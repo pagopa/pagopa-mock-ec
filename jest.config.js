@@ -1,8 +1,5 @@
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  reporters: [
-    'default',
-    'jest-html-reporters',
-  ],
+  preset: "ts-jest",
+  testEnvironment: "node",
+  testPathIgnorePatterns: ["dist", "/node_modules", ".helper.ts$"]
 };

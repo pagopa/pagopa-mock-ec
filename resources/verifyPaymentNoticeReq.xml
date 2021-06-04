@@ -1,0 +1,15 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:nod="http://pagopa-api.pagopa.gov.it/node/nodeForPsp.xsd">
+  <soapenv:Header />
+  <soapenv:Body>
+    <nod:verifyPaymentNoticeReq>
+      <idPSP>AGID_02</idPSP>
+      <idBrokerPSP>97735020584</idBrokerPSP>
+      <idChannel>97735020584_05</idChannel>
+      <password>pwd_AgID</password>
+      <qrCode>
+        <fiscalCode>77777777777</fiscalCode>
+        <noticeNumber>302018921337126000</noticeNumber>
+      </qrCode>
+    </nod:verifyPaymentNoticeReq>
+  </soapenv:Body>
+</soapenv:Envelope>

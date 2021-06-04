@@ -1,21 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es5",
     "module": "commonjs",
-    "lib": ["DOM", "ES2016"],
-    "allowJs": true,
-    "checkJs": true,
-    "sourceMap": true,
-    "outDir": "./build",
-    "removeComments": true,
-    "strict": true,
+    "target": "es2017",
+    "sourceMap": false,
+    "declaration": false,
+    "outDir": "dist",
+    "rootDir": "src",
     "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
     "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "baseUrl": "./",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "strictFunctionTypes": true
   },
-  "include": ["src/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.ts"]
 }
