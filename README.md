@@ -8,7 +8,7 @@ A mock implementation of PA pagoPA service
   - [Functionalities](#functionalities)
     - [Tribute description](#tribute-description)
     - [Configurations](#configurations)
-  - [Developer section](#developer-section)
+  - [Developer section 💻](#developer-section-)
     - [Prerequisites](#prerequisites)
     - [Environment](#environment)
     - [Check mockEcService 🧪](#check-mockecservice-)
@@ -75,10 +75,13 @@ The following edge cases are available (stateless, based on notice number)
 
 <br>
 
-## Developer section
+## Developer section 💻
 This _optional_ section is usefull if you want run `mock.ec-services-test` locally 🚀
 <details>
   <summary>Click to expand!</summary>  
+
+> **NOTE** : you can customize partial mock information using `.env.example`. To do that typing `cp .env.example .env` and changes the info you deem appropriate 
+
 
 ### Prerequisites
 
@@ -109,7 +112,7 @@ curl -H "Content-Type: text/xml; charset=utf-8" -H "SOAPAction:paVerifyPaymentNo
 
 if all rights you'd see something like that 👍
 
-```sh
+```xml
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
   <soapenv:Header />
   <soapenv:Body>
