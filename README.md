@@ -5,11 +5,12 @@ A mock implementation of PA pagoPA service
 - [mock.ec-services-test](#mockec-services-test)
   - [Glossary](#glossary)
   - [Usage](#usage)
+  - [Prerequisites](#prerequisites)
   - [Functionalities](#functionalities)
     - [Tribute description](#tribute-description)
     - [Configurations](#configurations)
   - [Developer section 💻](#developer-section-)
-    - [Prerequisites](#prerequisites)
+    - [Prerequisites](#prerequisites-1)
     - [Environment](#environment)
     - [Check mockEcService 🧪](#check-mockecservice-)
 
@@ -24,6 +25,17 @@ A mock implementation of PA pagoPA service
 <br>
 
 ## Usage
+## Prerequisites
+
+To be able to use as PSP the following `mock.ec-services-test` remebers to configure in your requests : 
+
+- PSP [Identification and Authentication](https://pagopa.github.io/pagopa-api/#section/Introduction/Identification-and-Authentication
+)
+- as EC/PA the `77777777777` fiscalCode
+- as `noticeNumber` one of those described in to below section [Configurations](#Configurations)
+
+
+
 ## Functionalities
 
 The following functionalites are available (EC Side) 
