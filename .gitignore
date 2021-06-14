@@ -10,4 +10,5 @@ pagopa-mock.log
 .env
 *.h2.db
 *.log
-
+cert/*.key
+cert/*.csr

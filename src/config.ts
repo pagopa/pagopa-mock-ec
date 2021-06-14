@@ -21,6 +21,9 @@ export const CONFIG = {
   PA_MOCK: {
     HOST: process.env.PAGOPA_NODO_HOST || localhost,
     PORT: process.env.PORT || 8089,
+    // SHA256 client certificate fingerprint (without `:` separators)
+    CLIENT_CERTIFICATE_FINGERPRINT: process.env.PAGOPAPROXY_CLIENT_CERTIFICATE_FINGERPRINT,
+
     ROUTES: {
       PPT_NODO: '/mockEcService',
     },

@@ -4,6 +4,7 @@ import * as morgan from 'morgan';
 import { Configuration } from './config';
 import { MockResponse, paGetPaymentRes, paSendRtRes, paVerifyPaymentNoticeRes } from './fixtures/nodoNewMod3Responses';
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
+import { requireClientCertificateFingerprint } from './middlewares/requireClientCertificateFingerprint';
 import {
   PAA_PAGAMENTO_DUPLICATO,
   PAA_PAGAMENTO_IN_CORSO,
@@ -60,6 +61,12 @@ export async function newExpressApp(
   app.set('port', config.PA_MOCK.PORT);
   const loggerFormat = ':date[iso] [info]: :method :url :status - :response-time ms';
   app.use(morgan(loggerFormat));
+
+  const clientCertificateFingerprint = config.PA_MOCK.CLIENT_CERTIFICATE_FINGERPRINT;
+  // Verify client certificate fingerprint if required
+  if (clientCertificateFingerprint !== undefined) {
+    app.use(requireClientCertificateFingerprint(clientCertificateFingerprint));
+  }
 
   app.use(express.json());
   app.use(express.urlencoded());
