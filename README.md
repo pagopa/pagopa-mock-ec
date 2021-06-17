@@ -1,14 +1,18 @@
-# mock.ec-services-test
+# mock-ec
 
 A mock implementation of PA pagoPA service
 
-- [mock.ec-services-test](#mockec-services-test)
+- [mock-ec](#mock-ec)
   - [Glossary](#glossary)
   - [Usage](#usage)
   - [Prerequisites](#prerequisites)
   - [Functionalities](#functionalities)
     - [Tribute description](#tribute-description)
     - [Configurations](#configurations)
+  - [Certificate creation :](#certificate-creation-)
+    - [generate private key and CSR](#generate-private-key-and-csr)
+    - [verify the information contained in the CSR](#verify-the-information-contained-in-the-csr)
+    - [create pfx file for azure](#create-pfx-file-for-azure)
   - [Developer section 💻](#developer-section-)
     - [Prerequisites](#prerequisites-1)
     - [Environment](#environment)
@@ -27,7 +31,7 @@ A mock implementation of PA pagoPA service
 ## Usage
 ## Prerequisites
 
-To be able to use as PSP the following `mock.ec-services-test` remebers to configure in your requests : 
+To be able to use as PSP the following `mock-ec` remebers to configure in your requests : 
 
 - PSP [Identification and Authentication](https://pagopa.github.io/pagopa-api/#section/Introduction/Identification-and-Authentication
 )
@@ -87,8 +91,28 @@ The following edge cases are available (stateless, based on notice number)
 
 <br>
 
+## Certificate creation :
+
+### generate private key and CSR
+```sh
+openssl req -new -config cert_config.cfg -newkey rsa:2048 -nodes -keyout mockecservice.key -out mockecservice.csr
+```
+### verify the information contained in the CSR
+
+```sh
+openssl req -noout -text -in mockecservice.csr
+
+```
+### create pfx file for azure
+
+```sh
+openssl pkcs12 -export -out mockecservice.pfx -inkey mockecservice.key -in mockecservice.crt
+```
+
+Then [Import a certificate using Azure CLI](https://docs.microsoft.com/en-us/azure/key-vault/certificates/tutorial-import-certificate#import-a-certificate-using-azure-cli)
+
 ## Developer section 💻
-This _optional_ section is usefull if you want run `mock.ec-services-test` locally 🚀
+This _optional_ section is usefull if you want run `mock-ec` locally 🚀
 <details>
   <summary>Click to expand!</summary>  
 
