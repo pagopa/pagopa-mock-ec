@@ -1,9 +1,11 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 import * as express from 'express';
 import * as bodyParserXml from 'express-xml-bodyparser';
 import * as morgan from 'morgan';
 import { Configuration } from './config';
-import { MockResponse, paGetPaymentRes, paSendRtRes, paVerifyPaymentNoticeRes } from './fixtures/nodoNewMod3Responses';
+import { paGetPaymentRes, paVerifyPaymentNoticeRes } from './fixtures/nodoNewMod3Responses';
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
+import { paSendRTHandler } from './handlers/handlers';
 import { requireClientCertificateFingerprint } from './middlewares/requireClientCertificateFingerprint';
 import {
   PAA_PAGAMENTO_DUPLICATO,
@@ -12,7 +14,7 @@ import {
   PAA_PAGAMENTO_SCONOSCIUTO,
   POSITIONS_STATUS,
 } from './utils/helper';
-import { logger } from './utils/logger';
+import { logger, log_event_tx } from './utils/logger';
 
 const faultId = '77777777777';
 
@@ -35,11 +37,6 @@ const descriptionAll = 'TARI/TEFA 2021';
 const descriptionMono = 'TARI 2021';
 
 const onBollettino = ' su bollettino';
-
-function log_event_tx(resp: MockResponse): void {
-  logger.info(`>>> tx RESPONSE [${resp[0]}]: `);
-  logger.info(resp[1]);
-}
 
 // tslint:disable-next-line: no-big-function
 export async function newExpressApp(
@@ -73,6 +70,12 @@ export async function newExpressApp(
   app.use(bodyParserXml({}));
 
   logger.info(`Path ${config.PA_MOCK.ROUTES.PPT_NODO} ...`);
+
+  // health check
+  app.get(`${config.PA_MOCK.ROUTES.PPT_NODO}/api/v1/info`, async (_, res) =>
+    res.status(200).send({ status: 'iamalive' }),
+  );
+
   // SOAP Server mock entrypoint
   // eslint-disable-next-line complexity
   // eslint-disable-next-line sonarjs/cognitive-complexity, complexity
@@ -303,19 +306,7 @@ export async function newExpressApp(
 
       // 3. paSendRT
       if (soapRequest[sentReceipt]) {
-        const paSendRT = soapRequest[sentReceipt][0];
-        const iuv = paSendRT.receipt[0].creditorreferenceid[0];
-
-        // // libero la posizione - cancello
-        // db.delete(iuv);
-        // esiste - la CHIUDO
-        db.set(iuv, POSITIONS_STATUS.CLOSE);
-
-        const paSendRTResponse = paSendRtRes({
-          outcome: 'OK',
-        });
-
-        log_event_tx(paSendRTResponse);
+        const paSendRTResponse = paSendRTHandler(soapRequest, db);
         return res.status(paSendRTResponse[0]).send(paSendRTResponse[1]);
       }
 
