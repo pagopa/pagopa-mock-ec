@@ -1,9 +1,5 @@
 # Azure DevOps pipeline to release a new version and deploy to production.
 
-variables:
-  NODE_VERSION: '12.19.1'
-  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
-
 parameters:
   - name: 'RELEASE_SEMVER'
     displayName: 'When packing a release, define the version bump to apply'
@@ -13,19 +9,40 @@ parameters:
       - minor
       - patch
     default: minor
-
+  - name: environment
+    displayName: Target Environment
+    type: string
+    default: dev
+    values:
+      - dev
+      - uat
 
 # Only manual activations are intended
 trigger: none
 pr: none
 
-# This pipeline has been implemented to be run on hosted agent pools based both
-# on 'windows' and 'ubuntu' virtual machine images and using the scripts defined
-# in the package.json file. Since we are deploying on Azure functions on Windows
-# runtime, the pipeline is currently configured to use a Windows hosted image for
-# the build and deploy.
+# variables setted on azdevops to avoid circular dependency warning
+# $(DEFAULT_BRANCH)
+# $(HEALTHCHECK_CONTAINER_SUBNET)
+# $(HEALTHCHECK_ENDPOINT)
+variables:
+  ${{ if eq(parameters['environment'], 'dev') }}:
+    DEPLOY_TYPE: $[variables['DEV_DEPLOY_TYPE']]
+    AZURE_SUBSCRIPTION: $(DEV_AZURE_SUBSCRIPTION)
+    WEB_APP_NAME: $(DEV_WEB_APP_NAME)
+    WEB_APP_RESOURCE_GROUP_NAME: $(DEV_WEB_APP_RESOURCE_GROUP_NAME)
+    HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(DEV_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
+    HEALTHCHECK_CONTAINER_VNET: $(DEV_HEALTHCHECK_CONTAINER_VNET)
+  ${{ if eq(parameters['environment'], 'uat') }}:
+    DEPLOY_TYPE: $[variables['UAT_DEPLOY_TYPE']]
+    AZURE_SUBSCRIPTION: $(UAT_AZURE_SUBSCRIPTION)
+    WEB_APP_NAME: $(UAT_WEB_APP_NAME)
+    WEB_APP_RESOURCE_GROUP_NAME: $(UAT_WEB_APP_RESOURCE_GROUP_NAME)
+    HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(UAT_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
+    HEALTHCHECK_CONTAINER_VNET: $(UAT_HEALTHCHECK_CONTAINER_VNET)
+
 pool:
-  vmImage: 'windows-2019'
+  vmImage: 'ubuntu-latest'
 
 resources:
   repositories:
@@ -36,62 +53,63 @@ resources:
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
-
   # Create a relase
   # Activated when ONE OF these are met:
-  # - is on branch main 
+  # - is on branch $(DEFAULT_BRANCH)
   # - is a tag in the form v{version}-RELEASE
   - stage: Release
-    condition:
+    condition: or(
+      eq(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH)),
       and(
-        succeeded(),
-        or(
-          eq(variables['Build.SourceBranch'], 'refs/heads/main'),
-          and(
-            startsWith(variables['Build.SourceBranch'], 'refs/tags'),
-            endsWith(variables['Build.SourceBranch'], '-RELEASE')
-          )
-        )
+      startsWith(variables['Build.SourceBranch'], 'refs/tags'),
+      endsWith(variables['Build.SourceBranch'], '-RELEASE')
+      )
       )
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
       - job: make_release
+        condition: eq(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
         steps:
-        - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-          - template: templates/node-github-release/template.yaml@pagopaCommons 
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
+              persistCredentials: true
+          - template: templates/node-github-release/template.yaml@pagopaCommons
+            parameters:
+              release_branch: '$(DEFAULT_BRANCH)'
               semver: '${{ parameters.RELEASE_SEMVER }}'
-              gitEmail: $(GIT_EMAIL)
-              gitUsername: $(GIT_USERNAME)
-              gitHubConnection: $(GITHUB_CONNECTION)
+              gitEmail: '$(GIT_EMAIL)'
+              gitUsername: '$(GIT_USERNAME)'
+              gitHubConnection: '$(GITHUB_CONNECTION)'
 
-        - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+      - job: skip_release
+        condition: ne(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
+        steps:
           - script: |
               echo "We assume this reference to be a valid release: $(Build.SourceBranch). Therefore, there is no need to bundle a new release."
             displayName: 'Skip release bundle'
-
 
   # Prepare Artifact
   - stage: Prepare_artifact
     dependsOn:
       - Release
     jobs:
-      - job: make_build
+      - job: 'prepare_artifact'
         steps:
-          - template: azure-templates/setup-project.yml
+          # Build application
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
               # On the assumption that this stage is executed only when Relase stage is,
               #  with this parameter we set the reference the deploy script must pull changes from.
               # The branch/tag name is calculated from the source branch
-              #  ex: Build.SourceBranch=refs/heads/main --> main
+              #  ex: Build.SourceBranch=refs/heads/master --> master
               #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
               gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
-
           - script: |
               yarn build
             displayName: 'Build'
 
+          # Copy application to
           - task: CopyFiles@2
             inputs:
               SourceFolder: '$(System.DefaultWorkingDirectory)'
@@ -119,49 +137,69 @@ stages:
                 !.auto-changelog.json
                 !api_pagopa.yaml
                 !__*/**/*
-            displayName: 'Copy bundle files'
-          
+            displayName: 'Copy deploy files'
+
           - publish: $(System.DefaultWorkingDirectory)/bundle
             artifact: Bundle
-            
-  - stage: Deploy_test
+
+  # Deploy
+  - stage: 'Deploy_to_${{ parameters.environment }}'
     dependsOn:
       - Prepare_artifact
     jobs:
-      - job: 'deploy'
+      - job: 'do_deploy_staging_slot_and_swap'
+        condition: eq(variables.DEPLOY_TYPE, 'staging_slot_and_swap')
         steps:
           - checkout: none
-
           - download: current
             artifact: Bundle
 
-          - task: AzureWebApp@1  
+          - task: AzureWebApp@1
             inputs:
-              azureSubscription: '$(PRODUCTION_AZURE_SUBSCRIPTION)'
-              resourceGroupName: '$(PRODUCTION_RESOURCE_GROUP_NAME)'
+              azureSubscription: '$(AZURE_SUBSCRIPTION)'
+              resourceGroupName: '$(WEB_APP_RESOURCE_GROUP_NAME)'
               appType: 'webApp'
-              appName: '$(PRODUCTION_MOCKEC_APP_NAME)'
+              appName: '$(WEB_APP_NAME)'
               package: '$(Pipeline.Workspace)/Bundle'
               deploymentMethod: 'auto'
-            displayName: Deploy to production slot
-  
-  # - stage: Deploy_production
-  #   dependsOn:
-  #     - Prepare_artifact
-  #   jobs:
-  #     - job: 'deploy'
-  #       steps:
-  #         - checkout: none
+              deployToSlotOrASE: true
+              slotName: 'staging'
+            displayName: 'Deploy to staging slot'
 
-  #         - download: current
-  #           artifact: Bundle
+          # - template: templates/rest-healthcheck/template.yaml@pagopaCommons
+          #   parameters:
+          #     azureSubscription: "$(AZURE_SUBSCRIPTION)"
+          #     appName: "$(WEB_APP_NAME)"
+          #     endpoint: "$(HEALTHCHECK_ENDPOINT)"
+          #     endpointType: "public"
+          #     containerInstanceResourceGroup: ""
+          #     containerInstanceVNet: ""
+          #     containerInstanceSubnet: ""
 
-  #         - task: AzureWebApp@1  
-  #           inputs:
-  #             azureSubscription: '$(PRODUCTION_AZURE_SUBSCRIPTION)'
-  #             resourceGroupName: '$(PRODUCTION_RESOURCE_GROUP_NAME)'
-  #             appType: 'webApp'
-  #             appName: '$(PRODUCTION_PROXYPROD_APP_NAME)'
-  #             package: '$(Pipeline.Workspace)/Bundle'
-  #             deploymentMethod: 'auto'
-  #           displayName: Deploy to production slot
+          - task: AzureAppServiceManage@0
+            inputs:
+              azureSubscription: '$(AZURE_SUBSCRIPTION)'
+              resourceGroupName: '$(WEB_APP_RESOURCE_GROUP_NAME)'
+              appName: '$(WEB_APP_NAME)'
+              sourceSlot: 'staging'
+              swapWithProduction: true
+            displayName: 'Swap with production slot'
+
+      - job: 'do_deploy_production_slot'
+        condition: eq(variables.DEPLOY_TYPE, 'production_slot')
+        steps:
+          - checkout: none
+          - download: current
+            artifact: Bundle
+
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: '$(AZURE_SUBSCRIPTION)'
+              resourceGroupName: '$(WEB_APP_RESOURCE_GROUP_NAME)'
+              appType: 'webApp'
+              appName: '$(WEB_APP_NAME)'
+              package: '$(Pipeline.Workspace)/Bundle'
+              deploymentMethod: 'auto'
+              deployToSlotOrASE: true
+              slotName: 'production'
+            displayName: 'Deploy to production slot'
