@@ -1,8 +1,8 @@
-# mock-ec
+# pagopa-mock-ec
 
 A mock implementation of PA pagoPA service
 
-- [mock-ec](#mock-ec)
+- [pagopa-mock-ec](#pagopa-mock-ec)
   - [Glossary](#glossary)
   - [Usage](#usage)
   - [Prerequisites](#prerequisites)
@@ -20,18 +20,18 @@ A mock implementation of PA pagoPA service
 
 ## Glossary
 
-| Acronym | Description | 
-| -------- | ----------- | 
-| EC or PA        | Public Admninistration  | 
-| CCPost          | Postal account          | 
-| CCBank          | Bank account            |
+| Acronym  | Description            |
+| -------- | ---------------------- |
+| EC or PA | Public Admninistration |
+| CCPost   | Postal account         |
+| CCBank   | Bank account           |
 
 <br>
 
 ## Usage
 ## Prerequisites
 
-To be able to use as PSP the following `mock-ec` remebers to configure in your requests : 
+To be able to use as PSP the following `pagopa-mock-ec` remebers to configure in your requests : 
 
 - PSP [Identification and Authentication](https://pagopa.github.io/pagopa-api/#section/Introduction/Identification-and-Authentication
 )
@@ -70,22 +70,22 @@ Both EC have at their disposal a bank IBAN and a postal IBAN.
 Based on notice number the mock will reply with a certain configuration of the tribute.
 
 
-| Notice number       | CC EC_TE | CC Comune di Milano| Notes                           |
-|---------------------|----------|--------------------|---------------------------------|
-|302**00**xxxxxxxxxxx | CCPost   | CCPost             | multibeneficiary (TARI + TEFA) |
-|302**01**xxxxxxxxxxx | CCPost   | CCBank             | multibeneficiary (TARI + TEFA) |
-|302**02**xxxxxxxxxxx | CCBank   | CCPost             | multibeneficiary (TARI + TEFA) |
-|302**03**xxxxxxxxxxx | CCBank   | CCBank             | multibeneficiary (TARI + TEFA) |
-|302**04**xxxxxxxxxxx | CCPost   | n.a.               | monobeneficiary (TARI)         |
-|302**05**xxxxxxxxxxx | CCBank   | n.a.               | monobeneficiary (TARI)         |
+| Notice number        | CC EC_TE | CC Comune di Milano | Notes                          |
+| -------------------- | -------- | ------------------- | ------------------------------ |
+| 302**00**xxxxxxxxxxx | CCPost   | CCPost              | multibeneficiary (TARI + TEFA) |
+| 302**01**xxxxxxxxxxx | CCPost   | CCBank              | multibeneficiary (TARI + TEFA) |
+| 302**02**xxxxxxxxxxx | CCBank   | CCPost              | multibeneficiary (TARI + TEFA) |
+| 302**03**xxxxxxxxxxx | CCBank   | CCBank              | multibeneficiary (TARI + TEFA) |
+| 302**04**xxxxxxxxxxx | CCPost   | n.a.                | monobeneficiary (TARI)         |
+| 302**05**xxxxxxxxxxx | CCBank   | n.a.                | monobeneficiary (TARI)         |
 
 
 The following edge cases are available (stateless, based on notice number)
 
-| Notice number       | Description                            |
-|---------------------|----------------------------------------|
-|302**99**xxxxxxxxxxx | Payment expired                        |
-|302**YY**xxxxxxxxxxx | Payment unknown                        |
+| Notice number        | Description     |
+| -------------------- | --------------- |
+| 302**99**xxxxxxxxxxx | Payment expired |
+| 302**YY**xxxxxxxxxxx | Payment unknown |
 
 **_NOTE:_**  YY: every code not mentioned before -> from 06 to 98
 
@@ -112,7 +112,7 @@ openssl pkcs12 -export -out mockecservice.pfx -inkey mockecservice.key -in mocke
 Then [Import a certificate using Azure CLI](https://docs.microsoft.com/en-us/azure/key-vault/certificates/tutorial-import-certificate#import-a-certificate-using-azure-cli)
 
 ## Developer section 💻
-This _optional_ section is usefull if you want run `mock-ec` locally 🚀
+This _optional_ section is usefull if you want run `pagopa-mock-ec` locally 🚀
 <details>
   <summary>Click to expand!</summary>  
 
@@ -129,12 +129,12 @@ yarn build && yarn start
 ```
 ### Environment
 
-  | name                 | description                   | default                               |
-  | -------------------- | ----------------------------- | ------------------                    |
-  | WINSTON_LOG_LEVEL    | desired log level             | `debug`                               |
-  | PAGOPA_NODO_HOST     | host this server listens to   | `http://localhost`                    |
-  | PORT                 | host this server listens to   | 8089                                  |
-  | BASE_PATH            | `host:port\<BASE_PATH>`       | `mockEcService`          |                     |
+  | name              | description                 | default            |
+  | ----------------- | --------------------------- | ------------------ |
+  | WINSTON_LOG_LEVEL | desired log level           | `debug`            |
+  | PAGOPA_NODO_HOST  | host this server listens to | `http://localhost` |
+  | PORT              | host this server listens to | 8089               |
+  | BASE_PATH         | `host:port\<BASE_PATH>`     | `mockEcService`    |
   
 ### Check mockEcService 🧪
 
