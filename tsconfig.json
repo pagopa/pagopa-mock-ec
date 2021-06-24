@@ -12,5 +12,5 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true
   },
-  "include": ["src/**/*.ts", "src/wsdl/Dangerfile.ts"]
+  "include": ["src/**/*.ts"]
 }
