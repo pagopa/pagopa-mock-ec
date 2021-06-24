@@ -133,7 +133,7 @@ yarn build && yarn start
   | ----------------- | --------------------------- | ------------------ |
   | WINSTON_LOG_LEVEL | desired log level           | `debug`            |
   | PAGOPA_NODO_HOST  | host this server listens to | `http://localhost` |
-  | PORT              | host this server listens to | 8089               |
+  | PORT              | host this server listens to | 8080               |
   | BASE_PATH         | `host:port\<BASE_PATH>`     | `mockEcService`    |
   
 ### Check mockEcService 🧪
