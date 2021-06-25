@@ -25,7 +25,7 @@ export const CONFIG = {
     CLIENT_CERTIFICATE_FINGERPRINT: process.env.PAGOPAPROXY_CLIENT_CERTIFICATE_FINGERPRINT,
 
     ROUTES: {
-      PPT_NODO: '/mockEcServicePartner',
+      PPT_NODO: '/mockEcService',
     },
     NM3_DATA: {
       // dati nuovo modello 3 - multibeneficiario
