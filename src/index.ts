@@ -17,9 +17,9 @@ App.newExpressApp(config, dbNotices)
   .then(app => {
     // Create a HTTP server from the new Express Application
     const server = http.createServer(app);
-    server.listen(config.PA_MOCK.PORT, config.PA_MOCK.HOST);
+    server.listen(config.PA_MOCK.PORT);
 
-    logger.info(`Server started at ${config.PA_MOCK.HOST}:${config.PA_MOCK.PORT}`);
+    logger.info(`Server started at on port:${config.PA_MOCK.PORT}`);
   })
   .catch(error => {
     logger.error(`Error occurred starting server: ${error}`);
