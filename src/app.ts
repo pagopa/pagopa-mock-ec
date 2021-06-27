@@ -28,10 +28,18 @@ const avviso3 = new RegExp('^30202.*'); // CCBank + CCPost
 const avviso4 = new RegExp('^30203.*'); // CCBank + CCBank
 const avviso5 = new RegExp('^30204.*'); // CCPost - Monobeneficiario
 const avviso6 = new RegExp('^30205.*'); // CCBank - Monobeneficiario
+const avviso7 = new RegExp('^30206.*'); // CCPost + CCPost
+const avviso8 = new RegExp('^30207.*'); // CCPost + CCBank
+const avviso9 = new RegExp('^30208.*'); // CCBank + CCPost
+const avviso10 = new RegExp('^30209.*'); // CCBank + CCBank
+const avviso11 = new RegExp('^30210.*'); // CCPost - Monobeneficiario
+const avviso12 = new RegExp('^30211.*'); // CCBank - Monobeneficiario
 const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
 
 const amount1 = 100.0;
+const amount1bis = 70.0;
 const amount2 = 20.0;
+const amount2bis = 30.0;
 
 const descriptionAll = 'TARI/TEFA 2021';
 const descriptionMono = 'TARI 2021';
@@ -95,14 +103,40 @@ export async function newExpressApp(
           avviso3.test(noticenumber) ||
           avviso4.test(noticenumber) ||
           avviso5.test(noticenumber) ||
-          avviso6.test(noticenumber);
+          avviso6.test(noticenumber) ||
+          avviso7.test(noticenumber) ||
+          avviso8.test(noticenumber) ||
+          avviso9.test(noticenumber) ||
+          avviso10.test(noticenumber) ||
+          avviso11.test(noticenumber) ||
+          avviso12.test(noticenumber);
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
+
+        const transferTypeRes =
+          avviso1.test(noticenumber) ||
+          avviso5.test(noticenumber) ||
+          avviso7.test(noticenumber) ||
+          avviso11.test(noticenumber)
+            ? StTransferType_type_pafnEnum.POSTAL
+            : undefined;
+
+        const amountRes =
+          avviso5.test(noticenumber) || avviso6.test(noticenumber)
+            ? amount1.toFixed(2)
+            : avviso11.test(noticenumber) || avviso12.test(noticenumber)
+            ? amount1bis.toFixed(2)
+            : avviso1.test(noticenumber) ||
+              avviso2.test(noticenumber) ||
+              avviso3.test(noticenumber) ||
+              avviso4.test(noticenumber)
+            ? (amount1 + amount2).toFixed(2)
+            : (amount1bis + amount2bis).toFixed(2);
 
         if (!isValidNotice && !isExpiredNotice) {
           // error case PAA_PAGAMENTO_SCONOSCIUTO
           const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
             fault: {
-              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|99]',
+              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|99]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
@@ -127,7 +161,7 @@ export async function newExpressApp(
           log_event_tx(paVerifyPaymentNoticeResponse);
           return res.status(paVerifyPaymentNoticeResponse[0]).send(paVerifyPaymentNoticeResponse[1]);
         } else {
-          const b = db.get(noticenumber[0]);
+          const b = db.get(noticenumber[0]); // get option status
           if (b) {
             // già esiste
             // error case PAA_PAGAMENTO_IN_CORSO
@@ -152,14 +186,8 @@ export async function newExpressApp(
             const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
               outcome: 'OK',
               fiscalCodePA: fiscalcode,
-              transferType:
-                avviso1.test(noticenumber) || avviso5.test(noticenumber)
-                  ? StTransferType_type_pafnEnum.POSTAL
-                  : undefined,
-              amount:
-                avviso5.test(noticenumber) || avviso6.test(noticenumber)
-                  ? amount1.toFixed(2)
-                  : (amount1 + amount2).toFixed(2),
+              transferType: transferTypeRes,
+              amount: amountRes,
             });
 
             log_event_tx(paVerifyPaymentNoticeResponse);
@@ -181,14 +209,32 @@ export async function newExpressApp(
           avviso3.test(noticenumber) ||
           avviso4.test(noticenumber) ||
           avviso5.test(noticenumber) ||
-          avviso6.test(noticenumber);
+          avviso6.test(noticenumber) ||
+          avviso7.test(noticenumber) ||
+          avviso8.test(noticenumber) ||
+          avviso9.test(noticenumber) ||
+          avviso10.test(noticenumber) ||
+          avviso11.test(noticenumber) ||
+          avviso12.test(noticenumber);
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
+
+        const amountRes =
+          avviso5.test(noticenumber) || avviso6.test(noticenumber)
+            ? amount1.toFixed(2)
+            : avviso11.test(noticenumber) || avviso12.test(noticenumber)
+            ? amount1bis.toFixed(2)
+            : avviso1.test(noticenumber) ||
+              avviso2.test(noticenumber) ||
+              avviso3.test(noticenumber) ||
+              avviso4.test(noticenumber)
+            ? (amount1 + amount2).toFixed(2)
+            : (amount1bis + amount2bis).toFixed(2);
 
         if (!isValidNotice && !isExpiredNotice) {
           // error case
           const paGetPaymentResponse = paGetPaymentRes({
             fault: {
-              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|99]',
+              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|99]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
@@ -213,7 +259,7 @@ export async function newExpressApp(
           log_event_tx(paGetPaymentResponse);
           return res.status(paGetPaymentResponse[0]).send(paGetPaymentResponse[1]);
         } else {
-          const b = db.get(noticenumber[0]);
+          const b = db.get(noticenumber[0]); // get status
           if (b) {
             // già esiste
             // error case PAA_PAGAMENTO_IN_CORSO
@@ -249,30 +295,36 @@ export async function newExpressApp(
 
             switch (idIbanAvviso) {
               case 0: // CCPost + CCPost
+              case 6: // CCPost + CCPost
                 iban1 = CCPostPrimaryEC;
                 iban2 = CCPostSecondaryEC;
                 remittanceInformation1Bollettino = onBollettino;
                 remittanceInformation2Bollettino = onBollettino;
                 break;
               case 1: // CCPost + CCBank
+              case 7: // CCPost + CCBank
                 iban1 = CCPostPrimaryEC;
                 iban2 = CCBankSecondaryEC;
                 remittanceInformation1Bollettino = onBollettino;
                 break;
               case 2: // CCBank + CCPost
+              case 8: // CCBank + CCPost
                 iban1 = CCBankPrimaryEC;
                 iban2 = CCPostSecondaryEC;
                 remittanceInformation2Bollettino = onBollettino;
                 break;
               case 3: // CCBank + CCBank
+              case 9: // CCBank + CCBank
                 iban1 = CCBankPrimaryEC;
                 iban2 = CCBankSecondaryEC;
                 break;
               case 4: // CCPost - Monobeneficiario
+              case 10: // CCPost - Monobeneficiario
                 iban1 = CCPostPrimaryEC;
                 remittanceInformation1Bollettino = onBollettino;
                 break;
               case 5: // CCBank - Monobeneficiario
+              case 11: // CCBank - Monobeneficiario
                 iban1 = CCBankPrimaryEC;
                 break;
               default:
@@ -281,12 +333,15 @@ export async function newExpressApp(
             }
 
             const paGetPaymentResponse = paGetPaymentRes({
-              amount:
-                avviso5.test(noticenumber) || avviso6.test(noticenumber)
-                  ? amount1.toFixed(2)
-                  : (amount1 + amount2).toFixed(2),
+              amount: amountRes,
               creditorReferenceId,
-              description: avviso5.test(noticenumber) || avviso6.test(noticenumber) ? descriptionMono : descriptionAll,
+              description:
+                avviso5.test(noticenumber) ||
+                avviso6.test(noticenumber) ||
+                avviso11.test(noticenumber) ||
+                avviso12.test(noticenumber)
+                  ? descriptionMono
+                  : descriptionAll,
               fiscalCodePA: fiscalcode,
               iban_1: iban1,
               iban_2: iban2,
