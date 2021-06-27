@@ -20,6 +20,8 @@ interface IActivateRequest {
   transferType?: stTransferType_type_pafn;
   fault?: ctFaultBean_type_pafn;
   amount?: stAmount_type_pafn | string;
+  amountPrimary?: stAmount_type_pafn | string;
+  amountSecondary?: stAmount_type_pafn | string;
   description?: string;
   iban_1?: string;
   iban_2?: string;
@@ -109,7 +111,7 @@ export const paGetPaymentRes = (params: IActivateRequest): MockResponse => [
                     <transferList>
                       <transfer>
                         <idTransfer>1</idTransfer>
-                        <transferAmount>100.00</transferAmount>
+                        <transferAmount>${params.amountPrimary}</transferAmount>
                         <fiscalCodePA>77777777777</fiscalCodePA>
                         <IBAN>${params.iban_1}</IBAN>
                         <remittanceInformation>TARI Comune EC_TE${
@@ -122,7 +124,7 @@ export const paGetPaymentRes = (params: IActivateRequest): MockResponse => [
                           ? // tslint:disable-next-line: no-nested-template-literals
                             `<transfer>
                         <idTransfer>2</idTransfer>
-                        <transferAmount>20.00</transferAmount>
+                        <transferAmount>${params.amountSecondary}</transferAmount>
                         <fiscalCodePA>01199250158</fiscalCodePA>
                         <IBAN>${params.iban_2}</IBAN>
                         <remittanceInformation>TEFA Comune Milano${params.remittanceInformation2Bollettino}</remittanceInformation>

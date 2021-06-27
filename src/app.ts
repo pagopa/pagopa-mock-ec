@@ -203,6 +203,14 @@ export async function newExpressApp(
         const noticenumber: string = paGetPayment.qrcode[0].noticenumber;
         const creditorReferenceId = noticenumber[0].substring(1);
         // const amount = paGetPayment.amount;
+        const isNoticeWith120 =
+          avviso1.test(noticenumber) ||
+          avviso2.test(noticenumber) ||
+          avviso3.test(noticenumber) ||
+          avviso4.test(noticenumber) ||
+          avviso5.test(noticenumber) ||
+          avviso6.test(noticenumber);
+
         const isValidNotice =
           avviso1.test(noticenumber) ||
           avviso2.test(noticenumber) ||
@@ -229,6 +237,9 @@ export async function newExpressApp(
               avviso4.test(noticenumber)
             ? (amount1 + amount2).toFixed(2)
             : (amount1bis + amount2bis).toFixed(2);
+
+        const amountPrimaryRes = isNoticeWith120 ? amount1.toFixed(2) : amount1bis.toFixed(2);
+        const amountSecondaryRes = isNoticeWith120 ? amount2.toFixed(2) : amount2bis.toFixed(2);
 
         if (!isValidNotice && !isExpiredNotice) {
           // error case
@@ -283,7 +294,7 @@ export async function newExpressApp(
             // happy case
 
             // retrive 0,1,2,3 from noticenumber
-            const idIbanAvviso: number = +noticenumber[0].substring(4, 5);
+            const idIbanAvviso: number = +noticenumber[0].substring(3, 5);
             // eslint-disable-next-line functional/no-let
             let iban1;
             // eslint-disable-next-line functional/no-let
@@ -334,6 +345,8 @@ export async function newExpressApp(
 
             const paGetPaymentResponse = paGetPaymentRes({
               amount: amountRes,
+              amountPrimary: amountPrimaryRes,
+              amountSecondary: amountSecondaryRes,
               creditorReferenceId,
               description:
                 avviso5.test(noticenumber) ||
