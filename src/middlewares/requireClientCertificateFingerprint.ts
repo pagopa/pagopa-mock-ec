@@ -29,18 +29,20 @@ export function requireClientCertificateFingerprint(validFingerprint: string): e
 
         // Extract the fingerprint
         const fingerprint = getFingerprintFromCertificate(clientCertificate);
-
         // Very the fingerprint
         if (fingerprint !== validFingerprint) {
           res.status(403).send('Invalid client certificate');
+          throw new Error('UNAUTHORIZED');
         } else {
           next();
         }
+      } else {
+        res.status(403).send('Client certificate required');
+        throw new Error('UNAUTHORIZED');
       }
-
-      res.status(403).send('Client certificate required');
     } catch (e) {
       res.status(403).send('Error decoding certificate');
+      throw new Error('UNAUTHORIZED');
     }
   };
 }
