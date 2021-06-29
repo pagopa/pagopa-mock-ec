@@ -8,6 +8,7 @@ import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTr
 import { paSendRTHandler } from './handlers/handlers';
 import { requireClientCertificateFingerprint } from './middlewares/requireClientCertificateFingerprint';
 import {
+  getRandomArbitrary,
   PAA_PAGAMENTO_DUPLICATO,
   PAA_PAGAMENTO_IN_CORSO,
   PAA_PAGAMENTO_SCADUTO,
@@ -21,7 +22,9 @@ const faultId = '77777777777';
 const verifySoapRequest = 'pafn:paverifypaymentnoticereq';
 const activateSoapRequest = 'pafn:pagetpaymentreq';
 const sentReceipt = 'pafn:pasendrtreq';
-
+// 3 02 04 8921337126000
+// 3 02 98
+// 3 02 97
 const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
 const avviso2 = new RegExp('^30201.*'); // CCPost + CCBank
 const avviso3 = new RegExp('^30202.*'); // CCBank + CCPost
@@ -35,6 +38,8 @@ const avviso10 = new RegExp('^30209.*'); // CCBank + CCBank
 const avviso11 = new RegExp('^30210.*'); // CCPost - Monobeneficiario
 const avviso12 = new RegExp('^30211.*'); // CCBank - Monobeneficiario
 const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
+const avvisoOver5000 = new RegExp('^30298.*'); // over 5000 euro
+const avvisoUnder1 = new RegExp('^30297.*'); // under 1 euro
 
 const amount1 = 100.0;
 const amount1bis = 70.0;
@@ -45,6 +50,8 @@ const descriptionAll = 'TARI/TEFA 2021';
 const descriptionMono = 'TARI 2021';
 
 const onBollettino = ' su bollettino';
+
+let amountSession: string | 0 = 0;
 
 // tslint:disable-next-line: no-big-function
 export async function newExpressApp(
@@ -109,8 +116,27 @@ export async function newExpressApp(
           avviso9.test(noticenumber) ||
           avviso10.test(noticenumber) ||
           avviso11.test(noticenumber) ||
-          avviso12.test(noticenumber);
+          avviso12.test(noticenumber) ||
+          avvisoOver5000.test(noticenumber) ||
+          avvisoUnder1.test(noticenumber);
+
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
+        const isOver5000 = avvisoOver5000.test(noticenumber);
+        const isUnder1 = avvisoUnder1.test(noticenumber);
+
+        const isAmount1 = avviso5.test(noticenumber) || avviso6.test(noticenumber);
+        const isAmount1bis = avviso11.test(noticenumber) || avviso12.test(noticenumber);
+        const isAmountComplete1 =
+          avviso1.test(noticenumber) ||
+          avviso2.test(noticenumber) ||
+          avviso3.test(noticenumber) ||
+          avviso4.test(noticenumber);
+
+        const isAmountComplete1bis =
+          avviso7.test(noticenumber) ||
+          avviso8.test(noticenumber) ||
+          avviso9.test(noticenumber) ||
+          avviso10.test(noticenumber);
 
         const transferTypeRes =
           avviso1.test(noticenumber) ||
@@ -120,17 +146,21 @@ export async function newExpressApp(
             ? StTransferType_type_pafnEnum.POSTAL
             : undefined;
 
-        const amountRes =
-          avviso5.test(noticenumber) || avviso6.test(noticenumber)
-            ? amount1.toFixed(2)
-            : avviso11.test(noticenumber) || avviso12.test(noticenumber)
-            ? amount1bis.toFixed(2)
-            : avviso1.test(noticenumber) ||
-              avviso2.test(noticenumber) ||
-              avviso3.test(noticenumber) ||
-              avviso4.test(noticenumber)
-            ? (amount1 + amount2).toFixed(2)
-            : (amount1bis + amount2bis).toFixed(2);
+        const amountRes = isAmount1
+          ? amount1.toFixed(2)
+          : isAmount1bis
+          ? amount1bis.toFixed(2)
+          : isAmountComplete1
+          ? (amount1 + amount2).toFixed(2)
+          : isAmountComplete1bis
+          ? (amount1bis + amount2bis).toFixed(2)
+          : isOver5000
+          ? getRandomArbitrary(5000, 10000).toFixed(2)
+          : isUnder1
+          ? getRandomArbitrary(0, 1).toFixed(2)
+          : 0;
+
+        amountSession = amountRes;
 
         if (!isValidNotice && !isExpiredNotice) {
           // error case PAA_PAGAMENTO_SCONOSCIUTO
@@ -223,23 +253,48 @@ export async function newExpressApp(
           avviso9.test(noticenumber) ||
           avviso10.test(noticenumber) ||
           avviso11.test(noticenumber) ||
-          avviso12.test(noticenumber);
+          avviso12.test(noticenumber) ||
+          avvisoOver5000.test(noticenumber) ||
+          avvisoUnder1.test(noticenumber);
+
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
+        const isOver5000 = avvisoOver5000.test(noticenumber);
+        const isUnder1 = avvisoUnder1.test(noticenumber);
 
-        const amountRes =
-          avviso5.test(noticenumber) || avviso6.test(noticenumber)
-            ? amount1.toFixed(2)
-            : avviso11.test(noticenumber) || avviso12.test(noticenumber)
-            ? amount1bis.toFixed(2)
-            : avviso1.test(noticenumber) ||
-              avviso2.test(noticenumber) ||
-              avviso3.test(noticenumber) ||
-              avviso4.test(noticenumber)
-            ? (amount1 + amount2).toFixed(2)
-            : (amount1bis + amount2bis).toFixed(2);
+        const isAmount1 = avviso5.test(noticenumber) || avviso6.test(noticenumber);
+        const isAmount1bis = avviso11.test(noticenumber) || avviso12.test(noticenumber);
+        const isAmountComplete1 =
+          avviso1.test(noticenumber) ||
+          avviso2.test(noticenumber) ||
+          avviso3.test(noticenumber) ||
+          avviso4.test(noticenumber);
 
-        const amountPrimaryRes = isNoticeWith120 ? amount1.toFixed(2) : amount1bis.toFixed(2);
-        const amountSecondaryRes = isNoticeWith120 ? amount2.toFixed(2) : amount2bis.toFixed(2);
+        const isAmountComplete1bis =
+          avviso7.test(noticenumber) ||
+          avviso8.test(noticenumber) ||
+          avviso9.test(noticenumber) ||
+          avviso10.test(noticenumber);
+
+        const amountRes = isAmount1
+          ? amount1.toFixed(2)
+          : isAmount1bis
+          ? amount1bis.toFixed(2)
+          : isAmountComplete1
+          ? (amount1 + amount2).toFixed(2)
+          : isAmountComplete1bis
+          ? (amount1bis + amount2bis).toFixed(2)
+          : isOver5000 || isUnder1
+          ? amountSession
+          : 0;
+
+        const amountPrimaryRes =
+          isOver5000 || isUnder1 ? +amountSession / 2 : isNoticeWith120 ? amount1.toFixed(2) : amount1bis.toFixed(2);
+        const amountSecondaryRes =
+          isOver5000 || isUnder1
+            ? +amountSession - +amountPrimaryRes
+            : isNoticeWith120
+            ? amount2.toFixed(2)
+            : amount2bis.toFixed(2);
 
         if (!isValidNotice && !isExpiredNotice) {
           // error case
@@ -294,7 +349,8 @@ export async function newExpressApp(
             // happy case
 
             // retrive 0,1,2,3 from noticenumber
-            const idIbanAvviso: number = +noticenumber[0].substring(3, 5);
+            const idIbanAvviso: number =
+              isOver5000 || isUnder1 ? Math.round(getRandomArbitrary(0, 11)) : +noticenumber[0].substring(3, 5);
             // eslint-disable-next-line functional/no-let
             let iban1;
             // eslint-disable-next-line functional/no-let
@@ -304,6 +360,7 @@ export async function newExpressApp(
             // eslint-disable-next-line functional/no-let
             let remittanceInformation2Bollettino = '';
 
+            console.log('idIbanAvviso', idIbanAvviso);
             switch (idIbanAvviso) {
               case 0: // CCPost + CCPost
               case 6: // CCPost + CCPost
@@ -345,7 +402,7 @@ export async function newExpressApp(
 
             const paGetPaymentResponse = paGetPaymentRes({
               amount: amountRes,
-              amountPrimary: amountPrimaryRes,
+              amountPrimary: iban2 ? amountPrimaryRes : +amountPrimaryRes * 2,
               amountSecondary: amountSecondaryRes,
               creditorReferenceId,
               description:

@@ -16,3 +16,7 @@ export enum POSITIONS_STATUS {
   IN_PROGRESS,
   CLOSE,
 }
+
+export function getRandomArbitrary(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
