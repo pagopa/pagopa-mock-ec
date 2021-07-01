@@ -37,26 +37,32 @@ const avviso9 = new RegExp('^30208.*'); // CCBank + CCPost
 const avviso10 = new RegExp('^30209.*'); // CCBank + CCBank
 const avviso11 = new RegExp('^30210.*'); // CCPost - Monobeneficiario
 const avviso12 = new RegExp('^30211.*'); // CCBank - Monobeneficiario
+const avviso13 = new RegExp('^30212.*'); // come avviso2 - amount1 4000 - amount2 2000
+const avviso14 = new RegExp('^30213.*'); // come avviso2 - amount1 0.10 - amount2 0.20
+const avvisoOver5000 = new RegExp('^30214.*'); // random over 5000 euro + random su 2 trasnfers
+const avvisoUnder1 = new RegExp('^30215.*'); // random under 1 euro + + random su 2 trasnfers
+
 const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
-const avvisoOver5000 = new RegExp('^30298.*'); // over 5000 euro
-const avvisoUnder1 = new RegExp('^30297.*'); // under 1 euro
 
 const amount1 = 100.0;
 const amount1bis = 70.0;
 const amount2 = 20.0;
 const amount2bis = 30.0;
+const amount1Over = 4000.0;
+const amount2Over = 2000.0;
+const amount1Under = 0.1;
+const amount2Under = 0.2;
 
 const descriptionAll = 'TARI/TEFA 2021';
 const descriptionMono = 'TARI 2021';
 
 const onBollettino = ' su bollettino';
 
-let amountSession: string | 0 = 0;
-
 // tslint:disable-next-line: no-big-function
 export async function newExpressApp(
   config: Configuration,
   db: Map<string, POSITIONS_STATUS>,
+  dbAmounts: Map<string, number>,
 ): Promise<Express.Application> {
   // config params...
   const email = config.PA_MOCK.NM3_DATA.USER_EMAL;
@@ -117,12 +123,16 @@ export async function newExpressApp(
           avviso10.test(noticenumber) ||
           avviso11.test(noticenumber) ||
           avviso12.test(noticenumber) ||
+          avviso13.test(noticenumber) ||
+          avviso14.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
         const isOver5000 = avvisoOver5000.test(noticenumber);
         const isUnder1 = avvisoUnder1.test(noticenumber);
+        const isFixOver = avviso13.test(noticenumber);
+        const isFixUnder = avviso14.test(noticenumber);
 
         const isAmount1 = avviso5.test(noticenumber) || avviso6.test(noticenumber);
         const isAmount1bis = avviso11.test(noticenumber) || avviso12.test(noticenumber);
@@ -154,13 +164,17 @@ export async function newExpressApp(
           ? (amount1 + amount2).toFixed(2)
           : isAmountComplete1bis
           ? (amount1bis + amount2bis).toFixed(2)
+          : isFixOver
+          ? (amount1Over + amount2Over).toFixed(2)
+          : isFixUnder
+          ? (amount1Under + amount2Under).toFixed(2)
           : isOver5000
           ? getRandomArbitrary(5000, 10000).toFixed(2)
           : isUnder1
           ? getRandomArbitrary(0, 1).toFixed(2)
           : 0;
 
-        amountSession = amountRes;
+        dbAmounts.set(noticenumber[0], +amountRes);
 
         if (!isValidNotice && !isExpiredNotice) {
           // error case PAA_PAGAMENTO_SCONOSCIUTO
@@ -254,12 +268,16 @@ export async function newExpressApp(
           avviso10.test(noticenumber) ||
           avviso11.test(noticenumber) ||
           avviso12.test(noticenumber) ||
+          avviso13.test(noticenumber) ||
+          avviso14.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
         const isOver5000 = avvisoOver5000.test(noticenumber);
         const isUnder1 = avvisoUnder1.test(noticenumber);
+        const isFixOver = avviso13.test(noticenumber);
+        const isFixUnder = avviso14.test(noticenumber);
 
         const isAmount1 = avviso5.test(noticenumber) || avviso6.test(noticenumber);
         const isAmount1bis = avviso11.test(noticenumber) || avviso12.test(noticenumber);
@@ -283,18 +301,36 @@ export async function newExpressApp(
           ? (amount1 + amount2).toFixed(2)
           : isAmountComplete1bis
           ? (amount1bis + amount2bis).toFixed(2)
+          : isFixOver
+          ? (amount1Over + amount2Over).toFixed(2)
+          : isFixUnder
+          ? (amount1Under + amount2Under).toFixed(2)
           : isOver5000 || isUnder1
-          ? amountSession
+          ? dbAmounts.get(noticenumber[0])
           : 0;
 
-        const amountPrimaryRes =
-          isOver5000 || isUnder1 ? +amountSession / 2 : isNoticeWith120 ? amount1.toFixed(2) : amount1bis.toFixed(2);
-        const amountSecondaryRes =
-          isOver5000 || isUnder1
-            ? +amountSession - +amountPrimaryRes
-            : isNoticeWith120
-            ? amount2.toFixed(2)
-            : amount2bis.toFixed(2);
+        const amountSession = dbAmounts.has(noticenumber[0]) ? dbAmounts.get(noticenumber[0]) : 0;
+        const amountSession1 = amountSession ? amountSession / 2 : 0;
+        const amountSession2 = amountSession ? amountSession - amountSession1 : 0;
+        const amountPrimaryRes = isFixOver
+          ? amount1Over.toFixed(2)
+          : isFixUnder
+          ? amount1Under.toFixed(2)
+          : isOver5000 || isUnder1
+          ? amountSession1.toFixed(2)
+          : isNoticeWith120
+          ? amount1.toFixed(2)
+          : amount1bis.toFixed(2);
+
+        const amountSecondaryRes = isFixOver
+          ? amount2Over.toFixed(2)
+          : isFixUnder
+          ? amount2Under.toFixed(2)
+          : isOver5000 || isUnder1
+          ? amountSession2.toFixed(2)
+          : isNoticeWith120
+          ? amount2.toFixed(2)
+          : amount2bis.toFixed(2);
 
         if (!isValidNotice && !isExpiredNotice) {
           // error case
@@ -350,7 +386,11 @@ export async function newExpressApp(
 
             // retrive 0,1,2,3 from noticenumber
             const idIbanAvviso: number =
-              isOver5000 || isUnder1 ? Math.round(getRandomArbitrary(0, 11)) : +noticenumber[0].substring(3, 5);
+              isOver5000 || isUnder1
+                ? Math.round(getRandomArbitrary(0, 11))
+                : isFixOver || isFixUnder
+                ? 1 // Fix Over and Under come avviso2
+                : +noticenumber[0].substring(3, 5);
             // eslint-disable-next-line functional/no-let
             let iban1;
             // eslint-disable-next-line functional/no-let
