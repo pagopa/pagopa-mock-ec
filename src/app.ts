@@ -400,7 +400,6 @@ export async function newExpressApp(
             // eslint-disable-next-line functional/no-let
             let remittanceInformation2Bollettino = '';
 
-            console.log('idIbanAvviso', idIbanAvviso);
             switch (idIbanAvviso) {
               case 0: // CCPost + CCPost
               case 6: // CCPost + CCPost
