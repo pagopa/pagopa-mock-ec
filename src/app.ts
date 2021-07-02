@@ -22,9 +22,7 @@ const faultId = '77777777777';
 const verifySoapRequest = 'pafn:paverifypaymentnoticereq';
 const activateSoapRequest = 'pafn:pagetpaymentreq';
 const sentReceipt = 'pafn:pasendrtreq';
-// 3 02 04 8921337126000
-// 3 02 98
-// 3 02 97
+
 const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
 const avviso2 = new RegExp('^30201.*'); // CCPost + CCBank
 const avviso3 = new RegExp('^30202.*'); // CCBank + CCPost
@@ -39,8 +37,8 @@ const avviso11 = new RegExp('^30210.*'); // CCPost - Monobeneficiario
 const avviso12 = new RegExp('^30211.*'); // CCBank - Monobeneficiario
 const avviso13 = new RegExp('^30212.*'); // come avviso2 - amount1 4000 - amount2 2000
 const avviso14 = new RegExp('^30213.*'); // come avviso2 - amount1 0.10 - amount2 0.20
-const avvisoOver5000 = new RegExp('^30214.*'); // random over 5000 euro + random su 2 trasnfers
-const avvisoUnder1 = new RegExp('^30215.*'); // random under 1 euro + + random su 2 trasnfers
+const avvisoOver5000 = new RegExp('^30214.*'); // random over 5000 euro + random su 2 transfers
+const avvisoUnder1 = new RegExp('^30215.*'); // random under 1 euro + + random su 2 transfers
 
 const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
 
@@ -306,7 +304,7 @@ export async function newExpressApp(
           : isFixUnder
           ? (amount1Under + amount2Under).toFixed(2)
           : isOver5000 || isUnder1
-          ? dbAmounts.get(noticenumber[0])
+          ? dbAmounts.get(noticenumber[0])?.toFixed(2)
           : 0;
 
         const amountSession = dbAmounts.has(noticenumber[0]) ? dbAmounts.get(noticenumber[0]) : 0;
@@ -441,7 +439,7 @@ export async function newExpressApp(
 
             const paGetPaymentResponse = paGetPaymentRes({
               amount: amountRes,
-              amountPrimary: iban2 ? amountPrimaryRes : +amountPrimaryRes * 2,
+              amountPrimary: iban2 == null ? amountPrimaryRes : (+amountPrimaryRes * 2).toFixed(2),
               amountSecondary: amountSecondaryRes,
               creditorReferenceId,
               description:
