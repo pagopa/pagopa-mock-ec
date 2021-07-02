@@ -36,6 +36,23 @@ interface IRTRequest {
   outcome: 'OK' | 'KO';
 }
 
+export const paErrorVerify = (): MockResponse => [
+  200,
+  `<SOAP-ENV:Envelope xmlns:SOAP-ENV=“http://schemas.xmlsoap.org/soap/envelope/”>
+  <SOAP-ENV:Header/>
+  <SOAP-ENV:Body>
+     <ns2:paGetPaymentRes xmlns:ns2=“http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd”>
+        <outcome>KO</outcome>
+        <fault>
+           <faultCode>PAA_SINTASSI_XSD</faultCode>
+           <faultString>Errore XSD</faultString>
+           <description>Errore validazione XSD della request</description>
+        </fault>
+     </ns2:paGetPaymentRes>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>`,
+];
+
 export const paVerifyPaymentNoticeRes = (params: IVerifyRequest): MockResponse => [
   200,
   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">

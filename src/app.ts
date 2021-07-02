@@ -3,7 +3,7 @@ import * as express from 'express';
 import * as bodyParserXml from 'express-xml-bodyparser';
 import * as morgan from 'morgan';
 import { Configuration } from './config';
-import { paGetPaymentRes, paVerifyPaymentNoticeRes } from './fixtures/nodoNewMod3Responses';
+import { paErrorVerify, paGetPaymentRes, paVerifyPaymentNoticeRes } from './fixtures/nodoNewMod3Responses';
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
 import { requireClientCertificateFingerprint } from './middlewares/requireClientCertificateFingerprint';
@@ -41,6 +41,7 @@ const avvisoOver5000 = new RegExp('^30214.*'); // random over 5000 euro + random
 const avvisoUnder1 = new RegExp('^30215.*'); // random under 1 euro + + random su 2 transfers
 
 const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
+const avvisoErrore = new RegExp('^30298.*'); // paErrorVerify
 
 const amount1 = 100.0;
 const amount1bis = 70.0;
@@ -108,6 +109,8 @@ export async function newExpressApp(
         const paVerifyPaymentNotice = soapRequest[verifySoapRequest][0];
         const fiscalcode = paVerifyPaymentNotice.qrcode[0].fiscalcode;
         const noticenumber = paVerifyPaymentNotice.qrcode[0].noticenumber;
+
+        const isFixedError = avvisoErrore.test(noticenumber);
         const isValidNotice =
           avviso1.test(noticenumber) ||
           avviso2.test(noticenumber) ||
@@ -173,6 +176,14 @@ export async function newExpressApp(
           : 0;
 
         dbAmounts.set(noticenumber[0], +amountRes);
+
+        if (isFixedError) { 
+
+          const paErrorVerify_ = paErrorVerify();
+
+          log_event_tx(paErrorVerify_);
+          return res.status(paErrorVerify_[0]).send(paErrorVerify_[1]);
+        }
 
         if (!isValidNotice && !isExpiredNotice) {
           // error case PAA_PAGAMENTO_SCONOSCIUTO
