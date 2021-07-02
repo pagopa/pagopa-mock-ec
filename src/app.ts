@@ -396,7 +396,7 @@ export async function newExpressApp(
             // retrive 0,1,2,3 from noticenumber
             const idIbanAvviso: number =
               isOver5000 || isUnder1
-                ? Math.round(getRandomArbitrary(0, 11))
+                ? 1 // Math.round(getRandomArbitrary(0, 11))
                 : isFixOver || isFixUnder
                 ? 1 // Fix Over and Under come avviso2
                 : +noticenumber[0].substring(3, 5);
@@ -450,7 +450,7 @@ export async function newExpressApp(
 
             const paGetPaymentResponse = paGetPaymentRes({
               amount: amountRes,
-              amountPrimary: iban2 == null ? amountPrimaryRes : (+amountPrimaryRes * 2).toFixed(2),
+              amountPrimary: iban2 !== null ? amountPrimaryRes : isOver5000 || isUnder1 ? amountSession1 : amountPrimaryRes,
               amountSecondary: amountSecondaryRes,
               creditorReferenceId,
               description:
