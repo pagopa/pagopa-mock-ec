@@ -193,7 +193,7 @@ export async function newExpressApp(
           // error case PAA_PAGAMENTO_SCONOSCIUTO
           const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
             fault: {
-              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|99]',
+              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|99|98|97]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
@@ -218,10 +218,8 @@ export async function newExpressApp(
           log_event_tx(paVerifyPaymentNoticeResponse);
           return res.status(paVerifyPaymentNoticeResponse[0]).send(paVerifyPaymentNoticeResponse[1]);
         } else if (isTimeout) {
-          console.log(`---------------------------------------------------------${TIMEOUT_SEC}`);
-
           setTimeout(function() {
-            // happy case DELAY
+            // happy case DELAY - paVerifyPaymentNoticeRes
             const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
               outcome: 'OK',
               fiscalCodePA: fiscalcode,
@@ -276,6 +274,7 @@ export async function newExpressApp(
         const creditorReferenceId = noticenumber[0].substring(1);
 
         const isFixedError = avvisoErrore.test(noticenumber);
+        const isTimeout = avvisoTimeout.test(noticenumber);
 
         const isNoticeWith120 =
           avviso1.test(noticenumber) ||
@@ -365,16 +364,16 @@ export async function newExpressApp(
           : amount2bis.toFixed(2);
 
         if (isFixedError) {
-          const paErrorVerifyResponse = paErrorVerify({ typeR: 'paVerifyPaymentNoticeRes' });
-          log_event_tx(paErrorVerifyResponse);
-          return res.status(paErrorVerifyResponse[0]).send(paErrorVerifyResponse[1]);
+          const paErrorGetResponse = paErrorVerify({ typeR: 'paGetPaymentRes' });
+          log_event_tx(paErrorGetResponse);
+          return res.status(paErrorGetResponse[0]).send(paErrorGetResponse[1]);
         }
 
-        if (!isValidNotice && !isExpiredNotice) {
+        if (!isValidNotice && !isExpiredNotice && !isTimeout) {
           // error case
           const paGetPaymentResponse = paGetPaymentRes({
             fault: {
-              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|99]',
+              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|99|98|97]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
@@ -384,7 +383,7 @@ export async function newExpressApp(
 
           log_event_tx(paGetPaymentResponse);
           return res.status(paGetPaymentResponse[0]).send(paGetPaymentResponse[1]);
-        } else if (isExpiredNotice) {
+        } else if (isExpiredNotice && !isTimeout) {
           // error case PAA_PAGAMENTO_SCADUTO
           const paGetPaymentResponse = paGetPaymentRes({
             fault: {
@@ -398,6 +397,29 @@ export async function newExpressApp(
 
           log_event_tx(paGetPaymentResponse);
           return res.status(paGetPaymentResponse[0]).send(paGetPaymentResponse[1]);
+        } else if (isTimeout) {
+          setTimeout(function() {
+            // happy case DELAY - paGetPaymentRes
+            const paGetPaymentResponse = paGetPaymentRes({
+              amount: (amount1 + amount2).toFixed(2),
+              amountPrimary: amount1.toFixed(2),
+              amountSecondary: amount2.toFixed(2),
+              creditorReferenceId,
+              description: descriptionAll,
+              fiscalCodePA: fiscalcode,
+              iban_1: CCPostPrimaryEC,
+              iban_2: CCPostSecondaryEC,
+              outcome: 'OK',
+              remittanceInformation1Bollettino: '',
+              remittanceInformation2Bollettino: '',
+              fullName,
+              email,
+              CF,
+            });
+
+            log_event_tx(paGetPaymentResponse);
+            return res.status(paGetPaymentResponse[0]).send(paGetPaymentResponse[1]);
+          }, +TIMEOUT_SEC);
         } else {
           const b = db.get(noticenumber[0]); // get status
           if (b) {
