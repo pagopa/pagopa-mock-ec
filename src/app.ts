@@ -41,7 +41,9 @@ const avvisoOver5000 = new RegExp('^30214.*'); // random over 5000 euro + random
 const avvisoUnder1 = new RegExp('^30215.*'); // random under 1 euro + + random su 2 transfers
 
 const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
-const avvisoErrore = new RegExp('^30298.*'); // paErrorVerify
+
+const avvisoTimeout = new RegExp('^30298.*'); // timeut
+const avvisoErrore = new RegExp('^30297.*'); // paErrorVerify
 
 const amount1 = 100.0;
 const amount1bis = 70.0;
@@ -64,6 +66,8 @@ export async function newExpressApp(
   dbAmounts: Map<string, number>,
 ): Promise<Express.Application> {
   // config params...
+  const TIMEOUT_SEC = config.PA_MOCK.NM3_DATA.TIMETOUT_SEC;
+
   const email = config.PA_MOCK.NM3_DATA.USER_EMAL;
   const fullName = config.PA_MOCK.NM3_DATA.USER_FULL_NAME;
   const CF = config.PA_MOCK.NM3_DATA.USER_CF;
@@ -111,6 +115,8 @@ export async function newExpressApp(
         const noticenumber = paVerifyPaymentNotice.qrcode[0].noticenumber;
 
         const isFixedError = avvisoErrore.test(noticenumber);
+        const isTimeout = avvisoTimeout.test(noticenumber);
+
         const isValidNotice =
           avviso1.test(noticenumber) ||
           avviso2.test(noticenumber) ||
@@ -177,15 +183,13 @@ export async function newExpressApp(
 
         dbAmounts.set(noticenumber[0], +amountRes);
 
-        if (isFixedError) { 
-
-          const paErrorVerify_ = paErrorVerify();
-
-          log_event_tx(paErrorVerify_);
-          return res.status(paErrorVerify_[0]).send(paErrorVerify_[1]);
+        if (isFixedError) {
+          const paErrorVerifyResponse = paErrorVerify({ typeR: 'paVerifyPaymentNoticeRes' });
+          log_event_tx(paErrorVerifyResponse);
+          return res.status(paErrorVerifyResponse[0]).send(paErrorVerifyResponse[1]);
         }
 
-        if (!isValidNotice && !isExpiredNotice) {
+        if (!isValidNotice && !isExpiredNotice && !isTimeout) {
           // error case PAA_PAGAMENTO_SCONOSCIUTO
           const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
             fault: {
@@ -199,7 +203,7 @@ export async function newExpressApp(
 
           log_event_tx(paVerifyPaymentNoticeResponse);
           return res.status(paVerifyPaymentNoticeResponse[0]).send(paVerifyPaymentNoticeResponse[1]);
-        } else if (isExpiredNotice) {
+        } else if (isExpiredNotice && !isTimeout) {
           // error case PAA_PAGAMENTO_SCADUTO
           const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
             outcome: 'KO',
@@ -213,6 +217,21 @@ export async function newExpressApp(
 
           log_event_tx(paVerifyPaymentNoticeResponse);
           return res.status(paVerifyPaymentNoticeResponse[0]).send(paVerifyPaymentNoticeResponse[1]);
+        } else if (isTimeout) {
+          console.log(`---------------------------------------------------------${TIMEOUT_SEC}`);
+
+          setTimeout(function() {
+            // happy case DELAY
+            const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
+              outcome: 'OK',
+              fiscalCodePA: fiscalcode,
+              transferType: StTransferType_type_pafnEnum.POSTAL,
+              amount: amount1.toFixed(2),
+            });
+
+            log_event_tx(paVerifyPaymentNoticeResponse);
+            return res.status(paVerifyPaymentNoticeResponse[0]).send(paVerifyPaymentNoticeResponse[1]);
+          }, +TIMEOUT_SEC);
         } else {
           const b = db.get(noticenumber[0]); // get option status
           if (b) {
@@ -255,7 +274,9 @@ export async function newExpressApp(
         const fiscalcode = paGetPayment.qrcode[0].fiscalcode;
         const noticenumber: string = paGetPayment.qrcode[0].noticenumber;
         const creditorReferenceId = noticenumber[0].substring(1);
-        // const amount = paGetPayment.amount;
+
+        const isFixedError = avvisoErrore.test(noticenumber);
+
         const isNoticeWith120 =
           avviso1.test(noticenumber) ||
           avviso2.test(noticenumber) ||
@@ -315,7 +336,9 @@ export async function newExpressApp(
           : isFixUnder
           ? (amount1Under + amount2Under).toFixed(2)
           : isOver5000 || isUnder1
-          ? dbAmounts.get(noticenumber[0])?.toFixed(2)
+          ? dbAmounts.has(noticenumber[0])
+            ? dbAmounts.get(noticenumber[0])
+            : 0
           : 0;
 
         const amountSession = dbAmounts.has(noticenumber[0]) ? dbAmounts.get(noticenumber[0]) : 0;
@@ -340,6 +363,12 @@ export async function newExpressApp(
           : isNoticeWith120
           ? amount2.toFixed(2)
           : amount2bis.toFixed(2);
+
+        if (isFixedError) {
+          const paErrorVerifyResponse = paErrorVerify({ typeR: 'paVerifyPaymentNoticeRes' });
+          log_event_tx(paErrorVerifyResponse);
+          return res.status(paErrorVerifyResponse[0]).send(paErrorVerifyResponse[1]);
+        }
 
         if (!isValidNotice && !isExpiredNotice) {
           // error case
@@ -450,7 +479,8 @@ export async function newExpressApp(
 
             const paGetPaymentResponse = paGetPaymentRes({
               amount: amountRes,
-              amountPrimary: iban2 !== null ? amountPrimaryRes : isOver5000 || isUnder1 ? amountSession1 : amountPrimaryRes,
+              amountPrimary:
+                iban2 !== null ? amountPrimaryRes : isOver5000 || isUnder1 ? amountSession1 : amountPrimaryRes,
               amountSecondary: amountSecondaryRes,
               creditorReferenceId,
               description:
@@ -483,9 +513,11 @@ export async function newExpressApp(
         return res.status(paSendRTResponse[0]).send(paSendRTResponse[1]);
       }
 
-      // The SOAP Request not implemented
-      logger.info(`The SOAP Request ${JSON.stringify(soapRequest)} not implemented`);
-      res.status(404).send('Not found');
+      if (!(soapRequest[sentReceipt] || soapRequest[activateSoapRequest] || soapRequest[verifySoapRequest])) {
+        // The SOAP Request not implemented
+        logger.info(`The SOAP Request ${JSON.stringify(soapRequest)} not implemented`);
+        res.status(404).send('Not found');
+      }
       // tslint:disable-next-line: prettier
     } catch (error) {
       // The SOAP Request isnt' correct

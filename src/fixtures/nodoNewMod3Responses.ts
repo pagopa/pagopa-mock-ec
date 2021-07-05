@@ -35,22 +35,27 @@ interface IActivateRequest {
 interface IRTRequest {
   outcome: 'OK' | 'KO';
 }
+interface IErrorType {
+  typeR: 'paVerifyPaymentNoticeRes' | 'paGetPaymentRes';
+}
 
-export const paErrorVerify = (): MockResponse => [
-  200,
-  `<SOAP-ENV:Envelope xmlns:SOAP-ENV=“http://schemas.xmlsoap.org/soap/envelope/”>
-  <SOAP-ENV:Header/>
-  <SOAP-ENV:Body>
-     <ns2:paGetPaymentRes xmlns:ns2=“http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd”>
-        <outcome>KO</outcome>
-        <fault>
-           <faultCode>PAA_SINTASSI_XSD</faultCode>
-           <faultString>Errore XSD</faultString>
-           <description>Errore validazione XSD della request</description>
-        </fault>
-     </ns2:paGetPaymentRes>
-  </SOAP-ENV:Body>
-</SOAP-ENV:Envelope>`,
+export const paErrorVerify = (params: IErrorType): MockResponse => [
+  404,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
+	<soapenv:Header />
+	<soapenv:Body>
+		<paf:${params.typeR}>
+			<outcome>KO</outcome>
+			<fault>
+				<faultCode>PAA_SEMANTICA</faultCode>
+				<faultString>Errore1</faultString>
+				<id>77777777777</id>
+				<description>ErroreDesc</description>
+			</fault>
+		</paf:${params.typeR}>
+	</soapenv:Body>
+</soapenv:Envelope>`,
 ];
 
 export const paVerifyPaymentNoticeRes = (params: IVerifyRequest): MockResponse => [
