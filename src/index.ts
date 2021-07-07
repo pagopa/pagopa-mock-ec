@@ -6,6 +6,7 @@ import { POSITIONS_STATUS } from './utils/helper';
 import { logger } from './utils/logger';
 
 const dbNotices: Map<string, POSITIONS_STATUS> = new Map<string, POSITIONS_STATUS>();
+const dbAmounts: Map<string, number> = new Map<string, number>();
 
 // Retrieve server configuration
 const config = Configuration.decode(CONFIG).getOrElseL(errors => {
@@ -13,7 +14,7 @@ const config = Configuration.decode(CONFIG).getOrElseL(errors => {
 });
 
 // Create the Express Application
-App.newExpressApp(config, dbNotices)
+App.newExpressApp(config, dbNotices, dbAmounts)
   .then(app => {
     // Create a HTTP server from the new Express Application
     const server = http.createServer(app);

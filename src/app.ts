@@ -3,11 +3,12 @@ import * as express from 'express';
 import * as bodyParserXml from 'express-xml-bodyparser';
 import * as morgan from 'morgan';
 import { Configuration } from './config';
-import { paGetPaymentRes, paVerifyPaymentNoticeRes } from './fixtures/nodoNewMod3Responses';
+import { paErrorVerify, paGetPaymentRes, paVerifyPaymentNoticeRes } from './fixtures/nodoNewMod3Responses';
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
 import { requireClientCertificateFingerprint } from './middlewares/requireClientCertificateFingerprint';
 import {
+  getRandomArbitrary,
   PAA_PAGAMENTO_DUPLICATO,
   PAA_PAGAMENTO_IN_CORSO,
   PAA_PAGAMENTO_SCADUTO,
@@ -34,12 +35,24 @@ const avviso9 = new RegExp('^30208.*'); // CCBank + CCPost
 const avviso10 = new RegExp('^30209.*'); // CCBank + CCBank
 const avviso11 = new RegExp('^30210.*'); // CCPost - Monobeneficiario
 const avviso12 = new RegExp('^30211.*'); // CCBank - Monobeneficiario
+const avviso13 = new RegExp('^30212.*'); // come avviso2 - amount1 4000 - amount2 2000
+const avviso14 = new RegExp('^30213.*'); // come avviso2 - amount1 0.10 - amount2 0.20
+const avvisoOver5000 = new RegExp('^30214.*'); // random over 5000 euro + random su 2 transfers
+const avvisoUnder1 = new RegExp('^30215.*'); // random under 1 euro + + random su 2 transfers
+
 const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
+
+const avvisoTimeout = new RegExp('^30298.*'); // timeut
+const avvisoErrore = new RegExp('^30297.*'); // paErrorVerify
 
 const amount1 = 100.0;
 const amount1bis = 70.0;
 const amount2 = 20.0;
 const amount2bis = 30.0;
+const amount1Over = 4000.0;
+const amount2Over = 2000.0;
+const amount1Under = 0.1;
+const amount2Under = 0.2;
 
 const descriptionAll = 'TARI/TEFA 2021';
 const descriptionMono = 'TARI 2021';
@@ -50,8 +63,11 @@ const onBollettino = ' su bollettino';
 export async function newExpressApp(
   config: Configuration,
   db: Map<string, POSITIONS_STATUS>,
+  dbAmounts: Map<string, number>,
 ): Promise<Express.Application> {
   // config params...
+  const TIMEOUT_SEC = config.PA_MOCK.NM3_DATA.TIMETOUT_SEC;
+
   const email = config.PA_MOCK.NM3_DATA.USER_EMAL;
   const fullName = config.PA_MOCK.NM3_DATA.USER_FULL_NAME;
   const CF = config.PA_MOCK.NM3_DATA.USER_CF;
@@ -97,6 +113,10 @@ export async function newExpressApp(
         const paVerifyPaymentNotice = soapRequest[verifySoapRequest][0];
         const fiscalcode = paVerifyPaymentNotice.qrcode[0].fiscalcode;
         const noticenumber = paVerifyPaymentNotice.qrcode[0].noticenumber;
+
+        const isFixedError = avvisoErrore.test(noticenumber);
+        const isTimeout = avvisoTimeout.test(noticenumber);
+
         const isValidNotice =
           avviso1.test(noticenumber) ||
           avviso2.test(noticenumber) ||
@@ -109,8 +129,31 @@ export async function newExpressApp(
           avviso9.test(noticenumber) ||
           avviso10.test(noticenumber) ||
           avviso11.test(noticenumber) ||
-          avviso12.test(noticenumber);
+          avviso12.test(noticenumber) ||
+          avviso13.test(noticenumber) ||
+          avviso14.test(noticenumber) ||
+          avvisoOver5000.test(noticenumber) ||
+          avvisoUnder1.test(noticenumber);
+
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
+        const isOver5000 = avvisoOver5000.test(noticenumber);
+        const isUnder1 = avvisoUnder1.test(noticenumber);
+        const isFixOver = avviso13.test(noticenumber);
+        const isFixUnder = avviso14.test(noticenumber);
+
+        const isAmount1 = avviso5.test(noticenumber) || avviso6.test(noticenumber);
+        const isAmount1bis = avviso11.test(noticenumber) || avviso12.test(noticenumber);
+        const isAmountComplete1 =
+          avviso1.test(noticenumber) ||
+          avviso2.test(noticenumber) ||
+          avviso3.test(noticenumber) ||
+          avviso4.test(noticenumber);
+
+        const isAmountComplete1bis =
+          avviso7.test(noticenumber) ||
+          avviso8.test(noticenumber) ||
+          avviso9.test(noticenumber) ||
+          avviso10.test(noticenumber);
 
         const transferTypeRes =
           avviso1.test(noticenumber) ||
@@ -120,23 +163,37 @@ export async function newExpressApp(
             ? StTransferType_type_pafnEnum.POSTAL
             : undefined;
 
-        const amountRes =
-          avviso5.test(noticenumber) || avviso6.test(noticenumber)
-            ? amount1.toFixed(2)
-            : avviso11.test(noticenumber) || avviso12.test(noticenumber)
-            ? amount1bis.toFixed(2)
-            : avviso1.test(noticenumber) ||
-              avviso2.test(noticenumber) ||
-              avviso3.test(noticenumber) ||
-              avviso4.test(noticenumber)
-            ? (amount1 + amount2).toFixed(2)
-            : (amount1bis + amount2bis).toFixed(2);
+        const amountRes = isAmount1
+          ? amount1.toFixed(2)
+          : isAmount1bis
+          ? amount1bis.toFixed(2)
+          : isAmountComplete1
+          ? (amount1 + amount2).toFixed(2)
+          : isAmountComplete1bis
+          ? (amount1bis + amount2bis).toFixed(2)
+          : isFixOver
+          ? (amount1Over + amount2Over).toFixed(2)
+          : isFixUnder
+          ? (amount1Under + amount2Under).toFixed(2)
+          : isOver5000
+          ? getRandomArbitrary(5000, 10000).toFixed(2)
+          : isUnder1
+          ? getRandomArbitrary(0, 1).toFixed(2)
+          : 0;
 
-        if (!isValidNotice && !isExpiredNotice) {
+        dbAmounts.set(noticenumber[0], +amountRes);
+
+        if (isFixedError) {
+          const paErrorVerifyResponse = paErrorVerify({ typeR: 'paVerifyPaymentNoticeRes' });
+          log_event_tx(paErrorVerifyResponse);
+          return res.status(paErrorVerifyResponse[0]).send(paErrorVerifyResponse[1]);
+        }
+
+        if (!isValidNotice && !isExpiredNotice && !isTimeout) {
           // error case PAA_PAGAMENTO_SCONOSCIUTO
           const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
             fault: {
-              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|99]',
+              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|99|98|97]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
@@ -146,7 +203,7 @@ export async function newExpressApp(
 
           log_event_tx(paVerifyPaymentNoticeResponse);
           return res.status(paVerifyPaymentNoticeResponse[0]).send(paVerifyPaymentNoticeResponse[1]);
-        } else if (isExpiredNotice) {
+        } else if (isExpiredNotice && !isTimeout) {
           // error case PAA_PAGAMENTO_SCADUTO
           const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
             outcome: 'KO',
@@ -160,6 +217,19 @@ export async function newExpressApp(
 
           log_event_tx(paVerifyPaymentNoticeResponse);
           return res.status(paVerifyPaymentNoticeResponse[0]).send(paVerifyPaymentNoticeResponse[1]);
+        } else if (isTimeout) {
+          setTimeout(function() {
+            // happy case DELAY - paVerifyPaymentNoticeRes
+            const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
+              outcome: 'OK',
+              fiscalCodePA: fiscalcode,
+              transferType: StTransferType_type_pafnEnum.POSTAL,
+              amount: amount1.toFixed(2),
+            });
+
+            log_event_tx(paVerifyPaymentNoticeResponse);
+            return res.status(paVerifyPaymentNoticeResponse[0]).send(paVerifyPaymentNoticeResponse[1]);
+          }, +TIMEOUT_SEC);
         } else {
           const b = db.get(noticenumber[0]); // get option status
           if (b) {
@@ -202,7 +272,10 @@ export async function newExpressApp(
         const fiscalcode = paGetPayment.qrcode[0].fiscalcode;
         const noticenumber: string = paGetPayment.qrcode[0].noticenumber;
         const creditorReferenceId = noticenumber[0].substring(1);
-        // const amount = paGetPayment.amount;
+
+        const isFixedError = avvisoErrore.test(noticenumber);
+        const isTimeout = avvisoTimeout.test(noticenumber);
+
         const isNoticeWith120 =
           avviso1.test(noticenumber) ||
           avviso2.test(noticenumber) ||
@@ -223,29 +296,84 @@ export async function newExpressApp(
           avviso9.test(noticenumber) ||
           avviso10.test(noticenumber) ||
           avviso11.test(noticenumber) ||
-          avviso12.test(noticenumber);
+          avviso12.test(noticenumber) ||
+          avviso13.test(noticenumber) ||
+          avviso14.test(noticenumber) ||
+          avvisoOver5000.test(noticenumber) ||
+          avvisoUnder1.test(noticenumber);
+
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
+        const isOver5000 = avvisoOver5000.test(noticenumber);
+        const isUnder1 = avvisoUnder1.test(noticenumber);
+        const isFixOver = avviso13.test(noticenumber);
+        const isFixUnder = avviso14.test(noticenumber);
 
-        const amountRes =
-          avviso5.test(noticenumber) || avviso6.test(noticenumber)
-            ? amount1.toFixed(2)
-            : avviso11.test(noticenumber) || avviso12.test(noticenumber)
-            ? amount1bis.toFixed(2)
-            : avviso1.test(noticenumber) ||
-              avviso2.test(noticenumber) ||
-              avviso3.test(noticenumber) ||
-              avviso4.test(noticenumber)
-            ? (amount1 + amount2).toFixed(2)
-            : (amount1bis + amount2bis).toFixed(2);
+        const isAmount1 = avviso5.test(noticenumber) || avviso6.test(noticenumber);
+        const isAmount1bis = avviso11.test(noticenumber) || avviso12.test(noticenumber);
+        const isAmountComplete1 =
+          avviso1.test(noticenumber) ||
+          avviso2.test(noticenumber) ||
+          avviso3.test(noticenumber) ||
+          avviso4.test(noticenumber);
 
-        const amountPrimaryRes = isNoticeWith120 ? amount1.toFixed(2) : amount1bis.toFixed(2);
-        const amountSecondaryRes = isNoticeWith120 ? amount2.toFixed(2) : amount2bis.toFixed(2);
+        const isAmountComplete1bis =
+          avviso7.test(noticenumber) ||
+          avviso8.test(noticenumber) ||
+          avviso9.test(noticenumber) ||
+          avviso10.test(noticenumber);
 
-        if (!isValidNotice && !isExpiredNotice) {
+        const amountRes = isAmount1
+          ? amount1.toFixed(2)
+          : isAmount1bis
+          ? amount1bis.toFixed(2)
+          : isAmountComplete1
+          ? (amount1 + amount2).toFixed(2)
+          : isAmountComplete1bis
+          ? (amount1bis + amount2bis).toFixed(2)
+          : isFixOver
+          ? (amount1Over + amount2Over).toFixed(2)
+          : isFixUnder
+          ? (amount1Under + amount2Under).toFixed(2)
+          : isOver5000 || isUnder1
+          ? dbAmounts.has(noticenumber[0])
+            ? dbAmounts.get(noticenumber[0])
+            : 0
+          : 0;
+
+        const amountSession = dbAmounts.has(noticenumber[0]) ? dbAmounts.get(noticenumber[0]) : 0;
+        const amountSession1 = amountSession ? amountSession / 2 : 0;
+        const amountSession2 = amountSession ? amountSession - amountSession1 : 0;
+        const amountPrimaryRes = isFixOver
+          ? amount1Over.toFixed(2)
+          : isFixUnder
+          ? amount1Under.toFixed(2)
+          : isOver5000 || isUnder1
+          ? amountSession1.toFixed(2)
+          : isNoticeWith120
+          ? amount1.toFixed(2)
+          : amount1bis.toFixed(2);
+
+        const amountSecondaryRes = isFixOver
+          ? amount2Over.toFixed(2)
+          : isFixUnder
+          ? amount2Under.toFixed(2)
+          : isOver5000 || isUnder1
+          ? amountSession2.toFixed(2)
+          : isNoticeWith120
+          ? amount2.toFixed(2)
+          : amount2bis.toFixed(2);
+
+        if (isFixedError) {
+          const paErrorGetResponse = paErrorVerify({ typeR: 'paGetPaymentRes' });
+          log_event_tx(paErrorGetResponse);
+          return res.status(paErrorGetResponse[0]).send(paErrorGetResponse[1]);
+        }
+
+        if (!isValidNotice && !isExpiredNotice && !isTimeout) {
           // error case
           const paGetPaymentResponse = paGetPaymentRes({
             fault: {
-              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|99]',
+              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|99|98|97]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
@@ -255,7 +383,7 @@ export async function newExpressApp(
 
           log_event_tx(paGetPaymentResponse);
           return res.status(paGetPaymentResponse[0]).send(paGetPaymentResponse[1]);
-        } else if (isExpiredNotice) {
+        } else if (isExpiredNotice && !isTimeout) {
           // error case PAA_PAGAMENTO_SCADUTO
           const paGetPaymentResponse = paGetPaymentRes({
             fault: {
@@ -269,6 +397,29 @@ export async function newExpressApp(
 
           log_event_tx(paGetPaymentResponse);
           return res.status(paGetPaymentResponse[0]).send(paGetPaymentResponse[1]);
+        } else if (isTimeout) {
+          setTimeout(function() {
+            // happy case DELAY - paGetPaymentRes
+            const paGetPaymentResponse = paGetPaymentRes({
+              amount: (amount1 + amount2).toFixed(2),
+              amountPrimary: amount1.toFixed(2),
+              amountSecondary: amount2.toFixed(2),
+              creditorReferenceId,
+              description: descriptionAll,
+              fiscalCodePA: fiscalcode,
+              iban_1: CCPostPrimaryEC,
+              iban_2: CCPostSecondaryEC,
+              outcome: 'OK',
+              remittanceInformation1Bollettino: '',
+              remittanceInformation2Bollettino: '',
+              fullName,
+              email,
+              CF,
+            });
+
+            log_event_tx(paGetPaymentResponse);
+            return res.status(paGetPaymentResponse[0]).send(paGetPaymentResponse[1]);
+          }, +TIMEOUT_SEC);
         } else {
           const b = db.get(noticenumber[0]); // get status
           if (b) {
@@ -294,7 +445,12 @@ export async function newExpressApp(
             // happy case
 
             // retrive 0,1,2,3 from noticenumber
-            const idIbanAvviso: number = +noticenumber[0].substring(3, 5);
+            const idIbanAvviso: number =
+              isOver5000 || isUnder1
+                ? 1 // Math.round(getRandomArbitrary(0, 11))
+                : isFixOver || isFixUnder
+                ? 1 // Fix Over and Under come avviso2
+                : +noticenumber[0].substring(3, 5);
             // eslint-disable-next-line functional/no-let
             let iban1;
             // eslint-disable-next-line functional/no-let
@@ -345,7 +501,8 @@ export async function newExpressApp(
 
             const paGetPaymentResponse = paGetPaymentRes({
               amount: amountRes,
-              amountPrimary: amountPrimaryRes,
+              amountPrimary:
+                iban2 !== null ? amountPrimaryRes : isOver5000 || isUnder1 ? amountSession1 : amountPrimaryRes,
               amountSecondary: amountSecondaryRes,
               creditorReferenceId,
               description:
@@ -378,9 +535,11 @@ export async function newExpressApp(
         return res.status(paSendRTResponse[0]).send(paSendRTResponse[1]);
       }
 
-      // The SOAP Request not implemented
-      logger.info(`The SOAP Request ${JSON.stringify(soapRequest)} not implemented`);
-      res.status(404).send('Not found');
+      if (!(soapRequest[sentReceipt] || soapRequest[activateSoapRequest] || soapRequest[verifySoapRequest])) {
+        // The SOAP Request not implemented
+        logger.info(`The SOAP Request ${JSON.stringify(soapRequest)} not implemented`);
+        res.status(404).send('Not found');
+      }
       // tslint:disable-next-line: prettier
     } catch (error) {
       // The SOAP Request isnt' correct
