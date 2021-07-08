@@ -37,8 +37,11 @@ const avviso11 = new RegExp('^30210.*'); // CCPost - Monobeneficiario
 const avviso12 = new RegExp('^30211.*'); // CCBank - Monobeneficiario
 const avviso13 = new RegExp('^30212.*'); // come avviso2 - amount1 4000 - amount2 2000
 const avviso14 = new RegExp('^30213.*'); // come avviso2 - amount1 0.10 - amount2 0.20
-const avvisoOver5000 = new RegExp('^30214.*'); // random over 5000 euro + random su 2 transfers
-const avvisoUnder1 = new RegExp('^30215.*'); // random under 1 euro + + random su 2 transfers
+const avviso15 = new RegExp('^30214.*'); // CCPost + CCBank + CBank
+const avviso16 = new RegExp('^30215.*'); // CCPost + CCBank + CBank + CCBank + CCBank
+const avviso17 = new RegExp('^30216.*'); // CCPost + CCBank + CBank + CCBank + CCBank
+const avvisoOver5000 = new RegExp('^30217.*'); // random over 5000 euro + random su 2 transfers
+const avvisoUnder1 = new RegExp('^30218.*'); // random under 1 euro + + random su 2 transfers
 
 const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
 
@@ -76,6 +79,7 @@ export async function newExpressApp(
   const CCBankPrimaryEC = config.PA_MOCK.NM3_DATA.CC_BANK_PRIMARY_EC;
   const CCPostSecondaryEC = config.PA_MOCK.NM3_DATA.CC_POST_SECONDARY_EC;
   const CCBankSecondaryEC = config.PA_MOCK.NM3_DATA.CC_BANK_SECONDARY_EC;
+  const CCBankThirdEC = config.PA_MOCK.NM3_DATA.CC_BANK_THIRD_EC;
 
   // app
   const app = express();
@@ -132,6 +136,9 @@ export async function newExpressApp(
           avviso12.test(noticenumber) ||
           avviso13.test(noticenumber) ||
           avviso14.test(noticenumber) ||
+          avviso15.test(noticenumber) ||
+          avviso16.test(noticenumber) ||
+          avviso17.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
@@ -147,7 +154,10 @@ export async function newExpressApp(
           avviso1.test(noticenumber) ||
           avviso2.test(noticenumber) ||
           avviso3.test(noticenumber) ||
-          avviso4.test(noticenumber);
+          avviso4.test(noticenumber) ||
+          avviso15.test(noticenumber) ||
+          avviso16.test(noticenumber) ||
+          avviso17.test(noticenumber);
 
         const isAmountComplete1bis =
           avviso7.test(noticenumber) ||
@@ -193,7 +203,8 @@ export async function newExpressApp(
           // error case PAA_PAGAMENTO_SCONOSCIUTO
           const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
             fault: {
-              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|99|98|97]',
+              description:
+                'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
@@ -299,6 +310,9 @@ export async function newExpressApp(
           avviso12.test(noticenumber) ||
           avviso13.test(noticenumber) ||
           avviso14.test(noticenumber) ||
+          avviso15.test(noticenumber) ||
+          avviso16.test(noticenumber) ||
+          avviso17.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
@@ -314,7 +328,10 @@ export async function newExpressApp(
           avviso1.test(noticenumber) ||
           avviso2.test(noticenumber) ||
           avviso3.test(noticenumber) ||
-          avviso4.test(noticenumber);
+          avviso4.test(noticenumber) ||
+          avviso15.test(noticenumber) ||
+          avviso16.test(noticenumber) ||
+          avviso17.test(noticenumber);
 
         const isAmountComplete1bis =
           avviso7.test(noticenumber) ||
@@ -373,7 +390,8 @@ export async function newExpressApp(
           // error case
           const paGetPaymentResponse = paGetPaymentRes({
             fault: {
-              description: 'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|99|98|97]',
+              description:
+                'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
@@ -456,6 +474,12 @@ export async function newExpressApp(
             // eslint-disable-next-line functional/no-let
             let iban2;
             // eslint-disable-next-line functional/no-let
+            let iban3;
+            // eslint-disable-next-line functional/no-let
+            let iban4;
+            // eslint-disable-next-line functional/no-let
+            let iban5;
+            // eslint-disable-next-line functional/no-let
             let remittanceInformation1Bollettino = '';
             // eslint-disable-next-line functional/no-let
             let remittanceInformation2Bollettino = '';
@@ -469,10 +493,28 @@ export async function newExpressApp(
                 remittanceInformation2Bollettino = onBollettino;
                 break;
               case 1: // CCPost + CCBank
-              case 7: // CCPost + CCBank
+              case 7: //  CCPost + CCBank
                 iban1 = CCPostPrimaryEC;
                 iban2 = CCBankSecondaryEC;
                 remittanceInformation1Bollettino = onBollettino;
+                break;
+              case 14: // CCPost + CCBank + CCBank
+                iban1 = CCPostPrimaryEC;
+                iban2 = CCBankSecondaryEC;
+                iban3 = CCBankThirdEC;
+                break;
+              case 15: // CCPost + CCBank + CCBank + CCBank
+                iban1 = CCPostPrimaryEC;
+                iban2 = CCBankSecondaryEC;
+                iban3 = CCBankThirdEC;
+                iban4 = CCBankSecondaryEC;
+                break;
+              case 16: // CCPost + CCBank + CCBank + CCBank + CCBank
+                iban1 = CCPostPrimaryEC;
+                iban2 = CCBankSecondaryEC;
+                iban3 = CCBankThirdEC;
+                iban4 = CCBankSecondaryEC;
+                iban5 = CCBankSecondaryEC;
                 break;
               case 2: // CCBank + CCPost
               case 8: // CCBank + CCPost
@@ -504,6 +546,9 @@ export async function newExpressApp(
               amountPrimary:
                 iban2 !== null ? amountPrimaryRes : isOver5000 || isUnder1 ? amountSession1 : amountPrimaryRes,
               amountSecondary: amountSecondaryRes,
+              amount3: iban5 ? 10 : iban4 ? 10 : 20,
+              amount4: iban5 ? 5 : 10,
+              amount5: 5,
               creditorReferenceId,
               description:
                 avviso5.test(noticenumber) ||
@@ -515,6 +560,9 @@ export async function newExpressApp(
               fiscalCodePA: fiscalcode,
               iban_1: iban1,
               iban_2: iban2,
+              iban_3: iban3,
+              iban_4: iban4,
+              iban_5: iban5,
               outcome: 'OK',
               remittanceInformation1Bollettino,
               remittanceInformation2Bollettino,
