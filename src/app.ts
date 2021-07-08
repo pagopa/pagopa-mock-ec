@@ -546,9 +546,9 @@ export async function newExpressApp(
               amountPrimary:
                 iban2 !== null ? amountPrimaryRes : isOver5000 || isUnder1 ? amountSession1 : amountPrimaryRes,
               amountSecondary: amountSecondaryRes,
-              amount3: iban5 ? 10 : iban4 ? 10 : 20,
-              amount4: iban5 ? 5 : 10,
-              amount5: 5,
+              amount3: (iban5 ? 10 : iban4 ? 10 : 20).toFixed(2),
+              amount4: (iban5 ? 5 : 10).toFixed(2),
+              amount5: '5.00',
               creditorReferenceId,
               description:
                 avviso5.test(noticenumber) ||
