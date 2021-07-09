@@ -151,7 +151,7 @@ The amount of the tribute is 120€ and divided in 4 transfers:
 
 #### Tribute 9
 
-The amount of the tribute is randomly generared and divided in 5 transfers:
+The amount of the tribute is is 120€ and divided in 5 transfers: 
 
 - Transfer 1 : 70€ due to **EC_TE**
 - Transfer 2 : 30€ due to **Comune di Milano**
