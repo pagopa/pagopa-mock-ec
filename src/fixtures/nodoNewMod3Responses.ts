@@ -166,7 +166,7 @@ export const paGetPaymentRes = (params: IActivateRequest): MockResponse => [
                             `<transfer>
                         <idTransfer>3</idTransfer>
                         <transferAmount>${params.amount3}</transferAmount>
-                        <fiscalCodePA>01199250158</fiscalCodePA>
+                        <fiscalCodePA>00939820726</fiscalCodePA>
                         <IBAN>${params.iban_3}</IBAN>
                         <remittanceInformation>TEFA Comune Milano${params.remittanceInformation2Bollettino}</remittanceInformation>
                         <transferCategory>0201102IM</transferCategory>
