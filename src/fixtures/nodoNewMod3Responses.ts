@@ -22,9 +22,15 @@ interface IActivateRequest {
   amount?: stAmount_type_pafn | string;
   amountPrimary?: stAmount_type_pafn | string;
   amountSecondary?: stAmount_type_pafn | string;
+  amount3?: stAmount_type_pafn | string;
+  amount4?: stAmount_type_pafn | string;
+  amount5?: stAmount_type_pafn | string;
   description?: string;
   iban_1?: string;
   iban_2?: string;
+  iban_3?: string;
+  iban_4?: string;
+  iban_5?: string;
   remittanceInformation1Bollettino?: string;
   remittanceInformation2Bollettino?: string;
   fullName?: string;
@@ -154,6 +160,45 @@ export const paGetPaymentRes = (params: IActivateRequest): MockResponse => [
                       </transfer>`
                           : ''
                       }
+                      ${
+                        params.iban_3
+                          ? // tslint:disable-next-line: no-nested-template-literals
+                            `<transfer>
+                        <idTransfer>3</idTransfer>
+                        <transferAmount>${params.amount3}</transferAmount>
+                        <fiscalCodePA>00939820726</fiscalCodePA>
+                        <IBAN>${params.iban_3}</IBAN>
+                        <remittanceInformation>TEFA Comune Milano${params.remittanceInformation2Bollettino}</remittanceInformation>
+                        <transferCategory>0201102IM</transferCategory>
+                      </transfer>`
+                          : ''
+                      }
+                      ${
+                        params.iban_4
+                          ? // tslint:disable-next-line: no-nested-template-literals
+                            `<transfer>
+                        <idTransfer>4</idTransfer>
+                        <transferAmount>${params.amount4}</transferAmount>
+                        <fiscalCodePA>01199250158</fiscalCodePA>
+                        <IBAN>${params.iban_4}</IBAN>
+                        <remittanceInformation>TEFA Comune Milano${params.remittanceInformation2Bollettino}</remittanceInformation>
+                        <transferCategory>0201102IM</transferCategory>
+                      </transfer>`
+                          : ''
+                      }
+                      ${
+                        params.iban_5
+                          ? // tslint:disable-next-line: no-nested-template-literals
+                            `<transfer>
+                        <idTransfer>5</idTransfer>
+                        <transferAmount>${params.amount5}</transferAmount>
+                        <fiscalCodePA>01199250158</fiscalCodePA>
+                        <IBAN>${params.iban_5}</IBAN>
+                        <remittanceInformation>TEFA Comune Milano${params.remittanceInformation2Bollettino}</remittanceInformation>
+                        <transferCategory>0201102IM</transferCategory>
+                      </transfer>`
+                          : ''
+                      }                                            
                     </transferList>
                   </data>`
               : ''
