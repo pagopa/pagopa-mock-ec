@@ -8,49 +8,44 @@ A mock implementation of PA pagoPA service
   - [Prerequisites](#prerequisites)
   - [Functionalities](#functionalities)
   - [Tribute description](#tribute-description)
-  - [Certificate creation :](#certificate-creation-)
-    - [generate private key and CSR](#generate-private-key-and-csr)
-    - [verify the information contained in the CSR](#verify-the-information-contained-in-the-csr)
-    - [create pfx file for azure](#create-pfx-file-for-azure)
-  - [Developer section 💻](#developer-section-)
-    - [Prerequisites](#prerequisites-1)
-    - [Environment](#environment)
-    - [Check mockEcService 🧪](#check-mockecservice-)
 
 ## Glossary
 
-| Acronym  | Description            |
-| -------- | ---------------------- |
-| EC       | Creditor institution   |
-| CCPost   | Postal account         |
-| CCBank   | Bank account           |
+| Acronym | Description          |
+| ------- | -------------------- |
+| EC      | Creditor institution |
+| CCPost  | Postal account       |
+| CCBank  | Bank account         |
 
 <br>
 
 ## Usage
+
 ## Prerequisites
 
-To be able to use as PSP the following `pagopa-mock-ec` remebers to configure in your requests : 
+To be able to use as PSP the following `pagopa-mock-ec` remebers to configure in your requests :
 
-- PSP [Identification and Authentication](https://pagopa.github.io/pagopa-api/#section/Introduction/Identification-and-Authentication
-)
+- PSP [Identification and Authentication](https://pagopa.github.io/pagopa-api/#section/Introduction/Identification-and-Authentication)
 - as EC the `77777777777` fiscalCode
 - as `noticeNumber` one of those described in to below section [Tribute description](#tribute-description)
 
-
 ## Functionalities
 
-The following functionalites are available (EC Side) 
->(_see [here](https://pagopa.github.io/pagopa-api/indexPA.html) to details_)
-- *paVerifyPaymentNotice*
-- *paGetPayment*
-- *paSendRT*
+The following functionalites are available (EC Side)
 
-These mock functionalities allows the PSP to invoke all the payment steps 
+> (_see [here](https://pagopa.github.io/pagopa-api/indexPA.html) to details_)
+
+- _paVerifyPaymentNotice_
+- _paGetPayment_
+- _paSendRT_
+
+These mock functionalities allows the PSP to invoke all the payment steps
+
 > (_see [here](https://pagopa.github.io/pagopa-api/) to details_)
-- *verifyPaymentNotice* or *verificaBollettino*
-- *activatePaymentNotice* 
-- *sendPaymentOutcome*
+
+- _verifyPaymentNotice_ or _verificaBollettino_
+- _activatePaymentNotice_
+- _sendPaymentOutcome_
 
 ## Tribute description
 
@@ -59,9 +54,10 @@ Based on notice number the mock will reply with a certain configuration of the t
 
 ### Tribute 1
 
-The tribute is 120 EUR divided in 2 transfers: 
-  - Transfer 1 : TARI, 100€ due to **EC_TE**
-  - Transfer 2 : TEFA, 20€ due to **Comune di Milano**
+The tribute is 120 EUR divided in 2 transfers:
+
+- Transfer 1 : TARI, 100€ due to **EC_TE**
+- Transfer 2 : TEFA, 20€ due to **Comune di Milano**
 
 | Notice number        | CC EC_TE | CC Comune di Milano | Notes                          |
 | -------------------- | -------- | ------------------- | ------------------------------ |
@@ -72,19 +68,21 @@ The tribute is 120 EUR divided in 2 transfers:
 
 ### Tribute 2
 
-The tribute is 100 EUR in a single transfers: 
-  - Transfer 1 : TARI, 100€ due to **EC_TE**
+The tribute is 100 EUR in a single transfers:
 
-| Notice number        | CC EC_TE | Notes                          |
-| -------------------- | -------- | ------------------------------ |
-| 302**04**xxxxxxxxxxx | CCPost   | monobeneficiary (TARI)         |
-| 302**05**xxxxxxxxxxx | CCBank   | monobeneficiary (TARI)         |
+- Transfer 1 : TARI, 100€ due to **EC_TE**
+
+| Notice number        | CC EC_TE | Notes                  |
+| -------------------- | -------- | ---------------------- |
+| 302**04**xxxxxxxxxxx | CCPost   | monobeneficiary (TARI) |
+| 302**05**xxxxxxxxxxx | CCBank   | monobeneficiary (TARI) |
 
 ### Tribute 3
 
-The tribute is 100 EUR divided in 2 transfers: 
-  - Transfer 1 : TARI, 70€ due to **EC_TE**
-  - Transfer 2 : TEFA, 30€ due to **Comune di Milano**
+The tribute is 100 EUR divided in 2 transfers:
+
+- Transfer 1 : TARI, 70€ due to **EC_TE**
+- Transfer 2 : TEFA, 30€ due to **Comune di Milano**
 
 | Notice number        | CC EC_TE | CC Comune di Milano | Notes                          |
 | -------------------- | -------- | ------------------- | ------------------------------ |
@@ -95,20 +93,21 @@ The tribute is 100 EUR divided in 2 transfers:
 
 ### Tribute 4
 
-The tribute is 70 EUR in a single transfer: 
-  - Transfer 1 : TARI, 70€ due to **EC_TE**
+The tribute is 70 EUR in a single transfer:
 
-| Notice number        | CC EC_TE | Notes                          |
-| -------------------- | -------- | ------------------------------ |
-| 302**10**xxxxxxxxxxx | CCPost   | monobeneficiary (TARI)         |
-| 302**11**xxxxxxxxxxx | CCBank   | monobeneficiary (TARI)         |
+- Transfer 1 : TARI, 70€ due to **EC_TE**
 
+| Notice number        | CC EC_TE | Notes                  |
+| -------------------- | -------- | ---------------------- |
+| 302**10**xxxxxxxxxxx | CCPost   | monobeneficiary (TARI) |
+| 302**11**xxxxxxxxxxx | CCBank   | monobeneficiary (TARI) |
 
 ### Tribute 5
 
-The tribute is 6000 EUR divided in 2 transfers: 
-  - Transfer 1 : TARI, 4000€ due to **EC_TE**
-  - Transfer 2 : TEFA, 2000€ due to **Comune di Milano**
+The tribute is 6000 EUR divided in 2 transfers:
+
+- Transfer 1 : TARI, 4000€ due to **EC_TE**
+- Transfer 2 : TEFA, 2000€ due to **Comune di Milano**
 
 | Notice number        | CC EC_TE | CC Comune di Milano | Notes                          |
 | -------------------- | -------- | ------------------- | ------------------------------ |
@@ -116,9 +115,10 @@ The tribute is 6000 EUR divided in 2 transfers:
 
 ### Tribute 6
 
-The tribute is 0.30 EUR divided in 2 transfers: 
-  - Transfer 1 : TARI, 0.10€ due to **EC_TE**
-  - Transfer 2 : TEFA, 0.20€ due to **Comune di Milano**
+The tribute is 0.30 EUR divided in 2 transfers:
+
+- Transfer 1 : TARI, 0.10€ due to **EC_TE**
+- Transfer 2 : TEFA, 0.20€ due to **Comune di Milano**
 
 | Notice number        | CC EC_TE | CC Comune di Milano | Notes                          |
 | -------------------- | -------- | ------------------- | ------------------------------ |
@@ -127,9 +127,10 @@ The tribute is 0.30 EUR divided in 2 transfers:
 #### Tribute 7
 
 The amount of the tribute is 120€ and divided in 3 transfers:
-  - Transfer 1 : 70€ due to **EC_TE**
-  - Transfer 2 : 30€ due to **Comune di Milano**
-  - Transfer 3 : 20€ due to **Comune di Bitetto**
+
+- Transfer 1 : 70€ due to **EC_TE**
+- Transfer 2 : 30€ due to **Comune di Milano**
+- Transfer 3 : 20€ due to **Comune di Bitetto**
 
 | Notice number        | CC EC_TE | CC Comune di Milano | Comune di Bitetto |
 | -------------------- | -------- | ------------------- | ----------------- |
@@ -138,28 +139,29 @@ The amount of the tribute is 120€ and divided in 3 transfers:
 #### Tribute 8
 
 The amount of the tribute is 120€ and divided in 4 transfers:
-  - Transfer 1 : 70€ due to **EC_TE**
-  - Transfer 2 : 30€ due to **Comune di Milano**
-  - Transfer 3 : 10€ due to **Comune di Bitetto**
-  - Transfer 4 : 10€ due to **Comune di Milano**
 
-| Notice number        | CC EC_TE | CC Comune di Milano (1) | Comune di Bitetto |CC Comune di Milano (2)|
-| -------------------- | -------- | ----------------------- | ----------------- |-----------------------|
-| 302**15**xxxxxxxxxxx | CCPost   | CCBank                  | CCBank            |CCBank                 |
+- Transfer 1 : 70€ due to **EC_TE**
+- Transfer 2 : 30€ due to **Comune di Milano**
+- Transfer 3 : 10€ due to **Comune di Bitetto**
+- Transfer 4 : 10€ due to **Comune di Milano**
 
+| Notice number        | CC EC_TE | CC Comune di Milano (1) | Comune di Bitetto | CC Comune di Milano (2) |
+| -------------------- | -------- | ----------------------- | ----------------- | ----------------------- |
+| 302**15**xxxxxxxxxxx | CCPost   | CCBank                  | CCBank            | CCBank                  |
 
 #### Tribute 9
 
-The amount of the tribute is randomly generared and divided in 5 transfers: 
-  - Transfer 1 : 70€ due to **EC_TE**
-  - Transfer 2 : 30€ due to **Comune di Milano**
-  - Transfer 3 : 10€ due to **Comune di Bitetto**
-  - Transfer 4 : 5€ due to **Comune di Milano**
-  - Transfer 5 : 5€ due to **Comune di Milano**
+The amount of the tribute is randomly generared and divided in 5 transfers:
 
-| Notice number        | CC EC_TE | CC Comune di Milano (1) | Comune di Bitetto |CC Comune di Milano (2)|CC Comune di Milano (3)|
-| -------------------- | -------- | ----------------------- | ----------------- |-----------------------|-----------------------|
-| 302**16**xxxxxxxxxxx | CCPost   | CCBank                  | CCBank            |CCBank                 |CCBank                 |
+- Transfer 1 : 70€ due to **EC_TE**
+- Transfer 2 : 30€ due to **Comune di Milano**
+- Transfer 3 : 10€ due to **Comune di Bitetto**
+- Transfer 4 : 5€ due to **Comune di Milano**
+- Transfer 5 : 5€ due to **Comune di Milano**
+
+| Notice number        | CC EC_TE | CC Comune di Milano (1) | Comune di Bitetto | CC Comune di Milano (2) | CC Comune di Milano (3) |
+| -------------------- | -------- | ----------------------- | ----------------- | ----------------------- | ----------------------- |
+| 302**16**xxxxxxxxxxx | CCPost   | CCBank                  | CCBank            | CCBank                  | CCBank                  |
 
 ### Edge cases
 
@@ -167,27 +169,30 @@ The following edge cases are available (stateless, based on notice number)
 
 | Notice number        | Description            |
 | -------------------- | ---------------------- |
-| 302**97**xxxxxxxxxxx | Station not reacheable | 
-| 302**98**xxxxxxxxxxx | Station timeout        | 
+| 302**97**xxxxxxxxxxx | Station not reacheable |
+| 302**98**xxxxxxxxxxx | Station timeout        |
 | 302**99**xxxxxxxxxxx | Payment expired        |
 | 302**YY**xxxxxxxxxxx | Payment unknown        |
 
-**_NOTE:_**  YY: every code not mentioned before -> from 17 to 96
+**_NOTE:_** YY: every code not mentioned before -> from 17 to 96
 
 <br>
-
+<!-- 
 ## Certificate creation :
 
 ### generate private key and CSR
+
 ```sh
 openssl req -new -config cert_config.cfg -newkey rsa:2048 -nodes -keyout mockecservice.key -out mockecservice.csr
 ```
+
 ### verify the information contained in the CSR
 
 ```sh
 openssl req -noout -text -in mockecservice.csr
 
 ```
+
 ### create pfx file for azure
 
 ```sh
@@ -197,12 +202,13 @@ openssl pkcs12 -export -out mockecservice.pfx -inkey mockecservice.key -in mocke
 Then [Import a certificate using Azure CLI](https://docs.microsoft.com/en-us/azure/key-vault/certificates/tutorial-import-certificate#import-a-certificate-using-azure-cli)
 
 ## Developer section 💻
+
 This _optional_ section is usefull if you want run `pagopa-mock-ec` locally 🚀
+
 <details>
-  <summary>Click to expand!</summary>  
+  <summary>Click to expand!</summary>
 
-> **NOTE** : you can customize partial mock information using `.env.example`. To do that typing `cp .env.example .env` and changes the info you deem appropriate 
-
+> **NOTE** : you can customize partial mock information using `.env.example`. To do that typing `cp .env.example .env` and changes the info you deem appropriate
 
 ### Prerequisites
 
@@ -212,21 +218,24 @@ This _optional_ section is usefull if you want run `pagopa-mock-ec` locally 🚀
 yarn install
 yarn build && yarn start
 ```
+
 ### Environment
 
-  | name              | description                 | default            |
-  | ----------------- | --------------------------- | ------------------ |
-  | WINSTON_LOG_LEVEL | desired log level           | `debug`            |
-  | PAGOPA_NODO_HOST  | host this server listens to | `http://localhost` |
-  | PORT              | host this server listens to | 8080               |
-  | BASE_PATH         | `host:port\<BASE_PATH>`     | `mockEcService`    |
-  
+| name              | description                 | default            |
+| ----------------- | --------------------------- | ------------------ |
+| WINSTON_LOG_LEVEL | desired log level           | `debug`            |
+| PAGOPA_NODO_HOST  | host this server listens to | `http://localhost` |
+| PORT              | host this server listens to | 8080               |
+| BASE_PATH         | `host:port\<BASE_PATH>`     | `mockEcService`    |
+
 ### Check mockEcService 🧪
 
 From `resources` folder run script `./run_all_mock_scenarios.sh` to execute all scenario.
 
-Otherwise if you just want to see if everything is up run typing the following command on a terminal 
->always from `resources` folder
+Otherwise if you just want to see if everything is up run typing the following command on a terminal
+
+> always from `resources` folder
+
 ```sh
 curl -H "Content-Type: text/xml; charset=utf-8" -H "SOAPAction:paVerifyPaymentNoticeReq"  -d @paVerifyPaymentNoticeReq_avv1.xml -X POST http://localhost:8089/mockEcService
 ```
@@ -257,4 +266,4 @@ if all rights you'd see something like that 👍
 </soapenv:Envelope>
 ```
 
-</details>
+</details> -->
