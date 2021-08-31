@@ -13,6 +13,7 @@ import {
   PAA_PAGAMENTO_IN_CORSO,
   PAA_PAGAMENTO_SCADUTO,
   PAA_PAGAMENTO_SCONOSCIUTO,
+  PAA_SINTASSI_XSD,
   POSITIONS_STATUS,
 } from './utils/helper';
 import { logger, log_event_tx } from './utils/logger';
@@ -45,8 +46,11 @@ const avvisoUnder1 = new RegExp('^30218.*'); // random under 1 euro + + random s
 
 const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
 
-const avvisoTimeout = new RegExp('^30298.*'); // timeut
+const avvisoTimeout = new RegExp('^30298.*'); // timeout
 const avvisoErrore = new RegExp('^30297.*'); // paErrorVerify
+
+const avvisoErroreXSD = new RegExp('^30296.*'); // PAA_SINTASSI_XSD
+
 
 const amount1 = 100.0;
 const amount1bis = 70.0;
@@ -120,6 +124,7 @@ export async function newExpressApp(
 
         const isFixedError = avvisoErrore.test(noticenumber);
         const isTimeout = avvisoTimeout.test(noticenumber);
+        const isErrorXsd = avvisoErroreXSD.test(noticenumber);
 
         const isValidNotice =
           avviso1.test(noticenumber) ||
@@ -192,6 +197,23 @@ export async function newExpressApp(
           : 0;
 
         dbAmounts.set(noticenumber[0], +amountRes);
+
+        if (isErrorXsd) {
+          // error case PAA_SINTASSI_XSD
+          const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
+            fault: {
+              description:
+                'sintassi XSD errata',
+              faultCode: PAA_SINTASSI_XSD.value,
+              faultString: 'messaggio xml non corretto',
+              id: faultId,
+            },
+            outcome: 'KO',
+          });
+
+          log_event_tx(paVerifyPaymentNoticeResponse);
+          return res.status(paVerifyPaymentNoticeResponse[0]).send(paVerifyPaymentNoticeResponse[1]);
+        }
 
         if (isFixedError) {
           const paErrorVerifyResponse = paErrorVerify({ typeR: 'paVerifyPaymentNoticeRes' });
