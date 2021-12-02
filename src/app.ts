@@ -28,8 +28,9 @@ const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
 const avviso2 = new RegExp('^30201.*'); // CCPost + CCBank
 const avviso3 = new RegExp('^30202.*'); // CCBank + CCPost
 const avviso4 = new RegExp('^30203.*'); // CCBank + CCBank
-const avviso5 = new RegExp('^30204.*'); // CCPost - Monobeneficiario
-const avviso6 = new RegExp('^30205.*'); // CCBank - Monobeneficiario
+const avviso5 = new RegExp('^30204.*'); // CCPost - Monobeneficiario + 777
+const avviso6 = new RegExp('^30205.*'); // CCBank - Monobeneficiario + 777 
+const avviso5smart = new RegExp('^30204777.*'); // CCPost - Monobeneficiario + 777
 const avviso7 = new RegExp('^30206.*'); // CCPost + CCPost
 const avviso8 = new RegExp('^30207.*'); // CCPost + CCBank
 const avviso9 = new RegExp('^30208.*'); // CCBank + CCPost
@@ -152,6 +153,8 @@ export async function newExpressApp(
         const isUnder1 = avvisoUnder1.test(noticenumber);
         const isFixOver = avviso13.test(noticenumber);
         const isFixUnder = avviso14.test(noticenumber);
+        const isSmartAmount = avviso5smart.test(noticenumber);
+
 
         const isAmount1 = avviso5.test(noticenumber) || avviso6.test(noticenumber);
         const isAmount1bis = avviso11.test(noticenumber) || avviso12.test(noticenumber);
@@ -178,7 +181,7 @@ export async function newExpressApp(
             ? StTransferType_type_pafnEnum.POSTAL
             : undefined;
 
-        const amountRes = isAmount1
+        let amountRes = isAmount1
           ? amount1.toFixed(2)
           : isAmount1bis
           ? amount1bis.toFixed(2)
@@ -195,6 +198,9 @@ export async function newExpressApp(
           : isUnder1
           ? getRandomArbitrary(0, 1).toFixed(2)
           : 0;
+
+        const customAmount = noticenumber[0].substring(14,18); // xx.xx
+        amountRes = isSmartAmount ? +customAmount.substring(0,2)+"." + customAmount.substring(2,4) : amountRes;
 
         dbAmounts.set(noticenumber[0], +amountRes);
 
@@ -346,6 +352,9 @@ export async function newExpressApp(
 
         const isAmount1 = avviso5.test(noticenumber) || avviso6.test(noticenumber);
         const isAmount1bis = avviso11.test(noticenumber) || avviso12.test(noticenumber);
+
+        const isSmartAmount = avviso5smart.test(noticenumber);
+
         const isAmountComplete1 =
           avviso1.test(noticenumber) ||
           avviso2.test(noticenumber) ||
@@ -361,7 +370,7 @@ export async function newExpressApp(
           avviso9.test(noticenumber) ||
           avviso10.test(noticenumber);
 
-        const amountRes = isAmount1
+        let amountRes = isAmount1
           ? amount1.toFixed(2)
           : isAmount1bis
           ? amount1bis.toFixed(2)
@@ -382,7 +391,7 @@ export async function newExpressApp(
         const amountSession = dbAmounts.has(noticenumber[0]) ? dbAmounts.get(noticenumber[0]) : 0;
         const amountSession1 = amountSession ? amountSession / 2 : 0;
         const amountSession2 = amountSession ? amountSession - amountSession1 : 0;
-        const amountPrimaryRes = isFixOver
+        let amountPrimaryRes = isFixOver
           ? amount1Over.toFixed(2)
           : isFixUnder
           ? amount1Under.toFixed(2)
@@ -402,6 +411,11 @@ export async function newExpressApp(
           ? amount2.toFixed(2)
           : amount2bis.toFixed(2);
 
+ 
+        const customAmount = noticenumber[0].substring(14,18); // xx.xx
+        amountPrimaryRes = isSmartAmount ? +customAmount.substring(0,2)+"." + customAmount.substring(2,4) : amountPrimaryRes;
+        amountRes = isSmartAmount ? +customAmount.substring(0,2)+"." + customAmount.substring(2,4) : amountRes;
+  
         if (isFixedError) {
           const paErrorGetResponse = paErrorVerify({ typeR: 'paGetPaymentRes' });
           log_event_tx(paErrorGetResponse);
