@@ -230,3 +230,15 @@ export const paSendRtRes = (params: IRTRequest): MockResponse => [
     </soapenv:Body>
   </soapenv:Envelope>`,
 ];
+
+export const pspNotifyPaymentRes = [
+  200,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/pspForNode.xsd">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <paf:activateIOPaymentRes>
+          <outcome>OK</outcome>
+      </paf:activateIOPaymentRes>
+    </soapenv:Body>
+  </soapenv:Envelope>`,
+];

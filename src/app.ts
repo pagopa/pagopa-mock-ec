@@ -3,7 +3,7 @@ import * as express from 'express';
 import * as bodyParserXml from 'express-xml-bodyparser';
 import * as morgan from 'morgan';
 import { Configuration } from './config';
-import { paErrorVerify, paGetPaymentRes, paVerifyPaymentNoticeRes } from './fixtures/nodoNewMod3Responses';
+import { paErrorVerify, paGetPaymentRes, paVerifyPaymentNoticeRes, pspNotifyPaymentRes } from './fixtures/nodoNewMod3Responses';
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
 import { requireClientCertificateFingerprint } from './middlewares/requireClientCertificateFingerprint';
@@ -23,6 +23,7 @@ const faultId = '77777777777';
 const verifySoapRequest = 'pafn:paverifypaymentnoticereq';
 const activateSoapRequest = 'pafn:pagetpaymentreq';
 const sentReceipt = 'pafn:pasendrtreq';
+const pspnotifypaymentreq='pspfn:pspnotifypaymentreq';
 
 const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
 const avviso2 = new RegExp('^30201.*'); // CCPost + CCBank
@@ -619,6 +620,11 @@ export async function newExpressApp(
         return res.status(paSendRTResponse[0]).send(paSendRTResponse[1]);
       }
 
+      // 4. pspnotifypaymentreq
+      if (soapRequest[pspnotifypaymentreq]) {
+        return res.status(+pspNotifyPaymentRes[0]).send(pspNotifyPaymentRes[1]);
+      }
+      
       if (!(soapRequest[sentReceipt] || soapRequest[activateSoapRequest] || soapRequest[verifySoapRequest])) {
         // The SOAP Request not implemented
         logger.info(`The SOAP Request ${JSON.stringify(soapRequest)} not implemented`);
