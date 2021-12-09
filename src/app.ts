@@ -662,7 +662,25 @@ export async function newExpressApp(
 
       // 3. paSendRT
       if (soapRequest[sentReceipt]) {
+        const sentReceiptReq = soapRequest[sentReceipt][0];
+        const auxdigit = config.PA_MOCK.AUX_DIGIT;
+
+        const noticenumber: string = `${auxdigit}${sentReceiptReq.receipt[0].creditorreferenceid}`;
+
+        if (testDebug.toUpperCase() === 'Y') {
+          noticenumberRequests.set(`${noticenumber}_paSendRT`, req.body);
+        }
+
         const paSendRTResponse = paSendRTHandler(soapRequest, db);
+
+        if (testDebug.toUpperCase() === 'Y') {
+          xml2js.parseString(paSendRTResponse[1], (err, result) => {
+            if (err) {
+              throw err;
+            }
+            noticenumberResponses.set(`${noticenumber}_paSendRT`, result);
+          });
+        }
         return res.status(paSendRTResponse[0]).send(paSendRTResponse[1]);
       }
 
