@@ -669,7 +669,8 @@ export async function newExpressApp(
       // 4. pspNotifyPayment
       if (soapRequest[pspnotifypaymentreq]) {
         const pspnotifypayment = soapRequest[pspnotifypaymentreq][0];
-        const noticenumber: string = pspnotifypayment.creditorreferenceid;
+        const auxdigit = 3; // TODO configure
+        const noticenumber: string = `${auxdigit}${pspnotifypayment.creditorreferenceid}`;
 
         if (testDebug.toUpperCase() === 'Y') {
           noticenumberRequests.set(`${noticenumber}_pspNotifyPayment`, req.body);
@@ -680,7 +681,6 @@ export async function newExpressApp(
             if (err) {
               throw err;
             }
-
             noticenumberResponses.set(`${noticenumber}_pspNotifyPayment`, result);
           });
         }
