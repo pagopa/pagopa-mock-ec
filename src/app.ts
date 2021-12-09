@@ -666,8 +666,24 @@ export async function newExpressApp(
         return res.status(paSendRTResponse[0]).send(paSendRTResponse[1]);
       }
 
-      // 4. pspnotifypaymentreq
+      // 4. pspNotifyPayment
       if (soapRequest[pspnotifypaymentreq]) {
+        const pspnotifypayment = soapRequest[pspnotifypaymentreq][0];
+        const noticenumber: string = pspnotifypayment.creditorreferenceid;
+
+        if (testDebug.toUpperCase() === 'Y') {
+          noticenumberRequests.set(`${noticenumber}_pspNotifyPayment`, req.body);
+        }
+
+        if (testDebug.toUpperCase() === 'Y') {
+          xml2js.parseString(pspNotifyPaymentRes[1], (err, result) => {
+            if (err) {
+              throw err;
+            }
+
+            noticenumberResponses.set(`${noticenumber}_pspNotifyPayment`, result);
+          });
+        }
         return res.status(+pspNotifyPaymentRes[0]).send(pspNotifyPaymentRes[1]);
       }
 
