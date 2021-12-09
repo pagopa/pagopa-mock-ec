@@ -21,6 +21,7 @@ export const CONFIG = {
   PA_MOCK: {
     HOST: process.env.PAGOPA_NODO_HOST || localhost,
     PORT: process.env.PORT || 8080,
+    TEST_DEBUG: process.env.TEST_DEBUG || 'N',
     // SHA256 client certificate fingerprint (without `:` separators)
     CLIENT_CERTIFICATE_FINGERPRINT: process.env.CLIENT_CERTIFICATE_FINGERPRINT,
 
@@ -47,6 +48,7 @@ const ServerConfiguration = t.interface({
   HOST: NonEmptyString,
   // We allow t.string to use socket pipe address in Azure App Services
   PORT: t.any,
+  TEST_DEBUG: NonEmptyString,
 });
 export type ServerConfiguration = t.TypeOf<typeof ServerConfiguration>;
 
