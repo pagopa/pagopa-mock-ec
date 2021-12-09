@@ -669,7 +669,7 @@ export async function newExpressApp(
       // 4. pspNotifyPayment
       if (soapRequest[pspnotifypaymentreq]) {
         const pspnotifypayment = soapRequest[pspnotifypaymentreq][0];
-        const auxdigit = 3; // TODO configure
+        const auxdigit = config.PA_MOCK.AUX_DIGIT;
         const noticenumber: string = `${auxdigit}${pspnotifypayment.creditorreferenceid}`;
 
         if (testDebug.toUpperCase() === 'Y') {
