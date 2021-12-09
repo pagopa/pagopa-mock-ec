@@ -2,8 +2,14 @@
 import * as express from 'express';
 import * as bodyParserXml from 'express-xml-bodyparser';
 import * as morgan from 'morgan';
+import * as xml2js from 'xml2js';
 import { Configuration } from './config';
-import { paErrorVerify, paGetPaymentRes, paVerifyPaymentNoticeRes, pspNotifyPaymentRes } from './fixtures/nodoNewMod3Responses';
+import {
+  paErrorVerify,
+  paGetPaymentRes,
+  paVerifyPaymentNoticeRes,
+  pspNotifyPaymentRes,
+} from './fixtures/nodoNewMod3Responses';
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
 import { requireClientCertificateFingerprint } from './middlewares/requireClientCertificateFingerprint';
@@ -23,14 +29,14 @@ const faultId = '77777777777';
 const verifySoapRequest = 'pafn:paverifypaymentnoticereq';
 const activateSoapRequest = 'pafn:pagetpaymentreq';
 const sentReceipt = 'pafn:pasendrtreq';
-const pspnotifypaymentreq='pspfn:pspnotifypaymentreq';
+const pspnotifypaymentreq = 'pspfn:pspnotifypaymentreq';
 
 const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
 const avviso2 = new RegExp('^30201.*'); // CCPost + CCBank
 const avviso3 = new RegExp('^30202.*'); // CCBank + CCPost
 const avviso4 = new RegExp('^30203.*'); // CCBank + CCBank
 const avviso5 = new RegExp('^30204.*'); // CCPost - Monobeneficiario + 777
-const avviso6 = new RegExp('^30205.*'); // CCBank - Monobeneficiario + 777 
+const avviso6 = new RegExp('^30205.*'); // CCBank - Monobeneficiario + 777
 const avviso5smart = new RegExp('^30204777.*'); // CCPost - Monobeneficiario + 777
 const avviso7 = new RegExp('^30206.*'); // CCPost + CCPost
 const avviso8 = new RegExp('^30207.*'); // CCPost + CCBank
@@ -53,7 +59,6 @@ const avvisoErrore = new RegExp('^30297.*'); // paErrorVerify
 
 const avvisoErroreXSD = new RegExp('^30296.*'); // PAA_SINTASSI_XSD
 
-
 const amount1 = 100.0;
 const amount1bis = 70.0;
 const amount2 = 20.0;
@@ -73,6 +78,8 @@ export async function newExpressApp(
   config: Configuration,
   db: Map<string, POSITIONS_STATUS>,
   dbAmounts: Map<string, number>,
+  noticenumberRequests: Map<string, JSON>,
+  noticenumberResponses: Map<string, JSON>,
 ): Promise<Express.Application> {
   // config params...
   const TIMEOUT_SEC = config.PA_MOCK.NM3_DATA.TIMETOUT_SEC;
@@ -86,6 +93,7 @@ export async function newExpressApp(
   const CCPostSecondaryEC = config.PA_MOCK.NM3_DATA.CC_POST_SECONDARY_EC;
   const CCBankSecondaryEC = config.PA_MOCK.NM3_DATA.CC_BANK_SECONDARY_EC;
   const CCBankThirdEC = config.PA_MOCK.NM3_DATA.CC_BANK_THIRD_EC;
+  const testDebug = config.PA_MOCK.TEST_DEBUG;
 
   // app
   const app = express();
@@ -110,6 +118,18 @@ export async function newExpressApp(
     res.status(200).send({ status: 'iamalive' }),
   );
 
+  // return history of requests and responses
+  app.get(`${config.PA_MOCK.ROUTES.PPT_NODO}/api/v1/history/:noticenumber/:primitive`, async (req, res) => {
+    if (testDebug.toUpperCase() === 'Y') {
+      res.status(200).send({
+        request: noticenumberRequests.get(`${req.params.noticenumber}_${req.params.primitive}`),
+        response: noticenumberResponses.get(`${req.params.noticenumber}_${req.params.primitive}`),
+      });
+    } else {
+      res.status(500).send({ details: 'History not enabled' });
+    }
+  });
+
   // SOAP Server mock entrypoint
   // eslint-disable-next-line complexity
   // eslint-disable-next-line sonarjs/cognitive-complexity, complexity
@@ -123,6 +143,9 @@ export async function newExpressApp(
         const paVerifyPaymentNotice = soapRequest[verifySoapRequest][0];
         const fiscalcode = paVerifyPaymentNotice.qrcode[0].fiscalcode;
         const noticenumber = paVerifyPaymentNotice.qrcode[0].noticenumber;
+        if (testDebug.toUpperCase() === 'Y') {
+          noticenumberRequests.set(`${noticenumber}_paVerifyPaymentNotice`, req.body);
+        }
 
         const isFixedError = avvisoErrore.test(noticenumber);
         const isTimeout = avvisoTimeout.test(noticenumber);
@@ -155,7 +178,6 @@ export async function newExpressApp(
         const isFixOver = avviso13.test(noticenumber);
         const isFixUnder = avviso14.test(noticenumber);
         const isSmartAmount = avviso5smart.test(noticenumber);
-
 
         const isAmount1 = avviso5.test(noticenumber) || avviso6.test(noticenumber);
         const isAmount1bis = avviso11.test(noticenumber) || avviso12.test(noticenumber);
@@ -200,8 +222,8 @@ export async function newExpressApp(
           ? getRandomArbitrary(0, 1).toFixed(2)
           : 0;
 
-        const customAmount = noticenumber[0].substring(14,18); // xx.xx
-        amountRes = isSmartAmount ? +customAmount.substring(0,2)+"." + customAmount.substring(2,4) : amountRes;
+        const customAmount = noticenumber[0].substring(14, 18); // xx.xx
+        amountRes = isSmartAmount ? +customAmount.substring(0, 2) + '.' + customAmount.substring(2, 4) : amountRes;
 
         dbAmounts.set(noticenumber[0], +amountRes);
 
@@ -209,8 +231,7 @@ export async function newExpressApp(
           // error case PAA_SINTASSI_XSD
           const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
             fault: {
-              description:
-                'sintassi XSD errata',
+              description: 'sintassi XSD errata',
               faultCode: PAA_SINTASSI_XSD.value,
               faultString: 'messaggio xml non corretto',
               id: faultId,
@@ -301,6 +322,16 @@ export async function newExpressApp(
             });
 
             log_event_tx(paVerifyPaymentNoticeResponse);
+            if (testDebug.toUpperCase() === 'Y') {
+              xml2js.parseString(paVerifyPaymentNoticeResponse[1], (err, result) => {
+                if (err) {
+                  throw err;
+                }
+
+                // const json = JSON.stringify(result);
+                noticenumberResponses.set(`${noticenumber}_paVerifyPaymentNotice`, result);
+              });
+            }
             return res.status(paVerifyPaymentNoticeResponse[0]).send(paVerifyPaymentNoticeResponse[1]);
           }
         }
@@ -315,6 +346,10 @@ export async function newExpressApp(
 
         const isFixedError = avvisoErrore.test(noticenumber);
         const isTimeout = avvisoTimeout.test(noticenumber);
+
+        if (testDebug.toUpperCase() === 'Y') {
+          noticenumberRequests.set(`${noticenumber}_paGetPayment`, req.body);
+        }
 
         const isNoticeWith120 =
           avviso1.test(noticenumber) ||
@@ -412,11 +447,12 @@ export async function newExpressApp(
           ? amount2.toFixed(2)
           : amount2bis.toFixed(2);
 
- 
-        const customAmount = noticenumber[0].substring(14,18); // xx.xx
-        amountPrimaryRes = isSmartAmount ? +customAmount.substring(0,2)+"." + customAmount.substring(2,4) : amountPrimaryRes;
-        amountRes = isSmartAmount ? +customAmount.substring(0,2)+"." + customAmount.substring(2,4) : amountRes;
-  
+        const customAmount = noticenumber[0].substring(14, 18); // xx.xx
+        amountPrimaryRes = isSmartAmount
+          ? +customAmount.substring(0, 2) + '.' + customAmount.substring(2, 4)
+          : amountPrimaryRes;
+        amountRes = isSmartAmount ? +customAmount.substring(0, 2) + '.' + customAmount.substring(2, 4) : amountRes;
+
         if (isFixedError) {
           const paErrorGetResponse = paErrorVerify({ typeR: 'paGetPaymentRes' });
           log_event_tx(paErrorGetResponse);
@@ -609,6 +645,16 @@ export async function newExpressApp(
             });
 
             log_event_tx(paGetPaymentResponse);
+            if (testDebug.toUpperCase() === 'Y') {
+              xml2js.parseString(paGetPaymentResponse[1], (err, result) => {
+                if (err) {
+                  throw err;
+                }
+
+                // const json = JSON.stringify(result);
+                noticenumberResponses.set(`${noticenumber}_paGetPayment`, result);
+              });
+            }
             return res.status(paGetPaymentResponse[0]).send(paGetPaymentResponse[1]);
           }
         }
@@ -624,7 +670,7 @@ export async function newExpressApp(
       if (soapRequest[pspnotifypaymentreq]) {
         return res.status(+pspNotifyPaymentRes[0]).send(pspNotifyPaymentRes[1]);
       }
-      
+
       if (!(soapRequest[sentReceipt] || soapRequest[activateSoapRequest] || soapRequest[verifySoapRequest])) {
         // The SOAP Request not implemented
         logger.info(`The SOAP Request ${JSON.stringify(soapRequest)} not implemented`);

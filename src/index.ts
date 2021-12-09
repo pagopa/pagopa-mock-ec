@@ -7,6 +7,8 @@ import { logger } from './utils/logger';
 
 const dbNotices: Map<string, POSITIONS_STATUS> = new Map<string, POSITIONS_STATUS>();
 const dbAmounts: Map<string, number> = new Map<string, number>();
+const noticenumberRequests: Map<string, JSON> = new Map<string, JSON>();
+const noticenumberResponses: Map<string, JSON> = new Map<string, JSON>();
 
 // Retrieve server configuration
 const config = Configuration.decode(CONFIG).getOrElseL(errors => {
@@ -14,7 +16,7 @@ const config = Configuration.decode(CONFIG).getOrElseL(errors => {
 });
 
 // Create the Express Application
-App.newExpressApp(config, dbNotices, dbAmounts)
+App.newExpressApp(config, dbNotices, dbAmounts, noticenumberRequests, noticenumberResponses)
   .then(app => {
     // Create a HTTP server from the new Express Application
     const server = http.createServer(app);
