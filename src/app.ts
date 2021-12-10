@@ -120,10 +120,13 @@ export async function newExpressApp(
 
   // return history of requests and responses
   app.get(`${config.PA_MOCK.ROUTES.PPT_NODO}/api/v1/history/:noticenumber/:primitive`, async (req, res) => {
-    if (testDebug.toUpperCase() === 'Y') {
+    const savedReq = noticenumberRequests.get(`${req.params.noticenumber}_${req.params.primitive}`);
+    const savedRes = noticenumberResponses.get(`${req.params.noticenumber}_${req.params.primitive}`);
+
+    if (testDebug.toUpperCase() === 'Y' && savedReq !== undefined && savedRes !== undefined) {
       res.status(200).send({
-        request: noticenumberRequests.get(`${req.params.noticenumber}_${req.params.primitive}`),
-        response: noticenumberResponses.get(`${req.params.noticenumber}_${req.params.primitive}`),
+        request: savedReq,
+        response: savedRes,
       });
     } else {
       res.status(500).send({ details: 'History not enabled' });
@@ -204,6 +207,7 @@ export async function newExpressApp(
             ? StTransferType_type_pafnEnum.POSTAL
             : undefined;
 
+        // eslint-disable-next-line functional/no-let
         let amountRes = isAmount1
           ? amount1.toFixed(2)
           : isAmount1bis
@@ -406,6 +410,7 @@ export async function newExpressApp(
           avviso9.test(noticenumber) ||
           avviso10.test(noticenumber);
 
+        // eslint-disable-next-line functional/no-let
         let amountRes = isAmount1
           ? amount1.toFixed(2)
           : isAmount1bis
@@ -427,6 +432,8 @@ export async function newExpressApp(
         const amountSession = dbAmounts.has(noticenumber[0]) ? dbAmounts.get(noticenumber[0]) : 0;
         const amountSession1 = amountSession ? amountSession / 2 : 0;
         const amountSession2 = amountSession ? amountSession - amountSession1 : 0;
+
+        // eslint-disable-next-line functional/no-let
         let amountPrimaryRes = isFixOver
           ? amount1Over.toFixed(2)
           : isFixUnder
