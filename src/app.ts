@@ -3,6 +3,11 @@ import * as express from 'express';
 import * as bodyParserXml from 'express-xml-bodyparser';
 import * as morgan from 'morgan';
 import * as xml2js from 'xml2js';
+
+import Queue = require('queue-fifo');
+
+import bodyParser = require('body-parser');
+
 import { Configuration } from './config';
 import {
   paErrorVerify,
@@ -23,6 +28,10 @@ import {
   POSITIONS_STATUS,
 } from './utils/helper';
 import { logger, log_event_tx } from './utils/logger';
+
+const paVerifyPaymentNoticeQueue = new Queue<string>();
+const paGetPaymentQueue = new Queue<string>();
+const paSendRTQueue = new Queue<string>();
 
 const faultId = '77777777777';
 
@@ -107,6 +116,8 @@ export async function newExpressApp(
     app.use(requireClientCertificateFingerprint(clientCertificateFingerprint));
   }
 
+  app.use(bodyParser.json({ verify: (req, res, buf) => (req.rawBody = buf) }));
+
   app.use(express.json());
   app.use(express.urlencoded());
   app.use(bodyParserXml({}));
@@ -133,6 +144,27 @@ export async function newExpressApp(
     }
   });
 
+  // save custom response
+  app.post(`${config.PA_MOCK.ROUTES.PPT_NODO}/api/v1/response/:primitive`, async (req, res) => {
+    if (req.params.primitive === 'paVerifyPaymentNotice') {
+      paVerifyPaymentNoticeQueue.enqueue(req.rawBody);
+      res.status(200).send(`${req.params.primitive} saved. ${paVerifyPaymentNoticeQueue.size()} pushed`);
+    } else if (req.params.primitive === 'paGetPayment') {
+      paGetPaymentQueue.enqueue(req.rawBody);
+      res.status(200).send(`${req.params.primitive} saved. ${paGetPaymentQueue.size()} pushed`);
+    } else if (req.params.primitive === 'paSendRTQ') {
+      paSendRTQueue.enqueue(req.rawBody);
+      res.status(200).send(`${req.params.primitive} saved. ${paSendRTQueue.size()} pushed`);
+    } else if (req.params.primitive === 'clear') {
+      paVerifyPaymentNoticeQueue.clear();
+      paGetPaymentQueue.clear();
+      paSendRTQueue.clear();
+      res.status(200).send('All queues clear');
+    } else {
+      res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
+    }
+  });
+
   // SOAP Server mock entrypoint
   // eslint-disable-next-line complexity
   // eslint-disable-next-line sonarjs/cognitive-complexity, complexity
@@ -143,6 +175,12 @@ export async function newExpressApp(
       const soapRequest = req.body['soapenv:envelope']['soapenv:body'][0];
       // 1. paVerifyPaymentNotice
       if (soapRequest[verifySoapRequest]) {
+        if (!paVerifyPaymentNoticeQueue.isEmpty()) {
+          const customResponse = paVerifyPaymentNoticeQueue.dequeue();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          return res.status(200).send(customResponse);
+        }
+
         const paVerifyPaymentNotice = soapRequest[verifySoapRequest][0];
         const fiscalcode = paVerifyPaymentNotice.qrcode[0].fiscalcode;
         const noticenumber = paVerifyPaymentNotice.qrcode[0].noticenumber;

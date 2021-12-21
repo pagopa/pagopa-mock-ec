@@ -12,5 +12,8 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "files": [
+    "typings/express.d.ts"
+  ]
 }
