@@ -381,6 +381,11 @@ export async function newExpressApp(
 
       // 2. paGetPayment
       if (soapRequest[activateSoapRequest]) {
+        if (!paGetPaymentQueue.isEmpty()) {
+          const customResponse = paGetPaymentQueue.dequeue();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          return res.status(200).send(customResponse);
+        }
         const paGetPayment = soapRequest[activateSoapRequest][0];
         const fiscalcode = paGetPayment.qrcode[0].fiscalcode;
         const noticenumber: string = paGetPayment.qrcode[0].noticenumber;
@@ -707,6 +712,11 @@ export async function newExpressApp(
 
       // 3. paSendRT
       if (soapRequest[sentReceipt]) {
+        if (!paSendRTQueue.isEmpty()) {
+          const customResponse = paSendRTQueue.dequeue();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          return res.status(200).send(customResponse);
+        }
         const sentReceiptReq = soapRequest[sentReceipt][0];
         const auxdigit = config.PA_MOCK.AUX_DIGIT;
 
