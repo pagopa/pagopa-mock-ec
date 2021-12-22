@@ -4,8 +4,6 @@ import * as bodyParserXml from 'express-xml-bodyparser';
 import * as morgan from 'morgan';
 import * as xml2js from 'xml2js';
 
-import Queue = require('queue-fifo');
-
 import bodyParser = require('body-parser');
 
 import { Configuration } from './config';
@@ -29,9 +27,9 @@ import {
 } from './utils/helper';
 import { logger, log_event_tx } from './utils/logger';
 
-const paVerifyPaymentNoticeQueue = new Queue<string>();
-const paGetPaymentQueue = new Queue<string>();
-const paSendRTQueue = new Queue<string>();
+const paVerifyPaymentNoticeQueue = new Array<string>();
+const paGetPaymentQueue = new Array<string>();
+const paSendRTQueue = new Array<string>();
 
 const faultId = '77777777777';
 
@@ -147,19 +145,32 @@ export async function newExpressApp(
   // save custom response
   app.post(`${config.PA_MOCK.ROUTES.PPT_NODO}/api/v1/response/:primitive`, async (req, res) => {
     if (req.params.primitive === 'paVerifyPaymentNotice') {
-      paVerifyPaymentNoticeQueue.enqueue(req.rawBody);
-      res.status(200).send(`${req.params.primitive} saved. ${paVerifyPaymentNoticeQueue.size()} pushed`);
+      if (req.query.override === "True" ) {
+        paVerifyPaymentNoticeQueue.pop();
+        paVerifyPaymentNoticeQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);  
+      } else {
+        paVerifyPaymentNoticeQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paVerifyPaymentNoticeQueue.length} pushed`);  
+      }
     } else if (req.params.primitive === 'paGetPayment') {
-      paGetPaymentQueue.enqueue(req.rawBody);
-      res.status(200).send(`${req.params.primitive} saved. ${paGetPaymentQueue.size()} pushed`);
-    } else if (req.params.primitive === 'paSendRTQ') {
-      paSendRTQueue.enqueue(req.rawBody);
-      res.status(200).send(`${req.params.primitive} saved. ${paSendRTQueue.size()} pushed`);
-    } else if (req.params.primitive === 'clear') {
-      paVerifyPaymentNoticeQueue.clear();
-      paGetPaymentQueue.clear();
-      paSendRTQueue.clear();
-      res.status(200).send('All queues clear');
+      if (req.query.override === "True" ) {
+        paGetPaymentQueue.pop();
+        paGetPaymentQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);  
+      } else {
+        paGetPaymentQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paGetPaymentQueue.length} pushed`);  
+      }
+    } else if (req.params.primitive === 'paSendRT') {
+      if (req.query.override === "True" ) {
+        paSendRTQueue.pop();
+        paSendRTQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);  
+      } else {
+        paSendRTQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paSendRTQueue.length} pushed`);  
+      }
     } else {
       res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
     }
@@ -175,8 +186,8 @@ export async function newExpressApp(
       const soapRequest = req.body['soapenv:envelope']['soapenv:body'][0];
       // 1. paVerifyPaymentNotice
       if (soapRequest[verifySoapRequest]) {
-        if (!paVerifyPaymentNoticeQueue.isEmpty()) {
-          const customResponse = paVerifyPaymentNoticeQueue.dequeue();
+        if (paVerifyPaymentNoticeQueue.length > 0) {
+          const customResponse = paVerifyPaymentNoticeQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res.status(200).send(customResponse);
         }
@@ -381,8 +392,8 @@ export async function newExpressApp(
 
       // 2. paGetPayment
       if (soapRequest[activateSoapRequest]) {
-        if (!paGetPaymentQueue.isEmpty()) {
-          const customResponse = paGetPaymentQueue.dequeue();
+        if (paGetPaymentQueue.length > 0) {
+          const customResponse = paGetPaymentQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res.status(200).send(customResponse);
         }
@@ -712,10 +723,11 @@ export async function newExpressApp(
 
       // 3. paSendRT
       if (soapRequest[sentReceipt]) {
-        if (!paSendRTQueue.isEmpty()) {
-          const customResponse = paSendRTQueue.dequeue();
+        if (paSendRTQueue.length > 0) {
+          const customResponse = paSendRTQueue.shift();
+
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res.status(200).send(customResponse);
+          return res.status( customResponse?.trim() === "error server response" ? 500 : 200 ).send(customResponse);
         }
         const sentReceiptReq = soapRequest[sentReceipt][0];
         const auxdigit = config.PA_MOCK.AUX_DIGIT;
