@@ -189,7 +189,7 @@ export async function newExpressApp(
         if (paVerifyPaymentNoticeQueue.length > 0) {
           const customResponse = paVerifyPaymentNoticeQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res.status(200).send(customResponse);
+          return res.status( customResponse?.trim() === "<response>error</response>" ? 500 : 200 ).send(customResponse);
         }
 
         const paVerifyPaymentNotice = soapRequest[verifySoapRequest][0];
@@ -395,7 +395,7 @@ export async function newExpressApp(
         if (paGetPaymentQueue.length > 0) {
           const customResponse = paGetPaymentQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res.status(200).send(customResponse);
+          return res.status( customResponse?.trim() === "<response>error</response>" ? 500 : 200 ).send(customResponse);
         }
         const paGetPayment = soapRequest[activateSoapRequest][0];
         const fiscalcode = paGetPayment.qrcode[0].fiscalcode;
@@ -725,7 +725,6 @@ export async function newExpressApp(
       if (soapRequest[sentReceipt]) {
         if (paSendRTQueue.length > 0) {
           const customResponse = paSendRTQueue.shift();
-
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res.status( customResponse?.includes('PAA_ERRORE_MOCK') ? 500 : 200 ).send(customResponse);
         }
