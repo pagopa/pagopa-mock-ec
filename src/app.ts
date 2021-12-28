@@ -727,7 +727,7 @@ export async function newExpressApp(
           const customResponse = paSendRTQueue.shift();
 
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res.status( customResponse?.trim() === "error server response" ? 500 : 200 ).send(customResponse);
+          return res.status( customResponse?.includes('PAA_ERRORE_MOCK') ? 500 : 200 ).send(customResponse);
         }
         const sentReceiptReq = soapRequest[sentReceipt][0];
         const auxdigit = config.PA_MOCK.AUX_DIGIT;
