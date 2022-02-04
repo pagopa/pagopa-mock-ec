@@ -114,6 +114,7 @@ export async function newExpressApp(
     app.use(requireClientCertificateFingerprint(clientCertificateFingerprint));
   }
 
+  /* tslint:disable:immutable-data */
   app.use(bodyParser.json({ verify: (req, res, buf) => (req.rawBody = buf) }));
 
   app.use(express.json());
@@ -145,31 +146,31 @@ export async function newExpressApp(
   // save custom response
   app.post(`${config.PA_MOCK.ROUTES.PPT_NODO}/api/v1/response/:primitive`, async (req, res) => {
     if (req.params.primitive === 'paVerifyPaymentNotice') {
-      if (req.query.override === "True" ) {
+      if (req.query.override === 'True') {
         paVerifyPaymentNoticeQueue.pop();
         paVerifyPaymentNoticeQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);  
+        res.status(200).send(`${req.params.primitive} updated`);
       } else {
         paVerifyPaymentNoticeQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${paVerifyPaymentNoticeQueue.length} pushed`);  
+        res.status(200).send(`${req.params.primitive} saved. ${paVerifyPaymentNoticeQueue.length} pushed`);
       }
     } else if (req.params.primitive === 'paGetPayment') {
-      if (req.query.override === "True" ) {
+      if (req.query.override === 'True') {
         paGetPaymentQueue.pop();
         paGetPaymentQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);  
+        res.status(200).send(`${req.params.primitive} updated`);
       } else {
         paGetPaymentQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${paGetPaymentQueue.length} pushed`);  
+        res.status(200).send(`${req.params.primitive} saved. ${paGetPaymentQueue.length} pushed`);
       }
     } else if (req.params.primitive === 'paSendRT') {
-      if (req.query.override === "True" ) {
+      if (req.query.override === 'True') {
         paSendRTQueue.pop();
         paSendRTQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);  
+        res.status(200).send(`${req.params.primitive} updated`);
       } else {
         paSendRTQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${paSendRTQueue.length} pushed`);  
+        res.status(200).send(`${req.params.primitive} saved. ${paSendRTQueue.length} pushed`);
       }
     } else {
       res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
@@ -189,7 +190,7 @@ export async function newExpressApp(
         if (paVerifyPaymentNoticeQueue.length > 0) {
           const customResponse = paVerifyPaymentNoticeQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res.status( customResponse?.trim() === "<response>error</response>" ? 500 : 200 ).send(customResponse);
+          return res.status(customResponse?.trim() === '<response>error</response>' ? 500 : 200).send(customResponse);
         }
 
         const paVerifyPaymentNotice = soapRequest[verifySoapRequest][0];
@@ -276,6 +277,7 @@ export async function newExpressApp(
           : 0;
 
         const customAmount = noticenumber[0].substring(14, 18); // xx.xx
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         amountRes = isSmartAmount ? +customAmount.substring(0, 2) + '.' + customAmount.substring(2, 4) : amountRes;
 
         dbAmounts.set(noticenumber[0], +amountRes);
@@ -395,7 +397,7 @@ export async function newExpressApp(
         if (paGetPaymentQueue.length > 0) {
           const customResponse = paGetPaymentQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res.status( customResponse?.trim() === "<response>error</response>" ? 500 : 200 ).send(customResponse);
+          return res.status(customResponse?.trim() === '<response>error</response>' ? 500 : 200).send(customResponse);
         }
         const paGetPayment = soapRequest[activateSoapRequest][0];
         const fiscalcode = paGetPayment.qrcode[0].fiscalcode;
@@ -509,10 +511,12 @@ export async function newExpressApp(
           : amount2bis.toFixed(2);
 
         const customAmount = noticenumber[0].substring(14, 18); // xx.xx
+        /* eslint-disable */
         amountPrimaryRes = isSmartAmount
           ? +customAmount.substring(0, 2) + '.' + customAmount.substring(2, 4)
           : amountPrimaryRes;
         amountRes = isSmartAmount ? +customAmount.substring(0, 2) + '.' + customAmount.substring(2, 4) : amountRes;
+        /* eslint-enable */
 
         if (isFixedError) {
           const paErrorGetResponse = paErrorVerify({ typeR: 'paGetPaymentRes' });
@@ -726,7 +730,7 @@ export async function newExpressApp(
         if (paSendRTQueue.length > 0) {
           const customResponse = paSendRTQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res.status( customResponse?.includes('PAA_ERRORE_MOCK') ? 500 : 200 ).send(customResponse);
+          return res.status(customResponse?.includes('PAA_ERRORE_MOCK') ? 500 : 200).send(customResponse);
         }
         const sentReceiptReq = soapRequest[sentReceipt][0];
         const auxdigit = config.PA_MOCK.AUX_DIGIT;
