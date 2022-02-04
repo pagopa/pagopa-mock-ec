@@ -124,12 +124,12 @@ export async function newExpressApp(
   logger.info(`Path ${config.PA_MOCK.ROUTES.PPT_NODO} ...`);
 
   // health check
-  app.get(`${config.PA_MOCK.ROUTES.PPT_NODO}/api/v1/info`, async (_, res) =>
+  app.get(`${config.PA_MOCK.ROUTES.PPT_NODO}/info`, async (_, res) =>
     res.status(200).send({ status: 'iamalive' }),
   );
 
   // return history of requests and responses
-  app.get(`${config.PA_MOCK.ROUTES.PPT_NODO}/api/v1/history/:noticenumber/:primitive`, async (req, res) => {
+  app.get(`${config.PA_MOCK.ROUTES.PPT_NODO}/history/:noticenumber/:primitive`, async (req, res) => {
     const savedReq = noticenumberRequests.get(`${req.params.noticenumber}_${req.params.primitive}`);
     const savedRes = noticenumberResponses.get(`${req.params.noticenumber}_${req.params.primitive}`);
 
@@ -144,9 +144,9 @@ export async function newExpressApp(
   });
 
   // save custom response
-  app.post(`${config.PA_MOCK.ROUTES.PPT_NODO}/api/v1/response/:primitive`, async (req, res) => {
+  app.post(`${config.PA_MOCK.ROUTES.PPT_NODO}/response/:primitive`, async (req, res) => {
     if (req.params.primitive === 'paVerifyPaymentNotice') {
-      if (req.query.override === 'True') {
+      if (String(req.query.override).toLowerCase() === 'true' ) {
         paVerifyPaymentNoticeQueue.pop();
         paVerifyPaymentNoticeQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} updated`);
@@ -155,7 +155,7 @@ export async function newExpressApp(
         res.status(200).send(`${req.params.primitive} saved. ${paVerifyPaymentNoticeQueue.length} pushed`);
       }
     } else if (req.params.primitive === 'paGetPayment') {
-      if (req.query.override === 'True') {
+      if (String(req.query.override).toLowerCase() === 'true' ) {
         paGetPaymentQueue.pop();
         paGetPaymentQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} updated`);
@@ -164,7 +164,7 @@ export async function newExpressApp(
         res.status(200).send(`${req.params.primitive} saved. ${paGetPaymentQueue.length} pushed`);
       }
     } else if (req.params.primitive === 'paSendRT') {
-      if (req.query.override === 'True') {
+      if (String(req.query.override).toLowerCase() === 'true' ) {
         paSendRTQueue.pop();
         paSendRTQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} updated`);
