@@ -124,9 +124,7 @@ export async function newExpressApp(
   logger.info(`Path ${config.PA_MOCK.ROUTES.PPT_NODO} ...`);
 
   // health check
-  app.get(`${config.PA_MOCK.ROUTES.PPT_NODO}/info`, async (_, res) =>
-    res.status(200).send({ status: 'iamalive' }),
-  );
+  app.get(`${config.PA_MOCK.ROUTES.PPT_NODO}/info`, async (_, res) => res.status(200).send({ status: 'iamalive' }));
 
   // return history of requests and responses
   app.get(`${config.PA_MOCK.ROUTES.PPT_NODO}/history/:noticenumber/:primitive`, async (req, res) => {
@@ -146,7 +144,7 @@ export async function newExpressApp(
   // save custom response
   app.post(`${config.PA_MOCK.ROUTES.PPT_NODO}/response/:primitive`, async (req, res) => {
     if (req.params.primitive === 'paVerifyPaymentNotice') {
-      if (String(req.query.override).toLowerCase() === 'true' ) {
+      if (String(req.query.override).toLowerCase() === 'true') {
         paVerifyPaymentNoticeQueue.pop();
         paVerifyPaymentNoticeQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} updated`);
@@ -155,7 +153,7 @@ export async function newExpressApp(
         res.status(200).send(`${req.params.primitive} saved. ${paVerifyPaymentNoticeQueue.length} pushed`);
       }
     } else if (req.params.primitive === 'paGetPayment') {
-      if (String(req.query.override).toLowerCase() === 'true' ) {
+      if (String(req.query.override).toLowerCase() === 'true') {
         paGetPaymentQueue.pop();
         paGetPaymentQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} updated`);
@@ -164,7 +162,7 @@ export async function newExpressApp(
         res.status(200).send(`${req.params.primitive} saved. ${paGetPaymentQueue.length} pushed`);
       }
     } else if (req.params.primitive === 'paSendRT') {
-      if (String(req.query.override).toLowerCase() === 'true' ) {
+      if (String(req.query.override).toLowerCase() === 'true') {
         paSendRTQueue.pop();
         paSendRTQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} updated`);
@@ -190,7 +188,9 @@ export async function newExpressApp(
         if (paVerifyPaymentNoticeQueue.length > 0) {
           const customResponse = paVerifyPaymentNoticeQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res.status(customResponse?.trim() === '<response>error</response>' ? 500 : 200).send(customResponse);
+          return res
+            .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
+            .send(customResponse);
         }
 
         const paVerifyPaymentNotice = soapRequest[verifySoapRequest][0];
@@ -397,7 +397,9 @@ export async function newExpressApp(
         if (paGetPaymentQueue.length > 0) {
           const customResponse = paGetPaymentQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res.status(customResponse?.trim() === '<response>error</response>' ? 500 : 200).send(customResponse);
+          return res
+            .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
+            .send(customResponse);
         }
         const paGetPayment = soapRequest[activateSoapRequest][0];
         const fiscalcode = paGetPayment.qrcode[0].fiscalcode;
@@ -730,7 +732,9 @@ export async function newExpressApp(
         if (paSendRTQueue.length > 0) {
           const customResponse = paSendRTQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res.status(customResponse?.includes('PAA_ERRORE_MOCK') ? 500 : 200).send(customResponse);
+          return res
+            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
+            .send(customResponse);
         }
         const sentReceiptReq = soapRequest[sentReceipt][0];
         const auxdigit = config.PA_MOCK.AUX_DIGIT;
