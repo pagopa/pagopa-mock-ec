@@ -13,3 +13,4 @@ pagopa-mock.log
 cert/*.key
 cert/*.csr
 .idea
+cert_local
