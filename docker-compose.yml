@@ -1,0 +1,21 @@
+version: "3.2"
+
+services:
+  mock-ec:
+    container_name: 'mock-ec'
+    ports:
+      - "8089:8089"
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    networks:
+      - mock-net
+
+
+
+networks:
+  mock-net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
+
