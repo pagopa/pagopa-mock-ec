@@ -82,7 +82,6 @@ module.exports = {
     "react/jsx-key": "error",
     "react/jsx-no-bind": ["error", { allowArrowFunctions: true }],
     "functional/no-let": "error",
-    "functional/immutable-data": "error",
     "sonarjs/no-small-switch": "off",
     "sonarjs/no-duplicate-string": "off",
   },
