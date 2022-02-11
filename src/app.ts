@@ -776,6 +776,7 @@ export async function newExpressApp(
             noticenumberResponses.set(`${noticenumber}_pspNotifyPayment`, result);
           });
         }
+        log_event_tx(pspNotifyPaymentRes);
         return res.status(+pspNotifyPaymentRes[0]).send(pspNotifyPaymentRes[1]);
       }
 
