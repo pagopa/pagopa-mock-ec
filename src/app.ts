@@ -30,6 +30,7 @@ import { logger, log_event_tx } from './utils/logger';
 const paVerifyPaymentNoticeQueue = new Array<string>();
 const paGetPaymentQueue = new Array<string>();
 const paSendRTQueue = new Array<string>();
+const pspNotiftPaymentQueue = new Array<string>();
 
 const faultId = '77777777777';
 
@@ -169,6 +170,15 @@ export async function newExpressApp(
       } else {
         paSendRTQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} saved. ${paSendRTQueue.length} pushed`);
+      }
+    } else if (req.params.primitive === 'pspNotifyPayment') {
+      if (String(req.query.override).toLowerCase() === 'true') {
+        pspNotiftPaymentQueue.pop();
+        pspNotiftPaymentQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        pspNotiftPaymentQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${pspNotiftPaymentQueue.length} pushed`);
       }
     } else {
       res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
@@ -602,7 +612,7 @@ export async function newExpressApp(
           } else {
             // happy case
 
-            // retrive 0,1,2,3 from noticenumber
+            // retrieve 0,1,2,3 from noticenumber
             const idIbanAvviso: number =
               isOver5000 || isUnder1
                 ? 1 // Math.round(getRandomArbitrary(0, 11))
@@ -760,24 +770,41 @@ export async function newExpressApp(
 
       // 4. pspNotifyPayment
       if (soapRequest[pspnotifypaymentreq]) {
-        const pspnotifypayment = soapRequest[pspnotifypaymentreq][0];
-        const auxdigit = config.PA_MOCK.AUX_DIGIT;
-        const noticenumber: string = `${auxdigit}${pspnotifypayment.creditorreferenceid}`;
+        if (pspNotiftPaymentQueue.length > 0) {
+          const customResponse = pspNotiftPaymentQueue.shift();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          if (customResponse && customResponse.includes('wait')) {
+            setTimeout(function() {
+              return res
+                .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
+                .send(customResponse);
+            }, 20000);
+            return;
+          } else {
+            return res
+              .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
+              .send(customResponse);
+          }
+        } else {
+          const pspnotifypayment = soapRequest[pspnotifypaymentreq][0];
+          const auxdigit = config.PA_MOCK.AUX_DIGIT;
+          const noticenumber: string = `${auxdigit}${pspnotifypayment.creditorreferenceid}`;
 
-        if (testDebug.toUpperCase() === 'Y') {
-          noticenumberRequests.set(`${noticenumber}_pspNotifyPayment`, req.body);
-        }
+          if (testDebug.toUpperCase() === 'Y') {
+            noticenumberRequests.set(`${noticenumber}_pspNotifyPayment`, req.body);
+          }
 
-        if (testDebug.toUpperCase() === 'Y') {
-          xml2js.parseString(pspNotifyPaymentRes[1], (err, result) => {
-            if (err) {
-              throw err;
-            }
-            noticenumberResponses.set(`${noticenumber}_pspNotifyPayment`, result);
-          });
+          if (testDebug.toUpperCase() === 'Y') {
+            xml2js.parseString(pspNotifyPaymentRes[1], (err, result) => {
+              if (err) {
+                throw err;
+              }
+              noticenumberResponses.set(`${noticenumber}_pspNotifyPayment`, result);
+            });
+          }
+          log_event_tx(pspNotifyPaymentRes);
+          return res.status(+pspNotifyPaymentRes[0]).send(pspNotifyPaymentRes[1]);
         }
-        log_event_tx(pspNotifyPaymentRes);
-        return res.status(+pspNotifyPaymentRes[0]).send(pspNotifyPaymentRes[1]);
       }
 
       if (!(soapRequest[sentReceipt] || soapRequest[activateSoapRequest] || soapRequest[verifySoapRequest])) {
