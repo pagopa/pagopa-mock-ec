@@ -58,8 +58,8 @@ const avviso16 = new RegExp('^30215.*'); // CCPost + CCBank + CBank + CCBank + C
 const avviso17 = new RegExp('^30216.*'); // CCPost + CCBank + CBank + CCBank + CCBank
 const avviso18 = new RegExp('^30217.*'); // come avviso6 - amount1 4000 - amount2 2000 (stesso EC verso 2 CCP diversi)
 const avviso19 = new RegExp('^30218.*'); // come avviso6 - amount1 4000 - amount2 2000 (stesso EC verso lo stesso CCPost)
-const avvisoOver5000 = new RegExp('^30217.*'); // random over 5000 euro + random su 2 transfers
-const avvisoUnder1 = new RegExp('^30218.*'); // random under 1 euro + + random su 2 transfers
+const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random su 2 transfers
+const avvisoUnder1 = new RegExp('^30288.*'); // random under 1 euro + + random su 2 transfers
 
 const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
 
