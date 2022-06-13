@@ -713,13 +713,14 @@ export async function newExpressApp(
               iban_5: iban5,
               outcome: 'OK',
               remittanceInformation1Bollettino,
-              remittanceInformation2Bollettino: avviso18.test(noticenumber) || avviso19.test(noticenumber)
-                ? remittanceInformation1Bollettino
-                : remittanceInformation2Bollettino,
+              remittanceInformation2Bollettino:
+                avviso18.test(noticenumber) || avviso19.test(noticenumber)
+                  ? remittanceInformation1Bollettino
+                  : remittanceInformation2Bollettino,
               fullName,
               email,
               CF,
-              isSameEC: (avviso18.test(noticenumber) || avviso19.test(noticenumber)),
+              isSameEC: avviso18.test(noticenumber) || avviso19.test(noticenumber),
             });
 
             log_event_tx(paGetPaymentResponse);
