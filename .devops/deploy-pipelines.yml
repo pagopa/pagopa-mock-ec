@@ -53,6 +53,18 @@ resources:
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
+  - stage: EchoDbg
+    pool:
+      vmImage: 'ubuntu-latest'
+    jobs:
+      - job: Print
+        steps:
+          - script: |
+              echo "Debug..."
+              echo variables['Build.SourceBranch']
+              echo variables.DEFAULT_BRANCH)
+            displayName: 'Print info'
+
   # Create a relase
   # Activated when ONE OF these are met:
   # - is on branch $(DEFAULT_BRANCH)
