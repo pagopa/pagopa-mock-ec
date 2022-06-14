@@ -62,7 +62,8 @@ stages:
           - script: |
               echo "Debug..."
               echo ${{ variables['Build.SourceBranch'] }}
-              echo ${{ variables.DEFAULT_BRANCH }}
+              echo ${{ variables.DEFAULT_BRANCH }} 
+              echo $(DEFAULT_BRANCH)
             displayName: 'Print info'
 
   # Create a relase
