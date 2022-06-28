@@ -163,6 +163,39 @@ The amount of the tribute is is 120€ and divided in 5 transfers:
 | -------------------- | -------- | ----------------------- | ----------------- | ----------------------- | ----------------------- |
 | 302**16**xxxxxxxxxxx | CCPost   | CCBank                  | CCBank            | CCBank                  | CCBank                  |
 
+### Tribute 10
+
+The tribute is 120.00 EUR divided in 2 transfers:
+- Transfer 1 : 0101101IM, 100.00€ due to **EC_TE**
+- Transfer 2 : 0201102IM, 20.00€ due to **EC_TE**
+
+| Notice number        | CC EC_TE | CC EC_TE |
+| -------------------- | -------- | -------- |
+| 302**17**xxxxxxxxxxx | CCPost   | CCPost   |
+
+### Tribute 11
+
+The tribute is 120.00 EUR divided in 2 transfers:
+- Transfer 1 : Oneri SUAP 1, 100.00€ due to **Comune di Milano**
+- Transfer 2 : Oneri SUAP 2, 20.00€ due to **Comune di Bitetto**
+
+| Notice number        | CC Comune di Milano | CC Comune di Bitetto |
+| -------------------- | ------------------- | -------------------- |
+| 302**18**xxxxxxxxxxx | CCPost              | CCPost               |
+
+
+#### Tribute 12
+
+The amount of the tribute is 120€ and divided in 3 transfers:
+
+- Transfer 1 : 70€ due to **EC_TE**
+- Transfer 2 : 30€ due to **EC_TE**
+- Transfer 3 : 20€ due to **EC_TE**
+
+| Notice number        | CC EC_TE | CC EC_TE | CC EC_TE|
+| -------------------- | -------- | ---------| --------|
+| 302**19**xxxxxxxxxxx | CCBank   | CCBank   | CCPost  |
+
 ### Edge cases
 
 The following edge cases are available (stateless, based on notice number)
