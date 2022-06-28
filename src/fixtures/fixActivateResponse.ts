@@ -66,7 +66,7 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
     <paf:paGetPaymentRes>
         <outcome>OK</outcome>
         <data>
-            <creditorReferenceId>>${params.creditorReferenceId}</creditorReferenceId>
+            <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
             <paymentAmount>120.00</paymentAmount>
             <dueDate>2021-07-31</dueDate>
             <description>pagamentoTest</description>
@@ -119,7 +119,7 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
     <paf:paGetPaymentRes>
         <outcome>OK</outcome>
         <data>
-            <creditorReferenceId>>${params.creditorReferenceId}</creditorReferenceId>
+            <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
             <paymentAmount>120.00</paymentAmount>
             <dueDate>2021-07-31</dueDate>
             <description>pagamentoTest</description>
