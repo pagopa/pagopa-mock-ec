@@ -154,11 +154,9 @@ export const paGetPaymentRes = (params: IActivateRequest): MockResponse => [
                             `<transfer>
                         <idTransfer>2</idTransfer>
                         <transferAmount>${params.amountSecondary}</transferAmount>
-                        <fiscalCodePA>${!params.isSameEC ? '01199250158' : '77777777777'}</fiscalCodePA>
+                        <fiscalCodePA>${!params.isSameEC ? "01199250158" : "77777777777" }</fiscalCodePA>
                         <IBAN>${params.iban_2}</IBAN>
-                        <remittanceInformation>TEFA Comune Milano${
-                          params.remittanceInformation2Bollettino
-                        }</remittanceInformation>
+                        <remittanceInformation>TEFA Comune Milano${params.remittanceInformation2Bollettino}</remittanceInformation>
                         <transferCategory>0201102IM</transferCategory>
                       </transfer>`
                           : ''
