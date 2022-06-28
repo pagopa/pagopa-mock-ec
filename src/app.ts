@@ -57,7 +57,6 @@ const avviso15 = new RegExp('^30214.*'); // CCPost + CCBank + CBank
 const avviso16 = new RegExp('^30215.*'); // CCPost + CCBank + CBank + CCBank + CCBank
 const avviso17 = new RegExp('^30216.*'); // CCPost + CCBank + CBank + CCBank + CCBank
 const avviso18 = new RegExp('^30217.*'); // come avviso6 - amount1 4000 - amount2 2000 (stesso EC verso 2 CCP diversi)
-const avviso19 = new RegExp('^30218.*'); // come avviso6 - amount1 4000 - amount2 2000 (stesso EC verso lo stesso CCPost)
 const avvisoOver5000 = new RegExp('^30217.*'); // random over 5000 euro + random su 2 transfers
 const avvisoUnder1 = new RegExp('^30218.*'); // random under 1 euro + + random su 2 transfers
 
@@ -225,14 +224,13 @@ export async function newExpressApp(
           avviso16.test(noticenumber) ||
           avviso17.test(noticenumber) ||
           avviso18.test(noticenumber) ||
-          avviso19.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
         const isOver5000 = avvisoOver5000.test(noticenumber);
         const isUnder1 = avvisoUnder1.test(noticenumber);
-        const isFixOver = avviso13.test(noticenumber) || avviso18.test(noticenumber) || avviso19.test(noticenumber);
+        const isFixOver = avviso13.test(noticenumber) || avviso18.test(noticenumber);
         const isFixUnder = avviso14.test(noticenumber);
         const isSmartAmount = avviso5smart.test(noticenumber);
 
@@ -258,8 +256,7 @@ export async function newExpressApp(
           avviso5.test(noticenumber) ||
           avviso7.test(noticenumber) ||
           avviso11.test(noticenumber) ||
-          avviso18.test(noticenumber) ||
-          avviso19.test(noticenumber)
+          avviso18.test(noticenumber)
             ? StTransferType_type_pafnEnum.POSTAL
             : undefined;
 
@@ -446,14 +443,13 @@ export async function newExpressApp(
           avviso16.test(noticenumber) ||
           avviso17.test(noticenumber) ||
           avviso18.test(noticenumber) ||
-          avviso19.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
         const isOver5000 = avvisoOver5000.test(noticenumber);
         const isUnder1 = avvisoUnder1.test(noticenumber);
-        const isFixOver = avviso13.test(noticenumber) || avviso18.test(noticenumber) || avviso19.test(noticenumber);
+        const isFixOver = avviso13.test(noticenumber) || avviso18.test(noticenumber);
         const isFixUnder = avviso14.test(noticenumber);
 
         const isAmount1 = avviso5.test(noticenumber) || avviso6.test(noticenumber);
@@ -707,19 +703,19 @@ export async function newExpressApp(
                   : descriptionAll,
               fiscalCodePA: fiscalcode,
               iban_1: iban1,
-              iban_2: avviso19.test(noticenumber) ? iban1 : iban2,
+              iban_2: iban2,
               iban_3: iban3,
               iban_4: iban4,
               iban_5: iban5,
               outcome: 'OK',
               remittanceInformation1Bollettino,
-              remittanceInformation2Bollettino: avviso18.test(noticenumber) || avviso19.test(noticenumber)
+              remittanceInformation2Bollettino: avviso18.test(noticenumber)
                 ? remittanceInformation1Bollettino
                 : remittanceInformation2Bollettino,
               fullName,
               email,
               CF,
-              isSameEC: (avviso18.test(noticenumber) || avviso19.test(noticenumber)),
+              isSameEC: avviso18.test(noticenumber),
             });
 
             log_event_tx(paGetPaymentResponse);
