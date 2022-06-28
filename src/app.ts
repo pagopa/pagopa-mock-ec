@@ -26,6 +26,8 @@ import {
   POSITIONS_STATUS,
 } from './utils/helper';
 import { logger, log_event_tx } from './utils/logger';
+import { paVerify17, paVerify18, paVerify19 } from './fixtures/fixVerifyResponse';
+import { paActivate17, paActivate18, paActivate19 } from './fixtures/fixActivateResponse';
 
 const paVerifyPaymentNoticeQueue = new Array<string>();
 const paGetPaymentQueue = new Array<string>();
@@ -56,8 +58,11 @@ const avviso14 = new RegExp('^30213.*'); // come avviso2 - amount1 0.10 - amount
 const avviso15 = new RegExp('^30214.*'); // CCPost + CCBank + CBank
 const avviso16 = new RegExp('^30215.*'); // CCPost + CCBank + CBank + CCBank + CCBank
 const avviso17 = new RegExp('^30216.*'); // CCPost + CCBank + CBank + CCBank + CCBank
-const avvisoOver5000 = new RegExp('^30217.*'); // random over 5000 euro + random su 2 transfers
-const avvisoUnder1 = new RegExp('^30218.*'); // random under 1 euro + + random su 2 transfers
+const avviso18 = new RegExp('^30217.*'); // fix response
+const avviso19 = new RegExp('^30218.*'); // fix response
+const avviso20 = new RegExp('^30219.*'); // fix response
+const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random su 2 transfers
+const avvisoUnder1 = new RegExp('^30288.*'); // random under 1 euro + + random su 2 transfers
 
 const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
 
@@ -196,6 +201,15 @@ export async function newExpressApp(
         const paVerifyPaymentNotice = soapRequest[verifySoapRequest][0];
         const fiscalcode = paVerifyPaymentNotice.qrcode[0].fiscalcode;
         const noticenumber = paVerifyPaymentNotice.qrcode[0].noticenumber;
+
+        if (avviso18.test(noticenumber)) {
+          return res.status(200).send(paVerify17);
+        } else if (avviso19.test(noticenumber)) {
+          return res.status(200).send(paVerify18);
+        } else if (avviso20.test(noticenumber)) {
+          return res.status(200).send(paVerify19);
+        }
+
         if (testDebug.toUpperCase() === 'Y') {
           noticenumberRequests.set(`${noticenumber}_paVerifyPaymentNotice`, req.body);
         }
@@ -405,6 +419,14 @@ export async function newExpressApp(
         const fiscalcode = paGetPayment.qrcode[0].fiscalcode;
         const noticenumber: string = paGetPayment.qrcode[0].noticenumber;
         const creditorReferenceId = noticenumber[0].substring(1);
+
+        if (avviso18.test(noticenumber)) {
+          return res.status(200).send(paActivate17);
+        } else if (avviso19.test(noticenumber)) {
+          return res.status(200).send(paActivate18);
+        } else if (avviso20.test(noticenumber)) {
+          return res.status(200).send(paActivate19);
+        }
 
         const isFixedError = avvisoErrore.test(noticenumber);
         const isTimeout = avvisoTimeout.test(noticenumber);
