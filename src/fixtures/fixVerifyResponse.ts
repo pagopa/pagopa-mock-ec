@@ -10,7 +10,7 @@ export const paVerify17 = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlso
                     <options>EQ</options>
                     <dueDate>2030-07-31</dueDate>
                     <detailDescription>pagamentoTest</detailDescription>
-                    <allCCP>true</transferType>
+                    <allCCP>true</allCCP>
                 </paymentOptionDescription>
             </paymentList>
             <paymentDescription>Pagamento di Test</paymentDescription>
@@ -33,7 +33,7 @@ export const paVerify18 = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlso
                     <options>EQ</options>
                     <dueDate>2030-07-31</dueDate>
                     <detailDescription>pagamentoTest</detailDescription>
-                    <allCCP>false</transferType>
+                    <allCCP>false</allCCP>
                 </paymentOptionDescription>
             </paymentList>
             <paymentDescription>Pagamento di Test</paymentDescription>
@@ -56,7 +56,7 @@ export const paVerify19 = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlso
                     <options>EQ</options>
                     <dueDate>2030-07-31</dueDate>
                     <detailDescription>pagamentoTest</detailDescription>
-                    <allCCP>false</transferType>
+                    <allCCP>false</allCCP>
                 </paymentOptionDescription>
             </paymentList>
             <paymentDescription>Pagamento di Test</paymentDescription>
