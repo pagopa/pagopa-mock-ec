@@ -421,11 +421,20 @@ export async function newExpressApp(
         const creditorReferenceId = noticenumber[0].substring(1);
 
         if (avviso18.test(noticenumber)) {
-          return res.status(200).send(paActivate17);
+          const paActivate17res = paActivate17({
+            creditorReferenceId,
+          });
+          return res.status(paActivate17res[0]).send(paActivate17res[1]);
         } else if (avviso19.test(noticenumber)) {
-          return res.status(200).send(paActivate18);
+          const paActivate18res = paActivate18({
+            creditorReferenceId,
+          });
+          return res.status(paActivate18res[0]).send(paActivate18res[1]);
         } else if (avviso20.test(noticenumber)) {
-          return res.status(200).send(paActivate19);
+          const paActivate19res = paActivate19({
+            creditorReferenceId,
+          });
+          return res.status(paActivate19res[0]).send(paActivate19res[1]);
         }
 
         const isFixedError = avvisoErrore.test(noticenumber);
