@@ -1,11 +1,19 @@
-export const paActivate17 = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+import { MockResponse } from './nodoNewMod3Responses';
+
+interface IActivateRequest {
+  creditorReferenceId?: string;
+}
+
+export const paActivate17 = (params: IActivateRequest): MockResponse => [
+  200,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
 xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
 <soapenv:Header />
 <soapenv:Body>
     <paf:paGetPaymentRes>
         <outcome>OK</outcome>
         <data>
-            <creditorReferenceId>0217xxxxxxxxxxx</creditorReferenceId>
+            <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
             <paymentAmount>120.00</paymentAmount>
             <dueDate>2021-07-31</dueDate>
             <description>pagamentoTest</description>
@@ -46,16 +54,19 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
         </data>
     </paf:paGetPaymentRes>
 </soapenv:Body>
-</soapenv:Envelope>`;
+</soapenv:Envelope>`,
+];
 
-export const paActivate18 = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+export const paActivate18 = (params: IActivateRequest): MockResponse => [
+  200,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
 xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
 <soapenv:Header />
 <soapenv:Body>
     <paf:paGetPaymentRes>
         <outcome>OK</outcome>
         <data>
-            <creditorReferenceId>0218xxxxxxxxxxx</creditorReferenceId>
+            <creditorReferenceId>>${params.creditorReferenceId}</creditorReferenceId>
             <paymentAmount>120.00</paymentAmount>
             <dueDate>2021-07-31</dueDate>
             <description>pagamentoTest</description>
@@ -96,16 +107,19 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
         </data>
     </paf:paGetPaymentRes>
 </soapenv:Body>
-</soapenv:Envelope>`;
+</soapenv:Envelope>`,
+];
 
-export const paActivate19 = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+export const paActivate19 = (params: IActivateRequest): MockResponse => [
+  200,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
 xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
 <soapenv:Header />
 <soapenv:Body>
     <paf:paGetPaymentRes>
         <outcome>OK</outcome>
         <data>
-            <creditorReferenceId>0219xxxxxxxxxxx</creditorReferenceId>
+            <creditorReferenceId>>${params.creditorReferenceId}</creditorReferenceId>
             <paymentAmount>120.00</paymentAmount>
             <dueDate>2021-07-31</dueDate>
             <description>pagamentoTest</description>
@@ -154,4 +168,5 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
         </data>
     </paf:paGetPaymentRes>
 </soapenv:Body>
-</soapenv:Envelope>`;
+</soapenv:Envelope>`,
+];
