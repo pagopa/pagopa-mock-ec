@@ -38,7 +38,7 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
                     <idTransfer>1</idTransfer>
                     <transferAmount>100.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT30N0103076271000001823603</IBAN>
+                    <IBAN>IT57N0760114800000011050036</IBAN>
                     <remittanceInformation>remittance information</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
@@ -46,7 +46,7 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
                     <idTransfer>2</idTransfer>
                     <transferAmount>20.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT30N0103076271000001823603</IBAN>
+                    <IBAN>IT86H0760101000000000001015</IBAN>
                     <remittanceInformation>remittance information</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
@@ -144,7 +144,7 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
                     <idTransfer>1</idTransfer>
                     <transferAmount>70.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT57N0760114800000011050036</IBAN>
+                    <IBAN>IT30N0103076271000001823603</IBAN>
                     <remittanceInformation>remittance information</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
@@ -152,7 +152,7 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
                     <idTransfer>2</idTransfer>
                     <transferAmount>30.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT86H0760101000000000001015</IBAN>
+                    <IBAN>IT30N0103076271000001823603</IBAN>
                     <remittanceInformation>remittance information</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
