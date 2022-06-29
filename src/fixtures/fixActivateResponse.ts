@@ -99,7 +99,7 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
                     <idTransfer>2</idTransfer>
                     <transferAmount>20.00</transferAmount>
                     <fiscalCodePA>00939820726</fiscalCodePA>
-                    <IBAN>IT1234567890123456789000005</IBAN>
+                    <IBAN>IT80E0306904013100000046039</IBAN>
                     <remittanceInformation>remittance information</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
