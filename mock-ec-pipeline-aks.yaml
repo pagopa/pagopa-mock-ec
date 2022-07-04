@@ -44,8 +44,14 @@ steps:
 - script: az login
   displayName: 'azure login'
 
-- script: az aks get-credentials --resource-group DDS-Kubernetes --name ddsakstest
-  displayName: 'Get cluster credentials'
+- script: |
+    CLUSTER_NAME="ddsakstest"
+    APISERVER=$(kubectl config view -o jsonpath="{.clusters[?(@.name==\"$CLUSTER_NAME\")].cluster.server}")    
+  displayName: 'Point to the API server referring the cluster name'
+ 
+
+#- script: az aks get-credentials --resource-group DDS-Kubernetes --name ddsakstest
+#  displayName: 'Get cluster credentials'
 
 #- script: kubectl cluster-info
 #  displayName: 'Cluster Info'
