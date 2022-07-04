@@ -44,13 +44,18 @@ steps:
 - script: az login
   displayName: 'azure login'
 
+- script: az account set --subscription 'DDS - Test Environment'
+  displayName: 'azure set subscription'
+
 - script: az aks get-credentials --resource-group DDS-Kubernetes --name ddsakstest
   displayName: 'Connect to the cluster'
 
 - script: cat /home/vsts/.kube/config
   displayName: 'Verify Configuration'
 
-- script: kubectl get node --all-namespaces
+- script: |
+    kubectl get node --all-namespaces
+    az aks show --resource-group DDS-Kubernetes --name ddsakstest
   displayName: 'Verify the connection'
 
 #- script: kubectl apply -f mock-ec-service.yaml,mock-ec-deployment.yaml,mock-net-networkpolicy.yaml
