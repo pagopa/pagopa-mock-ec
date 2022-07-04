@@ -11,8 +11,13 @@ import {
   paErrorVerify,
   paGetPaymentRes,
   paVerifyPaymentNoticeRes,
-  pspNotifyPaymentRes,
+  pspNotifyPaymentRes,  
 } from './fixtures/nodoNewMod3Responses';
+
+import {
+  paaVerificaRPTRisposta,
+} from './fixtures/nodoNewMod3Responses_oldEc';
+
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
 import { requireClientCertificateFingerprint } from './middlewares/requireClientCertificateFingerprint';
@@ -39,6 +44,9 @@ import {
 const paVerifyPaymentNoticeQueue = new Array<string>();
 const paGetPaymentQueue = new Array<string>();
 const paSendRTQueue = new Array<string>();
+const pspNotifyPaymentQueue = new Array<string>();
+const paaVerificaRPTQueue = new Array<string>();
+
 
 const faultId = '77777777777';
 
@@ -46,6 +54,7 @@ const verifySoapRequest = 'pafn:paverifypaymentnoticereq';
 const activateSoapRequest = 'pafn:pagetpaymentreq';
 const sentReceipt = 'pafn:pasendrtreq';
 const pspnotifypaymentreq = 'pspfn:pspnotifypaymentreq';
+const paaVerificaRPTreq = 'ppt:paaverificarpt';
 
 const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
 const avviso2 = new RegExp('^30201.*'); // CCPost + CCBank
@@ -185,11 +194,30 @@ export async function newExpressApp(
         paSendRTQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} saved. ${paSendRTQueue.length} pushed`);
       }
-    } else {
+    } else if (req.params.primitive === 'paaVerificaRPT') {
+      if (String(req.query.override).toLowerCase() === 'true') {
+        paaVerificaRPTQueue.pop();
+        paaVerificaRPTQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        paaVerificaRPTQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paaVerificaRPTQueue.length} pushed`);
+      }
+    } else if (req.params.primitive === 'pspNotifyPayment') {
+      if (String(req.query.override).toLowerCase() === 'true') {
+        pspNotifyPaymentQueue.pop();
+        pspNotifyPaymentQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        pspNotifyPaymentQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${pspNotifyPaymentQueue.length} pushed`);
+      } 
+    }  else {
       res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
     }
   });
 
+  
   // SOAP Server mock entrypoint
   // eslint-disable-next-line complexity
   // eslint-disable-next-line sonarjs/cognitive-complexity, complexity
@@ -822,6 +850,13 @@ export async function newExpressApp(
 
       // 4. pspNotifyPayment
       if (soapRequest[pspnotifypaymentreq]) {
+        if (pspNotifyPaymentQueue.length > 0) {
+          const customResponse = pspNotifyPaymentQueue.shift();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          return res
+            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
+            .send(customResponse);
+        }
         const pspnotifypayment = soapRequest[pspnotifypaymentreq][0];
         const auxdigit = config.PA_MOCK.AUX_DIGIT;
         const noticenumber: string = `${auxdigit}${pspnotifypayment.creditorreferenceid}`;
@@ -842,7 +877,21 @@ export async function newExpressApp(
         return res.status(+pspNotifyPaymentRes[0]).send(pspNotifyPaymentRes[1]);
       }
 
-      if (!(soapRequest[sentReceipt] || soapRequest[activateSoapRequest] || soapRequest[verifySoapRequest])) {
+      // 5. paaVerificaRPT
+      if (soapRequest[paaVerificaRPTreq]) {
+        if (paaVerificaRPTQueue.length > 0) {
+          const customResponse = paaVerificaRPTQueue.shift();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          return res
+            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
+            .send(customResponse);
+        }
+        
+        log_event_tx(paaVerificaRPTRisposta);
+        return res.status(+paaVerificaRPTRisposta[0]).send(paaVerificaRPTRisposta[1]);
+      }
+
+      if (!(soapRequest[sentReceipt] || soapRequest[activateSoapRequest] || soapRequest[verifySoapRequest] || soapRequest[paaVerificaRPTreq])) {
         // The SOAP Request not implemented
         logger.info(`The SOAP Request ${JSON.stringify(soapRequest)} not implemented`);
         res.status(404).send('Not found');
