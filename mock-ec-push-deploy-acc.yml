@@ -14,6 +14,8 @@ variables:
     value: 'nodo_srv_endpoint_azurecr_sit'
   - name: aksnamespace
     value: 'nodo-sit'
+  - name: kubernetesServiceConnection
+    value: 'nodo_srv_endpoint_kubernetes_sa_sit'
 
 # Agent VM image name
 #vmImageName: 'ubuntu-latest'
@@ -88,7 +90,8 @@ stages:
               displayName: Deploy to Kubernetes cluster
               inputs:
                 action: deploy
-                namespace: ${{ variables.aksnamespace }} 
+                namespace: ${{ variables.aksnamespace }}
+                kubernetesServiceConnection: ${{ variables.kubernetesServiceConnection }}
                 manifests: |
                   $(System.ArtifactsDirectory)/deployment.yml
                   $(System.ArtifactsDirectory)/service.yml
