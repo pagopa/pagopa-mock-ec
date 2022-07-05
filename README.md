@@ -172,17 +172,7 @@ The tribute is 120.00 EUR divided in 2 transfers:
 | Notice number        | CC EC_TE | CC EC_TE |
 | -------------------- | -------- | -------- |
 | 302**17**xxxxxxxxxxx | CCPost   | CCPost   |
-
-### Tribute 11
-
-The tribute is 120.00 EUR divided in 2 transfers:
-- Transfer 1 : Oneri SUAP 1, 100.00€ due to **Comune di Milano**
-- Transfer 2 : Oneri SUAP 2, 20.00€ due to **Comune di Bitetto**
-
-| Notice number        | CC Comune di Milano | CC Comune di Bitetto |
-| -------------------- | ------------------- | -------------------- |
-| 302**18**xxxxxxxxxxx | CCPost              | CCPost               |
-
+| 302**21**xxxxxxxxxxx | CCPost   | CCBank   |
 
 #### Tribute 12
 
@@ -195,6 +185,29 @@ The amount of the tribute is 120€ and divided in 3 transfers:
 | Notice number        | CC EC_TE | CC EC_TE | CC EC_TE|
 | -------------------- | -------- | ---------| --------|
 | 302**19**xxxxxxxxxxx | CCBank   | CCBank   | CCPost  |
+| 302**22**xxxxxxxxxxx | CCPost   | CCPost   | CCBank  |
+
+### Tribute 12
+
+The tribute is 120.00 EUR divided in 2 transfers:
+- Transfer 1 : Oneri SUAP 1, 100.00€ due to **Comune di Milano**
+- Transfer 2 : Oneri SUAP 2, 20.00€ due to **Comune di Bitetto**
+
+| Notice number        | CC Comune di Milano | CC Comune di Bitetto |
+| -------------------- | ------------------- | -------------------- |
+| 302**18**xxxxxxxxxxx | CCPost              | CCBank               |
+
+### Tribute 13
+
+The tribute is 120.00 EUR divided in 2 transfers:
+- Transfer 1 : Oneri SUAP 1, 100.00€ due to **Comune di Milano**
+- Transfer 2 : Oneri SUAP 2, 20.00€ due to **Comune di Milano**
+
+| Notice number        | CC Comune di Milano | CC Comune di Milano |
+| -------------------- | ------------------- | -------------------- |
+| 302**20**xxxxxxxxxxx | CCPost              | CCBank               |
+
+
 
 ### Edge cases
 
