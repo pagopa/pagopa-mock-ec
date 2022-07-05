@@ -53,9 +53,6 @@ steps:
 
 - script: |
     az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl get deployment,svc,pods -n nodo-sit"
-    az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl delete deployment  mock-ec* -n nodo-sit"
-    az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl delete pod mock-ec*  -n nodo-sit"
-    az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl delete svc mock-ec*  -n nodo-sit"
   displayName: 'Delete kubectl mock-ec deployment, pod and service'
 
 - script: |
@@ -78,7 +75,6 @@ steps:
 
 - script: |
     sleep 1m
-    az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl logs -f mock-ec* -n nodo-sit"
     az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl get deployment,svc,pods -n nodo-sit"
   displayName: 'Check the service, pods, and deployments'
 
