@@ -3,7 +3,7 @@ trigger: none
 # Don't run against PRs
 pr: none
 
-stages:
+steps:
 - script: |
     sudo apt-get update
     sudo apt-get install jq
