@@ -1,25 +1,38 @@
+name: $(BuildDefinitionName)_$(date:yyyyMMdd)$(rev:.r)
+
 trigger: none
 
 # Don't run against PRs
 pr: none
 
-steps:
-- script: |
-    sudo apt-get update
-    sudo apt-get install jq
-  displayName: 'Install jq JSON processor'
-- script: |
-    version_val=$(jq -r '.version' package.json)
-    echo "$version_val" 
-  displayName: 'Extract version value'  
+variables:
+  - name: repository
+    value: 'pagopa/pagopa-mock-ec'
+  - name: dockerfile
+    value: '$(Build.SourcesDirectory)/Dockerfile'
+  - name: containerRegistry
+    value: 'nodo_srv_endpoint_azurecr_sit'
 
-
-
-
-
-
-
-
-
-
-
+stages :
+  - stage: Build
+    displayName: Build and push stage
+    jobs:
+    - job: Build
+      displayName: Build job
+      steps:
+      - script: |
+          sudo apt-get update
+          sudo apt-get install jq
+        displayName: 'Install jq JSON processor'
+      - script: |
+          version_val=$(jq -r '.version' package.json)
+          echo "$version_val" 
+        displayName: 'Extract version value'        
+      - task: Docker@2
+        displayName: Build and push an image to container registry
+        inputs:
+          command: buildAndPush
+          repository: ${{ variables.repository }}
+          dockerfile: ${{ variables.dockerfile }}
+          containerRegistry: ${{ variables.containerRegistry }}
+          tags: $(version_val)
