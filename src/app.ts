@@ -26,8 +26,15 @@ import {
   POSITIONS_STATUS,
 } from './utils/helper';
 import { logger, log_event_tx } from './utils/logger';
-import { paVerify17, paVerify18, paVerify19. paVerify20, paVerify21, paVerify22 } from './fixtures/fixVerifyResponse';
-import { paActivate17, paActivate18, paActivate19, paActivate20, paActivate21, paActivate22 } from './fixtures/fixActivateResponse';
+import { paVerify17, paVerify18, paVerify19, paVerify20, paVerify21, paVerify22 } from './fixtures/fixVerifyResponse';
+import {
+  paActivate17,
+  paActivate18,
+  paActivate19,
+  paActivate20,
+  paActivate21,
+  paActivate22,
+} from './fixtures/fixActivateResponse';
 
 const paVerifyPaymentNoticeQueue = new Array<string>();
 const paGetPaymentQueue = new Array<string>();
@@ -460,7 +467,6 @@ export async function newExpressApp(
           });
           return res.status(paActivate22res[0]).send(paActivate22res[1]);
         }
-
 
         const isFixedError = avvisoErrore.test(noticenumber);
         const isTimeout = avvisoTimeout.test(noticenumber);
