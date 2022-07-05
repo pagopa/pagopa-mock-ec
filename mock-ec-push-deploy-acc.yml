@@ -43,7 +43,7 @@ stages:
           containerRegistry: ${{ variables.containerRegistry }}  
           tags: 1.6.1
           
-      - upload: manifests
+      - publish: $(System.ArtifactsDirectory)/manifests
         artifact: manifests
           
   #DEPLOY        
