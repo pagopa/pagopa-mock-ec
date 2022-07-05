@@ -7,13 +7,17 @@ pr: none
 
 variables:
   - name: repository
-    value: 'pagopa/pagopa-mock-ec'
+    value: 'pagopa-mock-ec'
   - name: dockerfile
     value: '$(Build.SourcesDirectory)/Dockerfile'
   - name: containerRegistry
     value: 'nodo_srv_endpoint_azurecr_sit'
+  - name: aksnamespace
+    value: 'nodo-sit'
 
-stages :
+
+stages:
+#BUILD
   - stage: Build
     displayName: Build and push stage
     jobs:
@@ -30,9 +34,62 @@ stages :
         displayName: 'Extract version value'        
       - task: Docker@2
         displayName: Build and push an image to container registry
-        inputs:
-          command: buildAndPush
-          repository: ${{ variables.repository }}
-          dockerfile: ${{ variables.dockerfile }}
-          containerRegistry: ${{ variables.containerRegistry }}
+        inputs:  
+          command: buildAndPush  
+          repository: ${{ variables.repository }}  
+          dockerfile: ${{ variables.dockerfile }}  
+          containerRegistry: ${{ variables.containerRegistry }}  
           tags: $(version_val)
+          
+      - task: PublishPipelineArtifact@1
+        inputs:
+          artifactName: 'manifests'
+          path: 'manifests'
+          
+  #DEPLOY        
+  - stage: Deploy
+    displayName: Deploy stage
+    dependsOn: Build
+    jobs:
+    - deployment: Deploy
+      displayName: Deploy job
+      #pool:
+        #vmImage: $(vmImageName)
+      environment: ${{ variables.aksnamespace }}  
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - script: |
+                sudo apt-get update
+                sudo apt-get install jq
+              displayName: 'Install jq JSON processor'
+            - script: |
+                version_val=$(jq -r '.version' package.json)
+                echo "$version_val" 
+              displayName: 'Extract version value'        
+            - task: DownloadPipelineArtifact@2
+              inputs:
+                artifactName: 'manifests'
+                downloadPath: '$(System.ArtifactsDirectory)/manifests'
+  
+            #- task: KubernetesManifest@0
+              #displayName: Create imagePullSecret
+              #inputs:
+                #action: createSecret
+                #secretName: $(imagePullSecret)
+                #namespace: $(k8sNamespace)
+                #dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+  
+            - task: KubernetesManifest@0
+              displayName: Deploy to Kubernetes cluster
+              inputs:
+                action: deploy
+                namespace: ${{ variables.aksnamespace }} 
+                manifests: |
+                  $(System.ArtifactsDirectory)/manifests/deployment.yml
+                  $(System.ArtifactsDirectory)/manifests/service.yml
+                #imagePullSecrets: |
+                  #$(imagePullSecret)
+                containers: |
+                  ${{ variables.containerRegistry}}/${{ variables.repository}}:$(version_val)
