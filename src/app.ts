@@ -26,8 +26,8 @@ import {
   POSITIONS_STATUS,
 } from './utils/helper';
 import { logger, log_event_tx } from './utils/logger';
-import { paVerify17, paVerify18, paVerify19 } from './fixtures/fixVerifyResponse';
-import { paActivate17, paActivate18, paActivate19 } from './fixtures/fixActivateResponse';
+import { paVerify17, paVerify18, paVerify19. paVerify20, paVerify21, paVerify22 } from './fixtures/fixVerifyResponse';
+import { paActivate17, paActivate18, paActivate19, paActivate20, paActivate21, paActivate22 } from './fixtures/fixActivateResponse';
 
 const paVerifyPaymentNoticeQueue = new Array<string>();
 const paGetPaymentQueue = new Array<string>();
@@ -61,6 +61,9 @@ const avviso17 = new RegExp('^30216.*'); // CCPost + CCBank + CBank + CCBank + C
 const avviso18 = new RegExp('^30217.*'); // fix response
 const avviso19 = new RegExp('^30218.*'); // fix response
 const avviso20 = new RegExp('^30219.*'); // fix response
+const avviso21 = new RegExp('^30220.*'); // fix response
+const avviso22 = new RegExp('^30221.*'); // fix response
+const avviso23 = new RegExp('^30222.*'); // fix response
 const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random su 2 transfers
 const avvisoUnder1 = new RegExp('^30288.*'); // random under 1 euro + + random su 2 transfers
 
@@ -208,6 +211,12 @@ export async function newExpressApp(
           return res.status(200).send(paVerify18);
         } else if (avviso20.test(noticenumber)) {
           return res.status(200).send(paVerify19);
+        } else if (avviso21.test(noticenumber)) {
+          return res.status(200).send(paVerify20);
+        } else if (avviso22.test(noticenumber)) {
+          return res.status(200).send(paVerify21);
+        } else if (avviso23.test(noticenumber)) {
+          return res.status(200).send(paVerify22);
         }
 
         if (testDebug.toUpperCase() === 'Y') {
@@ -435,7 +444,23 @@ export async function newExpressApp(
             creditorReferenceId,
           });
           return res.status(paActivate19res[0]).send(paActivate19res[1]);
+        } else if (avviso21.test(noticenumber)) {
+          const paActivate20res = paActivate20({
+            creditorReferenceId,
+          });
+          return res.status(paActivate20res[0]).send(paActivate20res[1]);
+        } else if (avviso22.test(noticenumber)) {
+          const paActivate21res = paActivate21({
+            creditorReferenceId,
+          });
+          return res.status(paActivate21res[0]).send(paActivate21res[1]);
+        } else if (avviso23.test(noticenumber)) {
+          const paActivate22res = paActivate22({
+            creditorReferenceId,
+          });
+          return res.status(paActivate22res[0]).send(paActivate22res[1]);
         }
+
 
         const isFixedError = avvisoErrore.test(noticenumber);
         const isTimeout = avvisoTimeout.test(noticenumber);
