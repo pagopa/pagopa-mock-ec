@@ -172,8 +172,8 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
 ];
 
 export const paActivate20 = (params: IActivateRequest): MockResponse => [
-    200,
-    `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+  200,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
   xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
   <soapenv:Header />
   <soapenv:Body>
@@ -222,11 +222,11 @@ export const paActivate20 = (params: IActivateRequest): MockResponse => [
       </paf:paGetPaymentRes>
   </soapenv:Body>
   </soapenv:Envelope>`,
-  ];
-  
-  export const paActivate21 = (params: IActivateRequest): MockResponse => [
-    200,
-    `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+];
+
+export const paActivate21 = (params: IActivateRequest): MockResponse => [
+  200,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
   xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
   <soapenv:Header />
   <soapenv:Body>
@@ -275,11 +275,11 @@ export const paActivate20 = (params: IActivateRequest): MockResponse => [
       </paf:paGetPaymentRes>
   </soapenv:Body>
   </soapenv:Envelope>`,
-  ];
-  
-  export const paActivate22 = (params: IActivateRequest): MockResponse => [
-    200,
-    `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+];
+
+export const paActivate22 = (params: IActivateRequest): MockResponse => [
+  200,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
   xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
   <soapenv:Header />
   <soapenv:Body>
@@ -336,5 +336,4 @@ export const paActivate20 = (params: IActivateRequest): MockResponse => [
       </paf:paGetPaymentRes>
   </soapenv:Body>
   </soapenv:Envelope>`,
-  ];
-  
+];
