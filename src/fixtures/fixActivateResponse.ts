@@ -213,7 +213,7 @@ export const paActivate20 = (params: IActivateRequest): MockResponse => [
                     <idTransfer>2</idTransfer>
                     <transferAmount>20.00</transferAmount>
                     <fiscalCodePA>01199250158</fiscalCodePA>
-                    <IBAN>IT1234567890123456789000005</IBAN>
+                    <IBAN>IT15V0306901783100000300001</IBAN>
                     <remittanceInformation>remittance information</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
