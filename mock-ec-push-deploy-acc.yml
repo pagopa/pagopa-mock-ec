@@ -7,7 +7,7 @@ pr: none
 
 variables:
   - name: repository
-    value: 'pagopa/pagopa-mock-ec'
+    value: 'pagopa-mock-ec'
   - name: dockerfile
     value: '$(Build.SourcesDirectory)/Dockerfile'
   - name: containerRegistry
