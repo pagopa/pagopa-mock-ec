@@ -39,7 +39,7 @@ stages:
           repository: ${{ variables.repository }}  
           dockerfile: ${{ variables.dockerfile }}  
           containerRegistry: ${{ variables.containerRegistry }}  
-          tags: $(version_val)
+          tags: 1.6.1
           
       - task: PublishPipelineArtifact@1
         inputs:
@@ -92,4 +92,4 @@ stages:
                 #imagePullSecrets: |
                   #$(imagePullSecret)
                 containers: |
-                  ${{ variables.containerRegistry}}/${{ variables.repository}}:$(version_val)
+                  ${{ variables.containerRegistry}}/${{ variables.repository}}:1.6.1
