@@ -1,0 +1,3 @@
+resources:
+  - mock-ec-deployment.yaml
+  - mock-ec-service.yaml
