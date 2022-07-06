@@ -64,7 +64,7 @@ stages:
               tags: $(appVersion)
 
   - stage: push_manifest
-    displayName: "Push manifest ${{ parameters.env }}"
+    displayName: "Push manifest (${{ parameters.env }})"
     condition: succeeded()
     dependsOn:
       - retrieve_info
@@ -94,7 +94,7 @@ stages:
             artifact: $(appVersion)-${{ parameters.env }}-manifest-app
 
   - stage: deploy
-    displayName: "Deploy ${{ parameters.env }}"
+    displayName: "Deploy (${{ parameters.env }})"
     dependsOn:
       - retrieve_info
       - build
