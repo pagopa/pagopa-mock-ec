@@ -37,8 +37,7 @@ stages:
           dockerfile: ${{ variables.dockerfile }}  
           containerRegistry: ${{ variables.containerRegistry }}  
           tags: |
-            $(Build.BuildId)
-            $(Build.SourceVersion)
+            1.6.1
       - task: CopyFiles@2
         displayName: Copy kube manifests
         inputs:
@@ -74,6 +73,7 @@ stages:
                 artifactName: 'kube-manifests'
                 downloadPath: '$(System.ArtifactsDirectory)'
 
+              
             - task: KubernetesManifest@0
               displayName: Create K8S manifest files
               name: bake
@@ -81,6 +81,11 @@ stages:
                 action: bake
                 renderType: kustomize
                 kustomizationPath: '$(System.ArtifactsDirectory)/app' # Location of the kustomization file
+            
+            - task: KubectlInstaller@0
+              displayName: Kubectl installer
+              inputs: 
+                kubectlVersion: latest
 
             - task: KubernetesManifest@0
               displayName: Deploy to Kubernetes cluster
@@ -88,7 +93,6 @@ stages:
                 action: deploy
                 namespace: ${{ variables.aksnamespace }}
                 kubernetesServiceConnection: ${{ variables.kubernetesServiceConnection }}
-                manifests: |
-                  $(bake.manifestsBundle)
-                containers: |
-                  ${{ variables.containerRegistry}}/${{ variables.repository}}:1.6.1
+                manifests: $(bake.manifestsBundle)
+                containers:   
+                  ${{ variables.containerRegistry}}/${{variables.repository}}:1.6.1
