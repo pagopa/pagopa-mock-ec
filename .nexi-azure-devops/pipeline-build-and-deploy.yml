@@ -1,0 +1,67 @@
+pr: none
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+parameters:
+  - name: env
+    displayName: Environment to deploy
+    type: string
+    values:
+      - dev
+      - sit
+      - uat
+      - prf
+      - prd
+
+variables:
+  repository: 'mock-ec'
+  dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+  kustomizeFolderApp: '$(Build.SourcesDirectory)/kustomize-mock-ec'
+
+stages:
+  - stage: retrieve_info
+    displayName: "Retrieve info (${{ parameters.env }})"
+    jobs:
+      - job: retrieve_info
+        displayName: "Retrieve info (${{ parameters.env }})"
+        steps:
+          - checkout: self
+            clean: true
+            persistCredentials: true
+
+          - script: |
+              APP_VERSION=$(jq -r .version package.json)
+              echo "##vso[task.setvariable variable=APP_VERSION;isOutput=true]$APP_VERSION"
+            displayName: Set version
+            name: getVar
+
+  - stage: build
+    displayName: "Build (${{ parameters.env }})"
+    condition: succeeded()
+    dependsOn:
+      - retrieve_info
+    variables:
+      - group: nodo-${{ parameters.env }}
+      - name: appVersion
+        value: $[ stageDependencies.retrieve_info.evaluate.outputs['getVar.APP_VERSION'] ]
+    jobs:
+      - job: build
+        displayName: "Build (${{ parameters.env }})"
+        steps:
+          - checkout: self
+            clean: true
+            persistCredentials: true
+
+          - script: cp .nexi-azure-devops/.nexi.env .env
+            displayName: 'Copy env'
+
+          - task: Docker@2
+            displayName: 'Build and push image'
+            inputs:
+              containerRegistry: $(container-registry-service-connection-${{ parameters.env }})
+              repository: $(repository)
+              command: 'buildAndPush'
+              Dockerfile: $(dockerfile)
+              tags: $(appVersion)
