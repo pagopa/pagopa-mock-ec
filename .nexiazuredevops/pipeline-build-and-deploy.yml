@@ -73,12 +73,6 @@ stages:
       - name: appVersion
         value: $[ stageDependencies.retrieve_info.evaluate.outputs['getVar.APP_VERSION'] ]
     jobs:
-      - template: jobs/push_manifest.yml
-        parameters:
-          repositoryDocker: $(repository-docker-${{ parameters.env }})
-          mvnVersion: $(mvnVersion)
-          kustomizeOverlay: ${{ parameters.env }}
-
       - job: push_manifest
         displayName: "Push manifest ${{ parameters.env }}"
         steps:
