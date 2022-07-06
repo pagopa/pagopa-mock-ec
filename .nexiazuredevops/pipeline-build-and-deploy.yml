@@ -54,7 +54,7 @@ stages:
             clean: true
             persistCredentials: true
 
-          - script: cp .nexi-azure-devops/.nexi.env .env
+          - script: cp .nexiazuredevops/.nexi.env .env
             displayName: 'Copy env'
 
           - task: Docker@2
