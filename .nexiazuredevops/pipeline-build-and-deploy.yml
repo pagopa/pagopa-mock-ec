@@ -42,7 +42,7 @@ stages:
     variables:
       - group: nodo-${{ parameters.env }}
       - name: appVersion
-        value: $[ stageDependencies.retrieve_info.evaluate.outputs['getVar.APP_VERSION'] ]
+        value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
       - job: build
         displayName: "Build (${{ parameters.env }})"
@@ -71,7 +71,7 @@ stages:
     variables:
       - group: nodo-${{ parameters.env }}
       - name: appVersion
-        value: $[ stageDependencies.retrieve_info.evaluate.outputs['getVar.APP_VERSION'] ]
+        value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
       - job: push_manifest
         displayName: "Push manifest ${{ parameters.env }}"
@@ -102,7 +102,7 @@ stages:
     variables:
       - group: nodo-${{ parameters.env }}
       - name: appVersion
-        value: $[ stageDependencies.retrieve_info.evaluate.outputs['getVar.APP_VERSION'] ]
+        value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     condition: succeeded()
     jobs:
       - job: deploy
