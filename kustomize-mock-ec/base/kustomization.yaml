@@ -1,0 +1,9 @@
+commonLabels:
+  app: mock-ec
+
+resources:
+  - deployment.yaml
+  - service.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
