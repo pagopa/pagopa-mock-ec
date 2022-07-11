@@ -11,12 +11,10 @@ import {
   paErrorVerify,
   paGetPaymentRes,
   paVerifyPaymentNoticeRes,
-  pspNotifyPaymentRes,  
+  pspNotifyPaymentRes,
 } from './fixtures/nodoNewMod3Responses';
 
-import {
-  paaVerificaRPTRisposta,
-} from './fixtures/nodoNewMod3Responses_oldEc';
+import { paaVerificaRPTRisposta } from './fixtures/nodoNewMod3Responses_oldEc';
 
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
@@ -46,7 +44,6 @@ const paGetPaymentQueue = new Array<string>();
 const paSendRTQueue = new Array<string>();
 const pspNotifyPaymentQueue = new Array<string>();
 const paaVerificaRPTQueue = new Array<string>();
-
 
 const faultId = '77777777777';
 
@@ -211,13 +208,12 @@ export async function newExpressApp(
       } else {
         pspNotifyPaymentQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} saved. ${pspNotifyPaymentQueue.length} pushed`);
-      } 
-    }  else {
+      }
+    } else {
       res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
     }
   });
 
-  
   // SOAP Server mock entrypoint
   // eslint-disable-next-line complexity
   // eslint-disable-next-line sonarjs/cognitive-complexity, complexity
@@ -886,12 +882,19 @@ export async function newExpressApp(
             .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
             .send(customResponse);
         }
-        
+
         log_event_tx(paaVerificaRPTRisposta);
         return res.status(+paaVerificaRPTRisposta[0]).send(paaVerificaRPTRisposta[1]);
       }
 
-      if (!(soapRequest[sentReceipt] || soapRequest[activateSoapRequest] || soapRequest[verifySoapRequest] || soapRequest[paaVerificaRPTreq])) {
+      if (
+        !(
+          soapRequest[sentReceipt] ||
+          soapRequest[activateSoapRequest] ||
+          soapRequest[verifySoapRequest] ||
+          soapRequest[paaVerificaRPTreq]
+        )
+      ) {
         // The SOAP Request not implemented
         logger.info(`The SOAP Request ${JSON.stringify(soapRequest)} not implemented`);
         res.status(404).send('Not found');
