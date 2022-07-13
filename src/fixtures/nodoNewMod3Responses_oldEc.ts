@@ -1,8 +1,8 @@
 export type MockResponse = readonly [number, string];
 
 export const paaVerificaRPTRisposta: MockResponse = [
-  200,
-  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/"   xmlns:pag="http://www.digitpa.gov.it/schemas/2011/Pagamenti/">
+   200,
+   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/"   xmlns:pag="http://www.digitpa.gov.it/schemas/2011/Pagamenti/">
   <soapenv:Header/>
   <soapenv:Body>
      <ws:paaVerificaRPTRisposta>
@@ -33,5 +33,45 @@ export const paaVerificaRPTRisposta: MockResponse = [
         </paaVerificaRPTRisposta>
      </ws:paaVerificaRPTRisposta>
   </soapenv:Body>
+</soapenv:Envelope>`,
+];
+
+
+export const paaAttivaRPTRisposta: MockResponse = [
+   200,
+   `<soapenv:Envelope
+   xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+   xmlns:ws="http://ws.pagamenti.telematici.gov/"
+   xmlns:pag="http://www.digitpa.gov.it/schemas/2011/Pagamenti/">
+   <soapenv:Header/>
+   <soapenv:Body>
+       <ws:paaAttivaRPTRisposta>
+           <paaAttivaRPTRisposta>
+               <esito>OK</esito>
+               <datiPagamentoPA>
+                   <importoSingoloVersamento>10.00</importoSingoloVersamento>
+                   <ibanAccredito>IT45R0760103200000000001016</ibanAccredito>
+                   <bicAccredito>BSCTCH22</bicAccredito>
+                   <enteBeneficiario>
+                       <pag:identificativoUnivocoBeneficiario>
+                           <pag:tipoIdentificativoUnivoco>G</pag:tipoIdentificativoUnivoco>
+                           <pag:codiceIdentificativoUnivoco>77777777777_05</pag:codiceIdentificativoUnivoco>
+                       </pag:identificativoUnivocoBeneficiario>
+                       <pag:denominazioneBeneficiario>15376371009</pag:denominazioneBeneficiario>
+                       <pag:codiceUnitOperBeneficiario>15376371009_01</pag:codiceUnitOperBeneficiario>
+                       <pag:denomUnitOperBeneficiario>uj</pag:denomUnitOperBeneficiario>
+                       <pag:indirizzoBeneficiario>"paaAttivaRPT"</pag:indirizzoBeneficiario>
+                       <pag:civicoBeneficiario>j</pag:civicoBeneficiario>
+                       <pag:capBeneficiario>gt</pag:capBeneficiario>
+                       <pag:localitaBeneficiario>gw</pag:localitaBeneficiario>
+                       <pag:provinciaBeneficiario>ds</pag:provinciaBeneficiario>
+                       <pag:nazioneBeneficiario>UK</pag:nazioneBeneficiario>
+                   </enteBeneficiario>
+                   <credenzialiPagatore>i</credenzialiPagatore>
+                   <causaleVersamento>prova/RFDB/018701385178400/TXT/causale 0dfe2e934e6648f798c5d64ce2f4ab23</causaleVersamento>
+               </datiPagamentoPA>
+           </paaAttivaRPTRisposta>
+       </ws:paaAttivaRPTRisposta>
+   </soapenv:Body>
 </soapenv:Envelope>`,
 ];
