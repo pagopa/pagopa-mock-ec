@@ -44,7 +44,7 @@ stages:
       - task: PublishPipelineArtifact@1
         inputs:
           artifactName: 'manifests'
-          path: '$(Pipeline.Workspace)/manifests'
+          path: 'manifests'
           
   #DEPLOY        
   - stage: Deploy
