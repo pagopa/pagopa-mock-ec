@@ -41,13 +41,13 @@ steps:
 - script: kompose convert -f docker-compose.yml
   displayName: 'kompose convert'  
 
-- script: az aks get-credentials --resource-group DDS-Kubernetes --name ddsakstest
+- script: az aks get-credentials — resource-group DDS-Kubernetes — name ddsakstest
   displayName: 'Get cluster credentials'
 
 - script: kubectl get node
   displayName: 'Get Node'
 
-#- script: kubectl apply -f mock-ec-service.yaml,mock-ec-deployment.yaml,mock-net-networkpolicy.yaml
+#- script: kubectl apply -f mock-ec-service.yml
 #  displayName: 'AKS deployment'
 
 #- script: kubectl get deployment,svc,pods
