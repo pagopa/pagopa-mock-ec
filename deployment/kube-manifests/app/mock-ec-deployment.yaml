@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  labels:
+    app: pagopa-mock-ec
+  name: pagopa-mock-ec
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pagopa-mock-ec
+  strategy: {}
+  template:
+    metadata:      
+      labels:
+        app: pagopa-mock-ec
+    spec:
+      containers:
+        - image: pagopa-mock-ec
+          name: pagopa-mock-ec
+          ports:
+            - containerPort: 8089
+          resources: {}
+      restartPolicy: Always
+status: {}
