@@ -38,6 +38,8 @@ steps:
     sudo apt install ./kompose_1.26.1_amd64.deb
   displayName: 'kompose installation'
 
+- script: kompose convert -f docker-compose.yml
+  displayName: 'kompose convert'  
 
 - script: az login
   displayName: 'azure login'
@@ -48,25 +50,19 @@ steps:
 - script: az aks get-credentials --resource-group DDS-Kubernetes --name ddsakstest
   displayName: 'Connect to the cluster'
 
-#- script: cat /home/vsts/.kube/config
-#  displayName: 'Verify Kube Configuration'
+- script: cat /home/vsts/.kube/config
+  displayName: 'Verify Configuration'
 
 - script: |
     az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl get pods --all-namespaces"
     az aks show --resource-group DDS-Kubernetes --name ddsakstest
-  displayName: 'Verify AKS Connection'
+  displayName: 'Verify the connection'
 
-- script: kompose convert -f docker-compose.yml
-  displayName: 'kompose convert' 
+#- script: kubectl apply -f mock-ec-service.yaml,mock-ec-deployment.yaml,mock-net-networkpolicy.yaml
+#  displayName: 'AKS deployment'
 
-- script: |
-    az aks command invoke --resource-group DDS-Kubernetes --name ddsakstest --command "kubectl apply -f mock-ec-deployment.yaml -n nodo-sit" --file mock-ec-deployment.yaml
-    az aks command invoke --resource-group DDS-Kubernetes --name ddsakstest --command "kubectl apply -f mock-ec-service.yaml -n nodo-sit" --file mock-ec-service.yaml
-    az aks command invoke --resource-group DDS-Kubernetes --name ddsakstest --command "kubectl apply -f mock-net-networkpolicy.yaml -n nodo-sit" --file mock-net-networkpolicy.yaml
-  displayName: 'AKS deployment'
-
-- script: az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl get deployment,svc,pods -n nodo-sit"
-  displayName: 'Check the service, pods, and deployments'
+#- script: kubectl get deployment,svc,pods
+#  displayName: 'Check the service, pods, and deployments'
 
 #- script: kubectl describe svc mock-ec
 #  displayName: 'Service'
