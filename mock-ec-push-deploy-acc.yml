@@ -1,17 +1,31 @@
+name: $(BuildDefinitionName)_$(date:yyyyMMdd)$(rev:.r)
+
 trigger: none
 
 # Don't run against PRs
 pr: none
 
-stages:
+variables:
+  - name: repository
+    value: 'pagopa/pagopa-mock-ec'
+  - name: dockerfile
+    value: '$(Build.SourcesDirectory)/Dockerfile'
+  - name: containerRegistry
+    value: 'nodo_srv_endpoint_azurecr_sit'
+
+stages :
+       
+# Install jq JSON     
 - script: |
     sudo apt-get update
     sudo apt-get install jq
   displayName: 'Install jq JSON processor'
+  
+# Extract version value 
 - script: |
     version_val=$(jq -r '.version' package.json)
     echo "$version_val" 
-  displayName: 'Extract version value'  
+  displayName: 'Extract version value '  
 
 
 
