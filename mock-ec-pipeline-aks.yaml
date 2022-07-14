@@ -47,9 +47,6 @@ steps:
 - script: kubectl get node
   displayName: 'Get Node'
 
-#- script: az login
-#  displayName: 'azure login'
-
 #- script: kubectl apply -f mock-ec-service.yaml,mock-ec-deployment.yaml,mock-net-networkpolicy.yaml
 #  displayName: 'AKS deployment'
 
