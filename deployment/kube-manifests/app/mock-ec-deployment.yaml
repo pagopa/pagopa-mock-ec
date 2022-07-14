@@ -8,16 +8,16 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pagopa-mock-ec
+      app: mock-ec
   strategy: {}
   template:
     metadata:      
       labels:
-        app: pagopa-mock-ec
+        app: mock-ec
     spec:
       containers:
-        - image: pagopa-mock-ec
-          name: pagopa-mock-ec
+        - image: mock-ec
+          name: mock-ec
           ports:
             - containerPort: 8089
           resources: {}
