@@ -2,8 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata: 
   labels:
-    app: pagopa-mock-ec
-  name: pagopa-mock-ec
+    app: mock-ec
+  name: mock-ec
 spec:
   replicas: 1
   selector:
