@@ -47,9 +47,6 @@ steps:
 - script: az aks get-credentials --resource-group DDS-Kubernetes --name ddsakstest
   displayName: 'Connect to the cluster'
 
-- script: cat /home/vsts/.kube/config
-  displayName: 'Verify Configuration'
-
 - script: kubectl get node
   displayName: 'Verify the connection'
 
