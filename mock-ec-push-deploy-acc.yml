@@ -86,9 +86,6 @@ stages:
                 #secretName: $(imagePullSecret)
                 #namespace: $(k8sNamespace)
                 #dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
-            - script: |          
-               mkdir $(System.ArtifactsDirectory)/sit
-              displayName: 'Create kustomization file Location'
             - task: KubernetesManifest@0
               displayName: Create K8S manifest files
               name: bake
