@@ -54,7 +54,7 @@ steps:
   displayName: 'Verify Configuration'
 
 - script: |
-    az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl get pods --all-namespaces"
+    kubectl get node --all-namespaces
     az aks show --resource-group DDS-Kubernetes --name ddsakstest
   displayName: 'Verify the connection'
 
