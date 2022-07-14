@@ -68,12 +68,27 @@ stages:
         runOnce:
           deploy:
             steps:
+            #- script: |
+                #sudo apt-get update
+                #sudo apt-get install jq
+              #displayName: 'Install jq JSON processor'
+            #- script: |
+                #version_val=$(jq -r '.version' package.json)
+                #echo "$version_val" 
+              #displayName: 'Extract version value'        
             - download: none
             - task: DownloadPipelineArtifact@2
               inputs:
-                artifactName: 'kube-manifests'
+                artifactName: 'k8s-manifests'
                 downloadPath: '$(System.ArtifactsDirectory)'
-
+  
+            #- task: KubernetesManifest@0
+              #displayName: Create imagePullSecret
+              #inputs:
+                #action: createSecret
+                #secretName: $(imagePullSecret)
+                #namespace: $(k8sNamespace)
+                #dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
             - task: KubernetesManifest@0
               displayName: Create K8S manifest files
               name: bake
@@ -90,5 +105,7 @@ stages:
                 kubernetesServiceConnection: ${{ variables.kubernetesServiceConnection }}
                 manifests: |
                   $(bake.manifestsBundle)
+                #imagePullSecrets: |
+                  #$(imagePullSecret)
                 containers: |
                   ${{ variables.containerRegistry}}/${{ variables.repository}}:1.6.1
