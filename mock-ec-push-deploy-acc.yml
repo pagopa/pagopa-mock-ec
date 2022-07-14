@@ -43,11 +43,8 @@ stages:
           containerRegistry: ${{ variables.containerRegistry }}  
           tags: 1.6.1
           
-
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: $(System.DefaultWorkingDirectory)
-          artifactName: manifest
+      - publish: $(System.ArtifactsDirectory)/manifests
+        artifact: manifests
           
   #DEPLOY        
   - stage: Deploy
@@ -90,8 +87,8 @@ stages:
                 action: deploy
                 namespace: ${{ variables.aksnamespace }} 
                 manifests: |
-                  $(System.ArtifactsDirectory)/deployment.yml
-                  $(System.ArtifactsDirectory)/service.yml
+                  $(System.ArtifactsDirectory)/manifests/deployment.yml
+                  $(System.ArtifactsDirectory)/manifests/service.yml
                 #imagePullSecrets: |
                   #$(imagePullSecret)
                 containers: |
