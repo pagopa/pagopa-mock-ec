@@ -50,7 +50,7 @@ steps:
 - script: cat /home/vsts/.kube/config
   displayName: 'Verify Configuration'
 
-- script: kubectl get node --all-namespaces
+- script: kubectl get node
   displayName: 'Verify the connection'
 
 #- script: kubectl apply -f mock-ec-service.yaml,mock-ec-deployment.yaml,mock-net-networkpolicy.yaml
