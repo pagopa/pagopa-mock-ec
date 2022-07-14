@@ -27,7 +27,6 @@ stages:
     jobs:
     - job: Build
       displayName: Build job
-      pool: nodopagamenti-agent-pool-sit
       steps:
       
       - task: Docker@2
@@ -61,7 +60,8 @@ stages:
     jobs:
     - deployment: Deploy
       displayName: Deploy job
-      pool: nodopagamenti-agent-pool-sit
+      #pool:
+        #vmImage: $(vmImageName)
       environment: ${{ variables.aksnamespace }}  
       strategy:
         runOnce:
