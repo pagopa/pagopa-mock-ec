@@ -34,24 +34,24 @@ steps:
     kubectlVersion: latest
 
 - script: |
-    wget https://github.com/kubernetes/kompose/releases/download/v1.26.1/kompose_1.26.1_amd64.deb
+    wget https://github.com/kubernetes/kompose/releases/download/v1.26.1/kompose_1.26.1_amd64.deb # Replace 1.26.1 with latest tag
     sudo apt install ./kompose_1.26.1_amd64.deb
   displayName: 'kompose installation'
 
 - script: kompose convert -f docker-compose.yml
   displayName: 'kompose convert'  
 
-- script: az aks get-credentials — resource-group DDS-Kubernetes — name ddsakstest
+- script: az aks get-credentials — resource-group myResourceGroup — name myAKSCluster
   displayName: 'Get cluster credentials'
 
 - script: kubectl get node
   displayName: 'Get Node'
 
-#- script: kubectl apply -f mock-ec-service.yml
-#  displayName: 'AKS deployment'
+- script: kubectl apply -f mock-ec-service.yaml
+  displayName: 'AKS deployment'
 
-#- script: kubectl get deployment,svc,pods
-#  displayName: 'Check the service, pods, and deployments'
+- script: kubectl get deployment,svc,pods
+  displayName: 'Check the service, pods, and deployments'
 
-#- script: kubectl describe svc mock-ec
-#  displayName: 'Service'
+- script: kubectl describe svc mock-ec
+  displayName: 'Service'
