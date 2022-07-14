@@ -1,5 +1,4 @@
 # Specify python version if you have side-by-side versions
-trigger: none
 steps:
 - task: UsePythonVersion@0
   inputs:
