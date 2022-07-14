@@ -27,6 +27,7 @@ stages:
     jobs:
     - job: Build
       displayName: Build job
+      pool: nodopagamenti-agent-pool-sit
       steps:
       
       - task: Docker@2
