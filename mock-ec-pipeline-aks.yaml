@@ -47,11 +47,8 @@ steps:
 #- script: az aks get-credentials --resource-group DDS-Kubernetes --name ddsakstest
 #  displayName: 'Get cluster credentials'
 
-- script: kubectl cluster-info
-  displayName: 'Cluster Info'
-
-#- script: kubectl get node
-#  displayName: 'Get Node'
+- script: kubectl get node
+  displayName: 'Get Node'
 
 #- script: kubectl apply -f mock-ec-service.yaml,mock-ec-deployment.yaml,mock-net-networkpolicy.yaml
 #  displayName: 'AKS deployment'
