@@ -52,33 +52,20 @@ steps:
 #  displayName: 'Verify Kube Configuration'
 
 - script: |
-    kubectl delete deployment  mock-ec*
-    kubectl delete pod mock-ec* 
-    kubectl delete svc mock-ec*
-  displayName: 'Delete kubectl mock-ec deployment, pod and service'
-
-- script: |
-    sleep 1m
-    az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl get deployment,svc,pods -n nodo-sit"
+    az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl get pods --all-namespaces"
+    az aks show --resource-group DDS-Kubernetes --name ddsakstest
   displayName: 'Verify AKS Connection'
 
-- script: |
-    kompose convert -f docker-compose.yml
-    cat ./mock-ec-deployment.yaml
-    cat ./mock-ec-service.yaml
-    cat ./mock-net-networkpolicy.yaml
-  displayName: 'Kompose convert' 
+- script: kompose convert -f docker-compose.yml
+  displayName: 'kompose convert' 
 
 - script: |
     az aks command invoke --resource-group DDS-Kubernetes --name ddsakstest --command "kubectl apply -f mock-ec-deployment.yaml -n nodo-sit" --file mock-ec-deployment.yaml
     az aks command invoke --resource-group DDS-Kubernetes --name ddsakstest --command "kubectl apply -f mock-ec-service.yaml -n nodo-sit" --file mock-ec-service.yaml
     az aks command invoke --resource-group DDS-Kubernetes --name ddsakstest --command "kubectl apply -f mock-net-networkpolicy.yaml -n nodo-sit" --file mock-net-networkpolicy.yaml
-  displayName: 'AKS mock-ec deployment'
+  displayName: 'AKS deployment'
 
-- script: |
-    sleep 1m
-    az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl logs -f mock-ec* -n nodo-sit"
-    az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl get deployment,svc,pods -n nodo-sit"
+- script: az aks command invoke  --resource-group DDS-Kubernetes --name ddsakstest  --command "kubectl get deployment,svc,pods -n nodo-sit"
   displayName: 'Check the service, pods, and deployments'
 
 #- script: kubectl describe svc mock-ec
