@@ -95,7 +95,7 @@ stages:
               inputs:
                 action: bake
                 renderType: kustomize
-                kustomizationPath: '$(System.ArtifactsDirectory)' # Location of the kustomization file
+                kustomizationPath: '$(System.ArtifactsDirectory)/sit' # Location of the kustomization file
 
             - task: KubernetesManifest@0
               displayName: Deploy to Kubernetes cluster
