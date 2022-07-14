@@ -14,10 +14,7 @@ import {
   pspNotifyPaymentRes,
 } from './fixtures/nodoNewMod3Responses';
 
-import { 
-  paaVerificaRPTRisposta,
-  paaAttivaRPTRisposta,
- } from './fixtures/nodoNewMod3Responses_oldEc';
+import { paaVerificaRPTRisposta } from './fixtures/nodoNewMod3Responses_oldEc';
 
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
@@ -47,7 +44,6 @@ const paGetPaymentQueue = new Array<string>();
 const paSendRTQueue = new Array<string>();
 const pspNotifyPaymentQueue = new Array<string>();
 const paaVerificaRPTQueue = new Array<string>();
-const paaAttivaRPTQueue = new Array<string>();
 
 const faultId = '77777777777';
 
@@ -56,8 +52,6 @@ const activateSoapRequest = 'pafn:pagetpaymentreq';
 const sentReceipt = 'pafn:pasendrtreq';
 const pspnotifypaymentreq = 'pspfn:pspnotifypaymentreq';
 const paaVerificaRPTreq = 'ppt:paaverificarpt';
-const paaAttivaRPTreq = 'ppt:paaattivarpt';
-
 
 const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
 const avviso2 = new RegExp('^30201.*'); // CCPost + CCBank
@@ -215,15 +209,6 @@ export async function newExpressApp(
         pspNotifyPaymentQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} saved. ${pspNotifyPaymentQueue.length} pushed`);
       }
-    } else if (req.params.primitive === 'paaAttivaRPT') {
-        if (String(req.query.override).toLowerCase() === 'true') {
-          paaAttivaRPTQueue.pop();
-          paaAttivaRPTQueue.push(req.rawBody);
-          res.status(200).send(`${req.params.primitive} updated`);
-        } else {
-          paaAttivaRPTQueue.push(req.rawBody);
-          res.status(200).send(`${req.params.primitive} saved. ${paaAttivaRPTQueue.length} pushed`);
-        }
     } else {
       res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
     }
@@ -901,28 +886,13 @@ export async function newExpressApp(
         log_event_tx(paaVerificaRPTRisposta);
         return res.status(+paaVerificaRPTRisposta[0]).send(paaVerificaRPTRisposta[1]);
       }
-      
-      // 6. paaAttivaRPT
-      if (soapRequest[paaAttivaRPTreq]) {
-        if (paaAttivaRPTQueue.length > 0) {
-          const customResponse = paaAttivaRPTQueue.shift();
-          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-            .send(customResponse);
-        }
-
-        log_event_tx(paaAttivaRPTRisposta);
-        return res.status(+paaAttivaRPTRisposta[0]).send(paaAttivaRPTRisposta[1]);
-      }
 
       if (
         !(
           soapRequest[sentReceipt] ||
           soapRequest[activateSoapRequest] ||
           soapRequest[verifySoapRequest] ||
-          soapRequest[paaVerificaRPTreq] ||
-          soapRequest[paaAttivaRPTreq]
+          soapRequest[paaVerificaRPTreq]
         )
       ) {
         // The SOAP Request not implemented
