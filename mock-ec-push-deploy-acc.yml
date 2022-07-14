@@ -15,9 +15,7 @@ variables:
   - name: aksnamespace
     value: 'nodo-sit'
 
-# Agent VM image name
-#vmImageName: 'ubuntu-latest'
-    
+
 stages:
 #BUILD
   - stage: Build
@@ -26,14 +24,14 @@ stages:
     - job: Build
       displayName: Build job
       steps:
-      #- script: |
-          #sudo apt-get update
-          #sudo apt-get install jq
-        #displayName: 'Install jq JSON processor'
-      #- script: |
-          #version_val=$(jq -r '.version' package.json)
-          #echo "$version_val" 
-        #displayName: 'Extract version value'        
+      - script: |
+          sudo apt-get update
+          sudo apt-get install jq
+        displayName: 'Install jq JSON processor'
+      - script: |
+          version_val=$(jq -r '.version' package.json)
+          echo "$version_val" 
+        displayName: 'Extract version value'        
       - task: Docker@2
         displayName: Build and push an image to container registry
         inputs:  
@@ -43,8 +41,10 @@ stages:
           containerRegistry: ${{ variables.containerRegistry }}  
           tags: 1.6.1
           
-      - upload: manifests
-        artifact: manifests
+      - task: PublishPipelineArtifact@1
+        inputs:
+          artifactName: 'manifests'
+          path: '$(Pipeline.Workspace)/manifests'
           
   #DEPLOY        
   - stage: Deploy
@@ -60,18 +60,18 @@ stages:
         runOnce:
           deploy:
             steps:
-            #- script: |
-                #sudo apt-get update
-                #sudo apt-get install jq
-              #displayName: 'Install jq JSON processor'
-            #- script: |
-                #version_val=$(jq -r '.version' package.json)
-                #echo "$version_val" 
-              #displayName: 'Extract version value'        
-            #- task: DownloadPipelineArtifact@2
-              #inputs:
-                #artifactName: 'manifests'
-                #downloadPath: '$(System.ArtifactsDirectory)/manifests'
+            - script: |
+                sudo apt-get update
+                sudo apt-get install jq
+              displayName: 'Install jq JSON processor'
+            - script: |
+                version_val=$(jq -r '.version' package.json)
+                echo "$version_val" 
+              displayName: 'Extract version value'        
+            - task: DownloadPipelineArtifact@2
+              inputs:
+                artifactName: 'manifests'
+                downloadPath: '$(System.ArtifactsDirectory)/manifests'
   
             #- task: KubernetesManifest@0
               #displayName: Create imagePullSecret
