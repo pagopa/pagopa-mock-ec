@@ -1,8 +1,8 @@
 export type MockResponse = readonly [number, string];
 
 export const paaVerificaRPTRisposta: MockResponse = [
-  200,
-  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/"   xmlns:pag="http://www.digitpa.gov.it/schemas/2011/Pagamenti/">
+   200,
+   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/"   xmlns:pag="http://www.digitpa.gov.it/schemas/2011/Pagamenti/">
   <soapenv:Header/>
   <soapenv:Body>
      <ws:paaVerificaRPTRisposta>
@@ -74,9 +74,9 @@ export const paaAttivaRPTRisposta: MockResponse = [
        </ws:paaAttivaRPTRisposta>
    </soapenv:Body>
 </soapenv:Envelope>`,
- ];
+];
 
- export const paaInviaRTRisposta: MockResponse = [
+export const paaInviaRTRisposta: MockResponse = [
    200,
    `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/">
    <soapenv:Header/>
@@ -88,4 +88,33 @@ export const paaAttivaRPTRisposta: MockResponse = [
       </ws:paaInviaRTRisposta>
    </soapenv:Body>
 </soapenv:Envelope>`,
- ];
+];
+
+
+export const paDemandPaymentNoticeRisposta: MockResponse = [
+   200,
+   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
+   <soapenv:Header/>
+   <soapenv:Body>
+		  <paf:paDemandPaymentNoticeResponse>
+			 <outcome>OK</outcome>
+			 <qrCode>
+				<fiscalCode>44444444444</fiscalCode>
+				<noticeNumber>311018891531183500</noticeNumber>
+			 </qrCode>
+			 <paymentList>
+				<paymentOptionDescription>
+				   <amount>10.00</amount>
+				   <options>EQ</options>
+				   <!--Optional:-->
+				   <dueDate>2022-06-25</dueDate>
+				   <!--Optional:-->
+				   <detailDescription>descrizione dettagliata lato PA</detailDescription>
+				   <!--Optional:-->
+					<allCCP>false</allCCP>
+				</paymentOptionDescription>
+			 </paymentList>
+		  </paf:paDemandPaymentNoticeResponse>
+	</soapenv:Body>
+</soapenv:Envelope>`,
+];
