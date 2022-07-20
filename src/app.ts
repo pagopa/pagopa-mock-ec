@@ -14,11 +14,12 @@ import {
   pspNotifyPaymentRes,
 } from './fixtures/nodoNewMod3Responses';
 
-import { 
+import {
   paaVerificaRPTRisposta,
   paaAttivaRPTRisposta,
   paaInviaRTRisposta,
- } from './fixtures/nodoNewMod3Responses_oldEc';
+  paDemandPaymentNoticeRisposta,
+} from './fixtures/nodoNewMod3Responses_oldEc';
 
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
@@ -50,6 +51,8 @@ const pspNotifyPaymentQueue = new Array<string>();
 const paaVerificaRPTQueue = new Array<string>();
 const paaAttivaRPTQueue = new Array<string>();
 const paaInviaRTQueue = new Array<string>();
+const paDemandPaymentNoticeQueue = new Array<string>();
+
 
 const faultId = '77777777777';
 
@@ -60,6 +63,7 @@ const pspnotifypaymentreq = 'pspfn:pspnotifypaymentreq';
 const paaVerificaRPTreq = 'ppt:paaverificarpt';
 const paaAttivaRPTreq = 'ppt:paaattivarpt';
 const paaInviaRTreq = 'ppt:paainviart';
+const paDemandPaymentNoticereq = 'pafn:pademandpaymentnoticerequest';
 
 
 const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
@@ -219,14 +223,14 @@ export async function newExpressApp(
         res.status(200).send(`${req.params.primitive} saved. ${pspNotifyPaymentQueue.length} pushed`);
       }
     } else if (req.params.primitive === 'paaAttivaRPT') {
-        if (String(req.query.override).toLowerCase() === 'true') {
-          paaAttivaRPTQueue.pop();
-          paaAttivaRPTQueue.push(req.rawBody);
-          res.status(200).send(`${req.params.primitive} updated`);
-        } else {
-          paaAttivaRPTQueue.push(req.rawBody);
-          res.status(200).send(`${req.params.primitive} saved. ${paaAttivaRPTQueue.length} pushed`);
-        }
+      if (String(req.query.override).toLowerCase() === 'true') {
+        paaAttivaRPTQueue.pop();
+        paaAttivaRPTQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        paaAttivaRPTQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paaAttivaRPTQueue.length} pushed`);
+      }
     } else if (req.params.primitive === 'paaInviaRT') {
       if (String(req.query.override).toLowerCase() === 'true') {
         paaInviaRTQueue.pop();
@@ -236,7 +240,16 @@ export async function newExpressApp(
         paaInviaRTQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} saved. ${paaInviaRTQueue.length} pushed`);
       }
-   } else {
+    } else if (req.params.primitive === 'paDemandPaymentNotice') {
+      if (String(req.query.override).toLowerCase() === 'true') {
+        paDemandPaymentNoticeQueue.pop();
+        paDemandPaymentNoticeQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        paDemandPaymentNoticeQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paDemandPaymentNoticeQueue.length} pushed`);
+      }
+    } else {
       res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
     }
   });
@@ -332,9 +345,9 @@ export async function newExpressApp(
 
         const transferTypeRes =
           avviso1.test(noticenumber) ||
-          avviso5.test(noticenumber) ||
-          avviso7.test(noticenumber) ||
-          avviso11.test(noticenumber)
+            avviso5.test(noticenumber) ||
+            avviso7.test(noticenumber) ||
+            avviso11.test(noticenumber)
             ? StTransferType_type_pafnEnum.POSTAL
             : undefined;
 
@@ -342,20 +355,20 @@ export async function newExpressApp(
         let amountRes = isAmount1
           ? amount1.toFixed(2)
           : isAmount1bis
-          ? amount1bis.toFixed(2)
-          : isAmountComplete1
-          ? (amount1 + amount2).toFixed(2)
-          : isAmountComplete1bis
-          ? (amount1bis + amount2bis).toFixed(2)
-          : isFixOver
-          ? (amount1Over + amount2Over).toFixed(2)
-          : isFixUnder
-          ? (amount1Under + amount2Under).toFixed(2)
-          : isOver5000
-          ? getRandomArbitrary(5000, 10000).toFixed(2)
-          : isUnder1
-          ? getRandomArbitrary(0, 1).toFixed(2)
-          : 0;
+            ? amount1bis.toFixed(2)
+            : isAmountComplete1
+              ? (amount1 + amount2).toFixed(2)
+              : isAmountComplete1bis
+                ? (amount1bis + amount2bis).toFixed(2)
+                : isFixOver
+                  ? (amount1Over + amount2Over).toFixed(2)
+                  : isFixUnder
+                    ? (amount1Under + amount2Under).toFixed(2)
+                    : isOver5000
+                      ? getRandomArbitrary(5000, 10000).toFixed(2)
+                      : isUnder1
+                        ? getRandomArbitrary(0, 1).toFixed(2)
+                        : 0;
 
         const customAmount = noticenumber[0].substring(14, 18); // xx.xx
         // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
@@ -415,7 +428,7 @@ export async function newExpressApp(
           log_event_tx(paVerifyPaymentNoticeResponse);
           return res.status(paVerifyPaymentNoticeResponse[0]).send(paVerifyPaymentNoticeResponse[1]);
         } else if (isTimeout) {
-          setTimeout(function() {
+          setTimeout(function () {
             // happy case DELAY - paVerifyPaymentNoticeRes
             const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
               outcome: 'OK',
@@ -438,8 +451,8 @@ export async function newExpressApp(
                   b === POSITIONS_STATUS.IN_PROGRESS
                     ? PAA_PAGAMENTO_IN_CORSO.value
                     : b === POSITIONS_STATUS.CLOSE
-                    ? PAA_PAGAMENTO_DUPLICATO.value
-                    : '_UNDEFINE_',
+                      ? PAA_PAGAMENTO_DUPLICATO.value
+                      : '_UNDEFINE_',
                 faultString: `Errore ${noticenumber}`,
                 id: faultId,
               },
@@ -585,20 +598,20 @@ export async function newExpressApp(
         let amountRes = isAmount1
           ? amount1.toFixed(2)
           : isAmount1bis
-          ? amount1bis.toFixed(2)
-          : isAmountComplete1
-          ? (amount1 + amount2).toFixed(2)
-          : isAmountComplete1bis
-          ? (amount1bis + amount2bis).toFixed(2)
-          : isFixOver
-          ? (amount1Over + amount2Over).toFixed(2)
-          : isFixUnder
-          ? (amount1Under + amount2Under).toFixed(2)
-          : isOver5000 || isUnder1
-          ? dbAmounts.has(noticenumber[0])
-            ? dbAmounts.get(noticenumber[0])
-            : 0
-          : 0;
+            ? amount1bis.toFixed(2)
+            : isAmountComplete1
+              ? (amount1 + amount2).toFixed(2)
+              : isAmountComplete1bis
+                ? (amount1bis + amount2bis).toFixed(2)
+                : isFixOver
+                  ? (amount1Over + amount2Over).toFixed(2)
+                  : isFixUnder
+                    ? (amount1Under + amount2Under).toFixed(2)
+                    : isOver5000 || isUnder1
+                      ? dbAmounts.has(noticenumber[0])
+                        ? dbAmounts.get(noticenumber[0])
+                        : 0
+                      : 0;
 
         const amountSession = dbAmounts.has(noticenumber[0]) ? dbAmounts.get(noticenumber[0]) : 0;
         const amountSession1 = amountSession ? amountSession / 2 : 0;
@@ -608,22 +621,22 @@ export async function newExpressApp(
         let amountPrimaryRes = isFixOver
           ? amount1Over.toFixed(2)
           : isFixUnder
-          ? amount1Under.toFixed(2)
-          : isOver5000 || isUnder1
-          ? amountSession1.toFixed(2)
-          : isNoticeWith120
-          ? amount1.toFixed(2)
-          : amount1bis.toFixed(2);
+            ? amount1Under.toFixed(2)
+            : isOver5000 || isUnder1
+              ? amountSession1.toFixed(2)
+              : isNoticeWith120
+                ? amount1.toFixed(2)
+                : amount1bis.toFixed(2);
 
         const amountSecondaryRes = isFixOver
           ? amount2Over.toFixed(2)
           : isFixUnder
-          ? amount2Under.toFixed(2)
-          : isOver5000 || isUnder1
-          ? amountSession2.toFixed(2)
-          : isNoticeWith120
-          ? amount2.toFixed(2)
-          : amount2bis.toFixed(2);
+            ? amount2Under.toFixed(2)
+            : isOver5000 || isUnder1
+              ? amountSession2.toFixed(2)
+              : isNoticeWith120
+                ? amount2.toFixed(2)
+                : amount2bis.toFixed(2);
 
         const customAmount = noticenumber[0].substring(14, 18); // xx.xx
         /* eslint-disable */
@@ -669,7 +682,7 @@ export async function newExpressApp(
           log_event_tx(paGetPaymentResponse);
           return res.status(paGetPaymentResponse[0]).send(paGetPaymentResponse[1]);
         } else if (isTimeout) {
-          setTimeout(function() {
+          setTimeout(function () {
             // happy case DELAY - paGetPaymentRes
             const paGetPaymentResponse = paGetPaymentRes({
               amount: (amount1 + amount2).toFixed(2),
@@ -703,8 +716,8 @@ export async function newExpressApp(
                   b === POSITIONS_STATUS.IN_PROGRESS
                     ? PAA_PAGAMENTO_IN_CORSO.value
                     : b === POSITIONS_STATUS.CLOSE
-                    ? PAA_PAGAMENTO_DUPLICATO.value
-                    : '_UNDEFINE_',
+                      ? PAA_PAGAMENTO_DUPLICATO.value
+                      : '_UNDEFINE_',
                 faultString: `Errore ${noticenumber}`,
                 id: faultId,
               },
@@ -720,8 +733,8 @@ export async function newExpressApp(
               isOver5000 || isUnder1
                 ? 1 // Math.round(getRandomArbitrary(0, 11))
                 : isFixOver || isFixUnder
-                ? 1 // Fix Over and Under come avviso2
-                : +noticenumber[0].substring(3, 5);
+                  ? 1 // Fix Over and Under come avviso2
+                  : +noticenumber[0].substring(3, 5);
             // eslint-disable-next-line functional/no-let
             let iban1;
             // eslint-disable-next-line functional/no-let
@@ -805,9 +818,9 @@ export async function newExpressApp(
               creditorReferenceId,
               description:
                 avviso5.test(noticenumber) ||
-                avviso6.test(noticenumber) ||
-                avviso11.test(noticenumber) ||
-                avviso12.test(noticenumber)
+                  avviso6.test(noticenumber) ||
+                  avviso11.test(noticenumber) ||
+                  avviso12.test(noticenumber)
                   ? descriptionMono
                   : descriptionAll,
               fiscalCodePA: fiscalcode,
@@ -909,11 +922,10 @@ export async function newExpressApp(
             .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
             .send(customResponse);
         }
-
         log_event_tx(paaVerificaRPTRisposta);
         return res.status(+paaVerificaRPTRisposta[0]).send(paaVerificaRPTRisposta[1]);
       }
-      
+
       // 6. paaAttivaRPT
       if (soapRequest[paaAttivaRPTreq]) {
         if (paaAttivaRPTQueue.length > 0) {
@@ -923,7 +935,6 @@ export async function newExpressApp(
             .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
             .send(customResponse);
         }
-
         log_event_tx(paaAttivaRPTRisposta);
         return res.status(+paaAttivaRPTRisposta[0]).send(paaAttivaRPTRisposta[1]);
       }
@@ -937,11 +948,23 @@ export async function newExpressApp(
             .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
             .send(customResponse);
         }
-
         log_event_tx(paaInviaRTRisposta);
         return res.status(+paaInviaRTRisposta[0]).send(paaInviaRTRisposta[1]);
       }
-          
+
+      // 8. paDemandPaymentNotice
+      if (soapRequest[paDemandPaymentNoticereq]) {
+        if (paDemandPaymentNoticeQueue.length > 0) {
+          const customResponse = paDemandPaymentNoticeQueue.shift();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          return res
+            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
+            .send(customResponse);
+        }
+        log_event_tx(paDemandPaymentNoticeRisposta);
+        return res.status(+paDemandPaymentNoticeRisposta[0]).send(paDemandPaymentNoticeRisposta[1]);
+      }
+
 
       if (
         !(
@@ -950,7 +973,8 @@ export async function newExpressApp(
           soapRequest[verifySoapRequest] ||
           soapRequest[paaVerificaRPTreq] ||
           soapRequest[paaAttivaRPTreq] ||
-          soapRequest[paaInviaRTreq]
+          soapRequest[paaInviaRTreq] ||
+          soapRequest[paDemandPaymentNoticereq]
         )
       ) {
         // The SOAP Request not implemented
