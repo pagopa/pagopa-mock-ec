@@ -14,3 +14,5 @@ cert/*.key
 cert/*.csr
 .idea
 cert_local
+.venv
+venv/
