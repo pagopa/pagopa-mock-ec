@@ -40,7 +40,7 @@ stages:
     dependsOn:
       - retrieve_info
     variables:
-      - group: nodo-${{ parameters.env }}
+      - group: nodo-integration-test-${{ parameters.env }}
       - name: appVersion
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
@@ -69,7 +69,7 @@ stages:
     dependsOn:
       - retrieve_info
     variables:
-      - group: nodo-${{ parameters.env }}
+      - group: nodo-integration-test-${{ parameters.env }}
       - name: appVersion
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
