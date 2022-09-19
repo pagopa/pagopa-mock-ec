@@ -1,9 +1,7 @@
 pr: none
 trigger: none
-
 pool:
   vmImage: 'ubuntu-latest'
-
 parameters:
   - name: env
     displayName: Environment to deploy
@@ -11,12 +9,10 @@ parameters:
     values:
       - dev
       - sit
-
 variables:
-  repository: 'mock-ec'
+  repository: 'mock-psp' 
   dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
-  kustomizeFolderApp: '$(Build.SourcesDirectory)/kustomize-mock-ec'
-
+  kustomizeFolderApp: '$(Build.SourcesDirectory)/kustomize-mock-psp'
 stages:
   - stage: retrieve_info
     displayName: "Retrieve info (${{ parameters.env }})"
@@ -27,49 +23,55 @@ stages:
           - checkout: self
             clean: true
             persistCredentials: true
-
           - script: |
               APP_VERSION=$(jq -r .version package.json)
               echo "##vso[task.setvariable variable=APP_VERSION;isOutput=true]$APP_VERSION"
             displayName: Set version
             name: getVar
-
   - stage: build
     displayName: "Build (${{ parameters.env }})"
     condition: succeeded()
     dependsOn:
       - retrieve_info
     variables:
-      - group: nodo-integration-test-${{ parameters.env }}
+      - group: nodo-integration-test-vg-${{ parameters.env }}
       - name: appVersion
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
-      - job: build
-        displayName: "Build (${{ parameters.env }})"
+      - job: build_npm
+        displayName: buildnpm
         steps:
-          - checkout: self
-            clean: true
-            persistCredentials: true
-
-          - script: cp .nexi.env .env
-            displayName: 'Copy env'
-
-          - task: Docker@2
-            displayName: 'Build and push image'
-            inputs:
+        - task: NodeTool@0
+          inputs:
+            versionSpec: '16.x'
+          displayName: 'Install Node.js'
+        - script: |
+            npm install --legacy-peer-deps
+          displayName: 'npm install'
+        - script: |
+            npm run generate build
+            pwd
+            ls -lrt
+          displayName: 'npm build'
+        - script: |
+            cp .nexi.env .env
+          displayName: 'Copy env'
+        - task: Docker@2
+          displayName: 'Build and push image'
+          inputs:
               containerRegistry: $(container-registry-service-connection-${{ parameters.env }})
               repository: $(repository)
               command: 'buildAndPush'
               Dockerfile: $(dockerfile)
               tags: $(appVersion)
-
+   
   - stage: push_manifest
     displayName: "Push manifest (${{ parameters.env }})"
     condition: succeeded()
     dependsOn:
-      - retrieve_info
+      - build
     variables:
-      - group: nodo-integration-test-${{ parameters.env }}
+      - group: nodo-integration-test-vg-${{ parameters.env }}
       - name: appVersion
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
@@ -79,7 +81,6 @@ stages:
           - checkout: self
             clean: true
             persistCredentials: true
-
           - task: KubernetesManifest@0
             name: "bakeApp"
             inputs:
@@ -88,42 +89,35 @@ stages:
               kustomizationPath: $(kustomizeFolderApp)/${{ parameters.env }}
               containers: $(repository-docker-${{ parameters.env }})/$(repository):$(appVersion)
             displayName: "Create manifest app (${{ parameters.env }})"
-
           - publish: $(bakeApp.manifestsBundle)
             displayName: "Publish manifest app (${{ parameters.env }})"
             artifact: $(appVersion)-${{ parameters.env }}-manifest-app
-
-  #- stage: deploy
-  #  displayName: "Deploy (${{ parameters.env }})"
-  #  dependsOn:
-  #    - retrieve_info
-  #    - build
-  #    - push_manifest
-  #  variables:
-  #    - group: nodo-integration-test-${{ parameters.env }}
-  #    - name: appVersion
-  #      value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
-  #  condition: succeeded()
-  #  jobs:
-  #    - job: deploy
-  #      displayName: "Deploy ${{ parameters.env }}"
-  #      pool: $(deploy-pool-${{ parameters.env }})
-  #      steps:
-  #        - checkout: none
-  #
-  #        - script: |
-  #            ls -la $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-manifest-app
-  #            rm -rf $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-manifest-app
-  #          displayName: "Clean old cached files $(appVersion)-${{ parameters.env }}-manifest-app"
-  #
-  #        - download: current
-  #          artifact: $(appVersion)-${{ parameters.env }}-manifest-app
-  #          displayName: "Download manifest app $(appVersion)-${{ parameters.env }}-manifest-app"
-
-  #        - task: KubernetesManifest@0
-  #          displayName: "Deploy manifest for app"
-  #          inputs:
-  #            action: 'deploy'
-  #            kubernetesServiceConnection:  $(kubernetes-service-connection-${{ parameters.env }})
-  #            namespace: mock-ec-${{ parameters.env }}
-  #            manifests: $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-manifest-app/*.yaml
+  - stage: deploy
+    displayName: "Deploy (${{ parameters.env }})"
+    dependsOn:
+      - push_manifest
+    variables:
+      - group: nodo-integration-test-vg-${{ parameters.env }}
+      - name: appVersion
+        value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
+    condition: succeeded()
+    jobs:
+      - job: deploy
+        displayName: "Deploy ${{ parameters.env }}"
+        pool: $(deploy-pool-${{ parameters.env }})
+        steps:
+          - checkout: none
+          - script: |
+              ls -la $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-manifest-app
+              rm -rf $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-manifest-app
+            displayName: "Clean old cached files $(appVersion)-${{ parameters.env }}-manifest-app"
+          - download: current
+            artifact: $(appVersion)-${{ parameters.env }}-manifest-app
+            displayName: "Download manifest app $(appVersion)-${{ parameters.env }}-manifest-app"
+          - task: KubernetesManifest@0
+            displayName: "Deploy manifest for app"
+            inputs:
+              action: 'deploy'
+              kubernetesServiceConnection:  $(kubernetes-service-connection-${{ parameters.env }})
+              namespace: mock-psp-${{ parameters.env }}
+              manifests: $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-manifest-app/*.yaml
