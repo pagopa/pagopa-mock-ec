@@ -10,9 +10,9 @@ parameters:
       - dev
       - sit
 variables:
-  repository: 'mock-psp' 
+  repository: 'mock-ec' 
   dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
-  kustomizeFolderApp: '$(Build.SourcesDirectory)/kustomize-mock-psp'
+  kustomizeFolderApp: '$(Build.SourcesDirectory)/kustomize-mock-ec'
 stages:
   - stage: retrieve_info
     displayName: "Retrieve info (${{ parameters.env }})"
@@ -119,5 +119,5 @@ stages:
             inputs:
               action: 'deploy'
               kubernetesServiceConnection:  $(kubernetes-service-connection-${{ parameters.env }})
-              namespace: mock-psp-${{ parameters.env }}
+              namespace: mock-ec-${{ parameters.env }}
               manifests: $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-manifest-app/*.yaml
