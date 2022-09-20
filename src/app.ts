@@ -254,12 +254,18 @@ export async function newExpressApp(
     }
   });
 
+  function ritorno(res: any, customResponse: string | undefined ){
+        return res.status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
+        .send(customResponse);
+  }
+
   // SOAP Server mock entrypoint
   // eslint-disable-next-line complexity
   // eslint-disable-next-line sonarjs/cognitive-complexity, complexity
   app.post(config.PA_MOCK.ROUTES.PPT_NODO, async (req, res) => {
     logger.info(`>>> rx REQUEST :`);
     logger.info(JSON.stringify(req.body));
+    const sleep = (ms:number) => new Promise(r => setTimeout(r, ms));
     try {
       const soapRequest = req.body['soapenv:envelope']['soapenv:body'][0];
       // 1. paVerifyPaymentNotice
@@ -267,9 +273,22 @@ export async function newExpressApp(
         if (paVerifyPaymentNoticeQueue.length > 0) {
           const customResponse = paVerifyPaymentNoticeQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-            .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
-            .send(customResponse);
+          if (customResponse !== undefined) {         
+            let convert = await xml2js.parseStringPromise(customResponse);
+            let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paVerifyPaymentNoticeRes'][0].delay;
+            delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paVerifyPaymentNoticeRes'][0].delay;
+            const builder = new xml2js.Builder();
+            const xml = builder.buildObject(convert);
+            var delay_numb: number = +delay[0];
+            logger.info(delay_numb);
+            if (delay) {
+              logger.info('>>> start timeout')
+              await sleep(delay_numb);
+              return ritorno(res,xml);
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
         }
 
         const paVerifyPaymentNotice = soapRequest[verifySoapRequest][0];
@@ -491,9 +510,22 @@ export async function newExpressApp(
         if (paGetPaymentQueue.length > 0) {
           const customResponse = paGetPaymentQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-            .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
-            .send(customResponse);
+          if (customResponse !== undefined) {         
+            let convert = await xml2js.parseStringPromise(customResponse);
+            let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'][0].delay;
+            delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'][0].delay;
+            const builder = new xml2js.Builder();
+            const xml = builder.buildObject(convert);
+            var delay_numb: number = +delay[0];
+            logger.info(delay_numb);
+            if (delay) {
+              logger.info('>>> start timeout')
+              await sleep(delay_numb);
+              return ritorno(res,xml);
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
         }
         const paGetPayment = soapRequest[activateSoapRequest][0];
         const fiscalcode = paGetPayment.qrcode[0].fiscalcode;
@@ -858,9 +890,22 @@ export async function newExpressApp(
         if (paSendRTQueue.length > 0) {
           const customResponse = paSendRTQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-            .send(customResponse);
+          if (customResponse !== undefined) {         
+            let convert = await xml2js.parseStringPromise(customResponse);
+            let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paSendRTRes'][0].delay;
+            delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paSendRTRes'][0].delay;
+            const builder = new xml2js.Builder();
+            const xml = builder.buildObject(convert);
+            var delay_numb: number = +delay[0];
+            logger.info(delay_numb);
+            if (delay) {
+              logger.info('>>> start timeout')
+              await sleep(delay_numb);
+              return ritorno(res,xml);
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
         }
         const sentReceiptReq = soapRequest[sentReceipt][0];
         const auxdigit = config.PA_MOCK.AUX_DIGIT;
@@ -889,9 +934,22 @@ export async function newExpressApp(
         if (pspNotifyPaymentQueue.length > 0) {
           const customResponse = pspNotifyPaymentQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-            .send(customResponse);
+          if (customResponse !== undefined) {         
+            let convert = await xml2js.parseStringPromise(customResponse);
+            let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['psp:pspNotifyPaymentRes'][0].delay;
+            delete convert['soapenv:Envelope']['soapenv:Body'][0]['psp:pspNotifyPaymentRes'][0].delay;
+            const builder = new xml2js.Builder();
+            const xml = builder.buildObject(convert);
+            var delay_numb: number = +delay[0];
+            logger.info(delay_numb);
+            if (delay) {
+              logger.info('>>> start timeout')
+              await sleep(delay_numb);
+              return ritorno(res,xml);
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
         }
         const pspnotifypayment = soapRequest[pspnotifypaymentreq][0];
         const auxdigit = config.PA_MOCK.AUX_DIGIT;
@@ -918,9 +976,22 @@ export async function newExpressApp(
         if (paaVerificaRPTQueue.length > 0) {
           const customResponse = paaVerificaRPTQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-            .send(customResponse);
+          if (customResponse !== undefined) {         
+            let convert = await xml2js.parseStringPromise(customResponse);
+            let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaVerificaRPTRisposta'][0]['paaVerificaRPTRisposta'][0].delay;
+            delete convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaVerificaRPTRisposta'][0]['paaVerificaRPTRisposta'][0].delay;
+            const builder = new xml2js.Builder();
+            const xml = builder.buildObject(convert);
+            var delay_numb: number = +delay[0];
+            logger.info(delay_numb);
+            if (delay) {
+              logger.info('>>> start timeout')
+              await sleep(delay_numb);
+              return ritorno(res,xml);
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
         }
         log_event_tx(paaVerificaRPTRisposta);
         return res.status(+paaVerificaRPTRisposta[0]).send(paaVerificaRPTRisposta[1]);
@@ -929,24 +1000,50 @@ export async function newExpressApp(
       // 6. paaAttivaRPT
       if (soapRequest[paaAttivaRPTreq]) {
         if (paaAttivaRPTQueue.length > 0) {
-          const customResponse = paaAttivaRPTQueue.shift();
-          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-            .send(customResponse);
+            const customResponse = paaAttivaRPTQueue.shift();
+            logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+            if (customResponse !== undefined) {         
+              let convert = await xml2js.parseStringPromise(customResponse);
+              let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaAttivaRPTRisposta'][0]['paaAttivaRPTRisposta'][0].delay;
+              delete convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaAttivaRPTRisposta'][0]['paaAttivaRPTRisposta'][0].delay;
+              const builder = new xml2js.Builder();
+              const xml = builder.buildObject(convert);
+              var delay_numb: number = +delay[0];
+              logger.info(delay_numb);
+              if (delay) {
+                logger.info('>>> start timeout')
+                await sleep(delay_numb);
+                return ritorno(res,xml);
+              } else {
+                return ritorno(res, customResponse);
+              }
+            }
+          }
+          log_event_tx(paaAttivaRPTRisposta);
+          return res.status(+paaAttivaRPTRisposta[0]).send(paaAttivaRPTRisposta[1]);
         }
-        log_event_tx(paaAttivaRPTRisposta);
-        return res.status(+paaAttivaRPTRisposta[0]).send(paaAttivaRPTRisposta[1]);
-      }
 
       // 7. paaInviaRT
       if (soapRequest[paaInviaRTreq]) {
         if (paaInviaRTQueue.length > 0) {
           const customResponse = paaInviaRTQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-            .send(customResponse);
+          if (customResponse !== undefined) {         
+            let convert = await xml2js.parseStringPromise(customResponse);
+            let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0]['paaInviaRTRisposta'][0].delay;
+            delete convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0]['paaInviaRTRisposta'][0].delay;
+            const builder = new xml2js.Builder();
+            const xml = builder.buildObject(convert);
+            var delay_numb: number = +delay[0];
+            logger.info(delay_numb);
+            if (delay) {
+              logger.info('>>> start timeout')
+              await sleep(delay_numb);
+              return ritorno(res,xml);
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
         }
         log_event_tx(paaInviaRTRisposta);
         return res.status(+paaInviaRTRisposta[0]).send(paaInviaRTRisposta[1]);
@@ -957,9 +1054,22 @@ export async function newExpressApp(
         if (paDemandPaymentNoticeQueue.length > 0) {
           const customResponse = paDemandPaymentNoticeQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-            .send(customResponse);
+          if (customResponse !== undefined) {         
+            let convert = await xml2js.parseStringPromise(customResponse);
+            let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paDemandPaymentNoticeResponse'][0].delay;
+            delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paDemandPaymentNoticeResponse'][0].delay;
+            const builder = new xml2js.Builder();
+            const xml = builder.buildObject(convert);
+            var delay_numb: number = +delay[0];
+            logger.info(delay_numb);
+            if (delay) {
+              logger.info('>>> start timeout')
+              await sleep(delay_numb);
+              return ritorno(res,xml);
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
         }
         log_event_tx(paDemandPaymentNoticeRisposta);
         return res.status(+paDemandPaymentNoticeRisposta[0]).send(paDemandPaymentNoticeRisposta[1]);
