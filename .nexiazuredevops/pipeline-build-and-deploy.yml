@@ -34,7 +34,7 @@ stages:
     dependsOn:
       - retrieve_info
     variables:
-      - group: nodo-integration-test-vg-${{ parameters.env }}
+      - group: nodo-integration-test-${{ parameters.env }}
       - name: appVersion
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
@@ -69,9 +69,10 @@ stages:
     displayName: "Push manifest (${{ parameters.env }})"
     condition: succeeded()
     dependsOn:
+      - retrieve_info
       - build
     variables:
-      - group: nodo-integration-test-vg-${{ parameters.env }}
+      - group: nodo-integration-test-${{ parameters.env }}
       - name: appVersion
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
@@ -95,9 +96,11 @@ stages:
   - stage: deploy
     displayName: "Deploy (${{ parameters.env }})"
     dependsOn:
+      - retrieve_info
+      - build
       - push_manifest
     variables:
-      - group: nodo-integration-test-vg-${{ parameters.env }}
+      - group: nodo-integration-test-${{ parameters.env }}
       - name: appVersion
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     condition: succeeded()
@@ -118,6 +121,6 @@ stages:
             displayName: "Deploy manifest for app"
             inputs:
               action: 'deploy'
-              kubernetesServiceConnection:  $(kubernetes-service-connection-${{ parameters.env }})
+              kubernetesServiceConnection:  $(kubernetes-service-connection-mock-ec-${{ parameters.env }})
               namespace: mock-ec-${{ parameters.env }}
               manifests: $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-manifest-app/*.yaml
