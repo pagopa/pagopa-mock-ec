@@ -276,13 +276,13 @@ export async function newExpressApp(
           if (customResponse !== undefined) {         
             let convert = await xml2js.parseStringPromise(customResponse);
             let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paVerifyPaymentNoticeRes'][0].delay;
-            delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paVerifyPaymentNoticeRes'][0].delay;
-            const builder = new xml2js.Builder();
-            const xml = builder.buildObject(convert);
-            var delay_numb: number = +delay[0];
-            logger.info(delay_numb);
             if (delay) {
               logger.info('>>> start timeout')
+              delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paVerifyPaymentNoticeRes'][0].delay;
+              const builder = new xml2js.Builder();
+              const xml = builder.buildObject(convert);
+              var delay_numb: number = +delay[0];
+              logger.info(delay_numb);
               await sleep(delay_numb);
               return ritorno(res,xml);
             } else {
@@ -514,12 +514,12 @@ export async function newExpressApp(
             let convert = await xml2js.parseStringPromise(customResponse);
             let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'][0].delay;
             delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'][0].delay;
-            const builder = new xml2js.Builder();
-            const xml = builder.buildObject(convert);
-            var delay_numb: number = +delay[0];
-            logger.info(delay_numb);
             if (delay) {
               logger.info('>>> start timeout')
+              const builder = new xml2js.Builder();
+              const xml = builder.buildObject(convert);
+              var delay_numb: number = +delay[0];
+              logger.info(delay_numb);
               await sleep(delay_numb);
               return ritorno(res,xml);
             } else {
@@ -894,12 +894,12 @@ export async function newExpressApp(
             let convert = await xml2js.parseStringPromise(customResponse);
             let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paSendRTRes'][0].delay;
             delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paSendRTRes'][0].delay;
-            const builder = new xml2js.Builder();
-            const xml = builder.buildObject(convert);
-            var delay_numb: number = +delay[0];
-            logger.info(delay_numb);
             if (delay) {
               logger.info('>>> start timeout')
+              const builder = new xml2js.Builder();
+              const xml = builder.buildObject(convert);
+              var delay_numb: number = +delay[0];
+              logger.info(delay_numb);
               await sleep(delay_numb);
               return ritorno(res,xml);
             } else {
@@ -938,12 +938,12 @@ export async function newExpressApp(
             let convert = await xml2js.parseStringPromise(customResponse);
             let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['psp:pspNotifyPaymentRes'][0].delay;
             delete convert['soapenv:Envelope']['soapenv:Body'][0]['psp:pspNotifyPaymentRes'][0].delay;
-            const builder = new xml2js.Builder();
-            const xml = builder.buildObject(convert);
-            var delay_numb: number = +delay[0];
-            logger.info(delay_numb);
             if (delay) {
-              logger.info('>>> start timeout')
+              logger.info('>>> start timeout');
+              const builder = new xml2js.Builder();
+              const xml = builder.buildObject(convert);
+              var delay_numb: number = +delay[0];
+              logger.info(delay_numb);
               await sleep(delay_numb);
               return ritorno(res,xml);
             } else {
@@ -980,12 +980,12 @@ export async function newExpressApp(
             let convert = await xml2js.parseStringPromise(customResponse);
             let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaVerificaRPTRisposta'][0]['paaVerificaRPTRisposta'][0].delay;
             delete convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaVerificaRPTRisposta'][0]['paaVerificaRPTRisposta'][0].delay;
-            const builder = new xml2js.Builder();
-            const xml = builder.buildObject(convert);
-            var delay_numb: number = +delay[0];
-            logger.info(delay_numb);
             if (delay) {
               logger.info('>>> start timeout')
+              const builder = new xml2js.Builder();
+              const xml = builder.buildObject(convert);
+              var delay_numb: number = +delay[0];
+              logger.info(delay_numb);
               await sleep(delay_numb);
               return ritorno(res,xml);
             } else {
@@ -1006,12 +1006,12 @@ export async function newExpressApp(
               let convert = await xml2js.parseStringPromise(customResponse);
               let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaAttivaRPTRisposta'][0]['paaAttivaRPTRisposta'][0].delay;
               delete convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaAttivaRPTRisposta'][0]['paaAttivaRPTRisposta'][0].delay;
-              const builder = new xml2js.Builder();
-              const xml = builder.buildObject(convert);
-              var delay_numb: number = +delay[0];
-              logger.info(delay_numb);
               if (delay) {
                 logger.info('>>> start timeout')
+                const builder = new xml2js.Builder();
+                const xml = builder.buildObject(convert);
+                var delay_numb: number = +delay[0];
+                logger.info(delay_numb);
                 await sleep(delay_numb);
                 return ritorno(res,xml);
               } else {
@@ -1032,12 +1032,12 @@ export async function newExpressApp(
             let convert = await xml2js.parseStringPromise(customResponse);
             let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0]['paaInviaRTRisposta'][0].delay;
             delete convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0]['paaInviaRTRisposta'][0].delay;
-            const builder = new xml2js.Builder();
-            const xml = builder.buildObject(convert);
-            var delay_numb: number = +delay[0];
-            logger.info(delay_numb);
             if (delay) {
               logger.info('>>> start timeout')
+              const builder = new xml2js.Builder();
+              const xml = builder.buildObject(convert);
+              var delay_numb: number = +delay[0];
+              logger.info(delay_numb);
               await sleep(delay_numb);
               return ritorno(res,xml);
             } else {
@@ -1058,12 +1058,12 @@ export async function newExpressApp(
             let convert = await xml2js.parseStringPromise(customResponse);
             let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paDemandPaymentNoticeResponse'][0].delay;
             delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paDemandPaymentNoticeResponse'][0].delay;
-            const builder = new xml2js.Builder();
-            const xml = builder.buildObject(convert);
-            var delay_numb: number = +delay[0];
-            logger.info(delay_numb);
             if (delay) {
               logger.info('>>> start timeout')
+              const builder = new xml2js.Builder();
+              const xml = builder.buildObject(convert);
+              var delay_numb: number = +delay[0];
+              logger.info(delay_numb);
               await sleep(delay_numb);
               return ritorno(res,xml);
             } else {
