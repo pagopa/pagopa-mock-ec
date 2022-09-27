@@ -10,7 +10,7 @@ parameters:
       - dev
       - sit
 variables:
-  repository: 'mock-ec' 
+  repository: 'mock-ec'
   dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
   kustomizeFolderApp: '$(Build.SourcesDirectory)/kustomize-mock-ec'
 stages:
@@ -38,39 +38,27 @@ stages:
       - name: appVersion
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
-      - job: build_npm
-        displayName: buildnpm
+      - job: build
+        displayName: "Build (${{ parameters.env }})"
         steps:
-        - task: NodeTool@0
-          inputs:
-            versionSpec: '16.x'
-          displayName: 'Install Node.js'
-        - script: |
-            npm install --legacy-peer-deps
-          displayName: 'npm install'
-        - script: |
-            npm run generate build
-            pwd
-            ls -lrt
-          displayName: 'npm build'
-        - script: |
-            cp .nexi.env .env
-          displayName: 'Copy env'
-        - task: Docker@2
-          displayName: 'Build and push image'
-          inputs:
+          - checkout: self
+            clean: true
+            persistCredentials: true
+          - script: cp .nexi.env .env
+            displayName: 'Copy env'
+          - task: Docker@2
+            displayName: 'Build and push image'
+            inputs:
               containerRegistry: $(container-registry-service-connection-${{ parameters.env }})
               repository: $(repository)
               command: 'buildAndPush'
               Dockerfile: $(dockerfile)
               tags: $(appVersion)
-   
   - stage: push_manifest
     displayName: "Push manifest (${{ parameters.env }})"
     condition: succeeded()
     dependsOn:
       - retrieve_info
-      - build
     variables:
       - group: nodo-integration-test-${{ parameters.env }}
       - name: appVersion
