@@ -19,6 +19,7 @@ import {
   paaAttivaRPTRisposta,
   paaInviaRTRisposta,
   paDemandPaymentNoticeRisposta,
+  paaChiediNumeroAvvisoRisposta,
 } from './fixtures/nodoNewMod3Responses_oldEc';
 
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
@@ -52,6 +53,7 @@ const paaVerificaRPTQueue = new Array<string>();
 const paaAttivaRPTQueue = new Array<string>();
 const paaInviaRTQueue = new Array<string>();
 const paDemandPaymentNoticeQueue = new Array<string>();
+const paaChiediNumeroAvvisoQueue = new Array<string>();
 
 
 const faultId = '77777777777';
@@ -64,6 +66,7 @@ const paaVerificaRPTreq = 'ppt:paaverificarpt';
 const paaAttivaRPTreq = 'ppt:paaattivarpt';
 const paaInviaRTreq = 'ppt:paainviart';
 const paDemandPaymentNoticereq = 'pafn:pademandpaymentnoticerequest';
+const paaChiediNumeroAvvisoreq = 'ppt:paaChiediNumeroAvviso';
 
 
 const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
@@ -249,6 +252,15 @@ export async function newExpressApp(
         paDemandPaymentNoticeQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} saved. ${paDemandPaymentNoticeQueue.length} pushed`);
       }
+    } else if (req.params.primitive === 'paaChiediNumeroAvviso') {
+      if (String(req.query.override).toLowerCase() === 'true') {
+        paaChiediNumeroAvvisoQueue.pop();
+        paaChiediNumeroAvvisoQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        paaChiediNumeroAvvisoQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paaChiediNumeroAvvisoQueue.length} pushed`);
+      }
     } else {
       res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
     }
@@ -277,7 +289,7 @@ export async function newExpressApp(
             let convert = await xml2js.parseStringPromise(customResponse);
             let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paVerifyPaymentNoticeRes'][0].delay;
             let irraggiungibile = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paVerifyPaymentNoticeRes'][0].irraggiungibile;
-              if(irraggiungibile) {
+            if(irraggiungibile) {
                 throw new TypeError("irraggiungibile");
               }
             if (delay) {
@@ -518,7 +530,7 @@ export async function newExpressApp(
             let convert = await xml2js.parseStringPromise(customResponse);
             let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'][0].delay;
             let irraggiungibile = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'].irraggiungibile;
-              if(irraggiungibile) {
+            if(irraggiungibile) {
                 throw new TypeError("irraggiungibile");
               }
             if (delay) {
@@ -950,7 +962,7 @@ export async function newExpressApp(
             let convert = await xml2js.parseStringPromise(customResponse);
             let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['psp:pspNotifyPaymentRes'][0].delay;
             let irraggiungibile = convert['soapenv:Envelope']['soapenv:Body'][0]['psp:pspNotifyPaymentRes'][0].irraggiungibile;
-              if(irraggiungibile) {
+            if(irraggiungibile) {
                 throw new TypeError("irraggiungibile");
               }
             if (delay) {
@@ -996,7 +1008,7 @@ export async function newExpressApp(
             let convert = await xml2js.parseStringPromise(customResponse);
             let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaVerificaRPTRisposta'][0]['paaVerificaRPTRisposta'][0].delay;
             let irraggiungibile = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaVerificaRPTRisposta'][0]['paaVerificaRPTRisposta'][0].irraggiungibile;
-              if(irraggiungibile) {
+            if(irraggiungibile) {
                 throw new TypeError("irraggiungibile");
               }
             if (delay) {
@@ -1056,7 +1068,7 @@ export async function newExpressApp(
             let convert = await xml2js.parseStringPromise(customResponse);
             let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0]['paaInviaRTRisposta'][0].delay;
             let irraggiungibile = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0]['paaInviaRTRisposta'][0].irraggiungibile;
-              if(irraggiungibile) {
+            if(irraggiungibile) {
                 throw new TypeError("irraggiungibile");
               }
             if (delay) {
@@ -1086,7 +1098,7 @@ export async function newExpressApp(
             let convert = await xml2js.parseStringPromise(customResponse);
             let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paDemandPaymentNoticeResponse'][0].delay;
             let irraggiungibile = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paDemandPaymentNoticeResponse'][0].irraggiungibile;
-              if(irraggiungibile) {
+            if(irraggiungibile) {
                 throw new TypeError("irraggiungibile");
               }
             if (delay) {
@@ -1105,6 +1117,36 @@ export async function newExpressApp(
         }
         log_event_tx(paDemandPaymentNoticeRisposta);
         return res.status(+paDemandPaymentNoticeRisposta[0]).send(paDemandPaymentNoticeRisposta[1]);
+      }
+
+      // 9. paaChiediNumeroAvviso
+      if (soapRequest[paaChiediNumeroAvvisoreq]) {
+        if (paaChiediNumeroAvvisoQueue.length > 0) {
+          const customResponse = paaChiediNumeroAvvisoQueue.shift();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          if (customResponse !== undefined) {         
+            let convert = await xml2js.parseStringPromise(customResponse);
+            let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaChiediNumeroAvvisoRisposta'][0]['paaChiediNumeroAvvisoRisposta'][0].delay;
+            let irraggiungibile = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaChiediNumeroAvvisoRisposta'][0]['paaChiediNumeroAvvisoRisposta'][0].irraggiungibile;
+            if(irraggiungibile) {
+                throw new TypeError("irraggiungibile");
+              }
+            if (delay) {
+              logger.info('>>> start timeout')
+              delete convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaChiediNumeroAvvisoRisposta'][0]['paaChiediNumeroAvvisoRisposta'][0].delay;
+              const builder = new xml2js.Builder();
+              const xml = builder.buildObject(convert);
+              var delay_numb: number = +delay[0];
+              logger.info(delay_numb);
+              await sleep(delay_numb);
+              return ritorno(res,xml);
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
+        }
+        log_event_tx(paaChiediNumeroAvvisoRisposta);
+        return res.status(+paaChiediNumeroAvvisoRisposta[0]).send(paaChiediNumeroAvvisoRisposta[1]);
       }
 
 
