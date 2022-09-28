@@ -12,6 +12,8 @@ import {
   paGetPaymentRes,
   paVerifyPaymentNoticeRes,
   pspNotifyPaymentRes,
+  paGetPaymentV2Res,
+  paSendRTV2Res,
 } from './fixtures/nodoNewMod3Responses';
 
 import {
@@ -52,6 +54,8 @@ const paaVerificaRPTQueue = new Array<string>();
 const paaAttivaRPTQueue = new Array<string>();
 const paaInviaRTQueue = new Array<string>();
 const paDemandPaymentNoticeQueue = new Array<string>();
+const paGetPaymentV2Queue = new Array<string>();
+const paSendRTV2Queue = new Array<string>();
 
 
 const faultId = '77777777777';
@@ -64,7 +68,8 @@ const paaVerificaRPTreq = 'ppt:paaverificarpt';
 const paaAttivaRPTreq = 'ppt:paaattivarpt';
 const paaInviaRTreq = 'ppt:paainviart';
 const paDemandPaymentNoticereq = 'pafn:pademandpaymentnoticerequest';
-
+const paGetPaymentV2req = 'pafn:pagetpaymentv2request';
+const paSendRTV2req = 'pafn:pasendrtv2request';
 
 const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
 const avviso2 = new RegExp('^30201.*'); // CCPost + CCBank
@@ -248,6 +253,24 @@ export async function newExpressApp(
       } else {
         paDemandPaymentNoticeQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} saved. ${paDemandPaymentNoticeQueue.length} pushed`);
+      }
+    } else if (req.params.primitive === 'paGetPaymentV2') {
+      if (String(req.query.override).toLowerCase() === 'true') {
+        paGetPaymentV2Queue.pop();
+        paGetPaymentV2Queue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        paGetPaymentV2Queue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paGetPaymentV2Queue.length} pushed`);
+      }
+    } else if (req.params.primitive === 'paSendRTV2') {
+      if (String(req.query.override).toLowerCase() === 'true') {
+        paSendRTV2Queue.pop();
+        paSendRTV2Queue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        paSendRTV2Queue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paSendRTV2Queue.length} pushed`);
       }
     } else {
       res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
@@ -1075,6 +1098,58 @@ export async function newExpressApp(
         return res.status(+paDemandPaymentNoticeRisposta[0]).send(paDemandPaymentNoticeRisposta[1]);
       }
 
+      // 9. paGetPaymentV2
+      if (soapRequest[paGetPaymentV2req]) {
+        if (paGetPaymentV2Queue.length > 0) {
+          const customResponse = paGetPaymentV2Queue.shift();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          if (customResponse !== undefined) {         
+            let convert = await xml2js.parseStringPromise(customResponse);
+            let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentV2Response'][0].delay;
+            delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentV2Response'][0].delay;
+            if (delay) {
+              logger.info('>>> start timeout')
+              const builder = new xml2js.Builder();
+              const xml = builder.buildObject(convert);
+              var delay_numb: number = +delay[0];
+              logger.info(delay_numb);
+              await sleep(delay_numb);
+              return ritorno(res,xml);
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
+        }
+        log_event_tx(paGetPaymentV2Res);
+        return res.status(+paGetPaymentV2Res[0]).send(paGetPaymentV2Res[1]);
+      }
+
+      // 10. paSendRTV2
+      if (soapRequest[paSendRTV2req]) {
+        if (paSendRTV2Queue.length > 0) {
+          const customResponse = paSendRTV2Queue.shift();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          if (customResponse !== undefined) {         
+            let convert = await xml2js.parseStringPromise(customResponse);
+            let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paSendRTV2Response'][0].delay;
+            delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paSendRTV2Response'][0].delay;
+            if (delay) {
+              logger.info('>>> start timeout')
+              const builder = new xml2js.Builder();
+              const xml = builder.buildObject(convert);
+              var delay_numb: number = +delay[0];
+              logger.info(delay_numb);
+              await sleep(delay_numb);
+              return ritorno(res,xml);
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
+        }
+        log_event_tx(paSendRTV2Res);
+        return res.status(+paSendRTV2Res[0]).send(paSendRTV2Res[1]);
+      }
+
 
       if (
         !(
@@ -1084,7 +1159,9 @@ export async function newExpressApp(
           soapRequest[paaVerificaRPTreq] ||
           soapRequest[paaAttivaRPTreq] ||
           soapRequest[paaInviaRTreq] ||
-          soapRequest[paDemandPaymentNoticereq]
+          soapRequest[paDemandPaymentNoticereq] ||
+          soapRequest[paGetPaymentV2req] ||
+          soapRequest[paSendRTV2req]
         )
       ) {
         // The SOAP Request not implemented
