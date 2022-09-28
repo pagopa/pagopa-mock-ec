@@ -66,7 +66,7 @@ const paaVerificaRPTreq = 'ppt:paaverificarpt';
 const paaAttivaRPTreq = 'ppt:paaattivarpt';
 const paaInviaRTreq = 'ppt:paainviart';
 const paDemandPaymentNoticereq = 'pafn:pademandpaymentnoticerequest';
-const paaChiediNumeroAvvisoreq = 'ppt:paaChiediNumeroAvviso';
+const paaChiediNumeroAvvisoreq = 'ppt:paachiedinumeroavviso';
 
 
 const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
@@ -1158,7 +1158,8 @@ export async function newExpressApp(
           soapRequest[paaVerificaRPTreq] ||
           soapRequest[paaAttivaRPTreq] ||
           soapRequest[paaInviaRTreq] ||
-          soapRequest[paDemandPaymentNoticereq]
+          soapRequest[paDemandPaymentNoticereq] ||
+          soapRequest[paaChiediNumeroAvvisoreq]
         )
       ) {
         // The SOAP Request not implemented
