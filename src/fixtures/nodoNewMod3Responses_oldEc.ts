@@ -118,3 +118,26 @@ export const paDemandPaymentNoticeRisposta: MockResponse = [
 	</soapenv:Body>
 </soapenv:Envelope>`,
 ];
+
+export const paaChiediNumeroAvvisoRisposta: MockResponse = [
+   200,
+   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/" xmlns:pag="http://www.digitpa.gov.it/schemas/2011/Pagamenti/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ws:paaChiediNumeroAvvisoRisposta>
+         <paaChiediNumeroAvvisoRisposta>
+            <esito>OK</esito>
+            <numeroAvviso>
+               <auxDigit>3</auxDigit>
+               <IUV>11567890123456700</IUV>
+            </numeroAvviso>
+            <datiPagamentoPA>
+               <importoSingoloVersamento>10.00</importoSingoloVersamento>
+               <ibanAccredito>IT45R0760103200000000001016</ibanAccredito>
+               <causaleVersamento>prova/RFDB/44444444444/TESTO/44444444444_01</causaleVersamento>
+            </datiPagamentoPA>
+         </paaChiediNumeroAvvisoRisposta>
+      </ws:paaChiediNumeroAvvisoRisposta>
+   </soapenv:Body>
+</soapenv:Envelope>`,
+];
