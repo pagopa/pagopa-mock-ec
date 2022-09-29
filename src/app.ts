@@ -1081,7 +1081,6 @@ export async function newExpressApp(
               }
             }
           }
-        }
         log_event_tx(paaAttivaRPTRisposta);
         return res.status(+paaAttivaRPTRisposta[0]).send(paaAttivaRPTRisposta[1]);
       }
