@@ -12,8 +12,8 @@ import {
   paGetPaymentRes,
   paVerifyPaymentNoticeRes,
   pspNotifyPaymentRes,
-  paGetPaymentV2Res,
-  paSendRTV2Res,
+  paGetPaymentV2Response,
+  paSendRTV2Response,
 } from './fixtures/nodoNewMod3Responses';
 
 import {
@@ -1197,8 +1197,8 @@ export async function newExpressApp(
             }
           }
         }
-        log_event_tx(paGetPaymentV2Res);
-        return res.status(+paGetPaymentV2Res[0]).send(paGetPaymentV2Res[1]);
+        log_event_tx(paGetPaymentV2Response);
+        return res.status(+paGetPaymentV2Response[0]).send(paGetPaymentV2Response[1]);
       }
 
       // 11. paSendRTV2
@@ -1227,8 +1227,8 @@ export async function newExpressApp(
             }
           }
         }
-        log_event_tx(paSendRTV2Res);
-        return res.status(+paSendRTV2Res[0]).send(paSendRTV2Res[1]);
+        log_event_tx(paSendRTV2Response);
+        return res.status(+paSendRTV2Response[0]).send(paSendRTV2Response[1]);
       }
 
       if (

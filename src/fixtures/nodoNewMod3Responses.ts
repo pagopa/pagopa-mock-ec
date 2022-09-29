@@ -243,7 +243,7 @@ export const pspNotifyPaymentRes: MockResponse = [
 </soapenv:Envelope>`,
 ];
 
-export const paGetPaymentV2Res: MockResponse = [
+export const paGetPaymentV2Response: MockResponse = [
   200,
   ` <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
 		   <soapenv:Body>
@@ -317,7 +317,7 @@ export const paGetPaymentV2Res: MockResponse = [
 		</soapenv:Envelope>`,
 ];
 
-export const paSendRTV2Res: MockResponse = [
+export const paSendRTV2Response: MockResponse = [
   200,
   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
   <soapenv:Header/>
