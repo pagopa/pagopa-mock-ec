@@ -1246,8 +1246,7 @@ export async function newExpressApp(
           soapRequest[paDemandPaymentNoticereq] ||
           soapRequest[paaChiediNumeroAvvisoreq] ||
           soapRequest[paGetPaymentV2req] ||
-          soapRequest[paSendRTV2req] ||
-          soapRequest[paaChiediNumeroAvvisoreq]
+          soapRequest[paSendRTV2req]
         )
       ) {
         // The SOAP Request not implemented
