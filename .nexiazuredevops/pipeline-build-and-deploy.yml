@@ -70,7 +70,7 @@ stages:
 
 
   - stage: push_manifest_mock_ec_primary
-    displayName: "Push manifest $(mock_ec_primary_var) - (${{ parameters.env }})"
+    displayName: "Push manifest MOCK_EC_PRIMARY - (${{ parameters.env }})"
     condition: succeeded()
     dependsOn:
       - retrieve_info
@@ -81,7 +81,7 @@ stages:
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
       - job: push_manifest_mock_ec_primary
-        displayName: "Push manifest $(mock_ec_primary_var) - ${{ parameters.env }}"
+        displayName: "Push manifest MOCK_EC_PRIMARY - ${{ parameters.env }}"
         steps:
           - checkout: self
             clean: true
@@ -93,14 +93,14 @@ stages:
               renderType: 'kustomize'
               kustomizationPath: $(kustomizeFolderApp)/$(mock_ec_primary_var)/${{ parameters.env }}
               containers: $(repository-docker-${{ parameters.env }})/$(repository):$(appVersion)
-            displayName: "Create manifest $(mock_ec_primary_var) app (${{ parameters.env }})"
+            displayName: "Create manifest MOCK_EC_PRIMARY app (${{ parameters.env }})"
           - publish: $(bakeApp.manifestsBundle)
-            displayName: "Publish manifest $(mock_ec_primary_var) app (${{ parameters.env }})"
+            displayName: "Publish manifest MOCK_EC_PRIMARY app (${{ parameters.env }})"
             artifact: $(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_primary_var)
 
             
   - stage: deploy_mock_ec_primary
-    displayName: "Deploy $(mock_ec_primary_var) - (${{ parameters.env }})"
+    displayName: "Deploy MOCK_EC_PRIMARY - (${{ parameters.env }})"
     dependsOn:
       - retrieve_info
       - build
@@ -112,7 +112,7 @@ stages:
     condition: succeeded()
     jobs:
       - job: deploy_mock_ec_primary
-        displayName: "Deploy $(mock_ec_primary_var) - ${{ parameters.env }}"
+        displayName: "Deploy MOCK_EC_PRIMARY - ${{ parameters.env }}"
         pool: $(deploy-pool-${{ parameters.env }})
         steps:
           - checkout: none
@@ -133,7 +133,7 @@ stages:
 
 
   - stage: push_manifest_mock_ec_secondary
-    displayName: "Push manifest $(mock_ec_secondary_var) - (${{ parameters.env }})"
+    displayName: "Push manifest MOCK_EC_SECONDARY - (${{ parameters.env }})"
     condition: succeeded()
     dependsOn:
       - retrieve_info
@@ -144,7 +144,7 @@ stages:
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
       - job: push_manifest_mock_ec_secondary
-        displayName: "Push manifest $(mock_ec_secondary_var) - ${{ parameters.env }}"
+        displayName: "Push manifest MOCK_EC_SECONDARY - ${{ parameters.env }}"
         steps:
           - checkout: self
             clean: true
@@ -156,14 +156,14 @@ stages:
               renderType: 'kustomize'
               kustomizationPath: $(kustomizeFolderApp)/$(mock_ec_secondary_var)/${{ parameters.env }}
               containers: $(repository-docker-${{ parameters.env }})/$(repository):$(appVersion)
-            displayName: "Create manifest $(mock_ec_secondary_var) app (${{ parameters.env }})"
+            displayName: "Create manifest MOCK_EC_SECONDARY) app (${{ parameters.env }})"
           - publish: $(bakeApp.manifestsBundle)
-            displayName: "Publish manifest $(mock_ec_secondary_var) app (${{ parameters.env }})"
+            displayName: "Publish manifest MOCK_EC_SECONDARY app (${{ parameters.env }})"
             artifact: $(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_secondary_var)
 
             
   - stage: deploy_mock_ec_secondary
-    displayName: "Deploy $(mock_ec_secondary_var) - (${{ parameters.env }})"
+    displayName: "Deploy MOCK_EC_SECONDARY - (${{ parameters.env }})"
     dependsOn:
       - retrieve_info
       - build
@@ -175,7 +175,7 @@ stages:
     condition: succeeded()
     jobs:
       - job: deploy_mock_ec_secondary
-        displayName: "Deploy $(mock_ec_secondary_var) - ${{ parameters.env }}"
+        displayName: "Deploy MOCK_EC_SECONDARY - ${{ parameters.env }}"
         pool: $(deploy-pool-${{ parameters.env }})
         steps:
           - checkout: none
