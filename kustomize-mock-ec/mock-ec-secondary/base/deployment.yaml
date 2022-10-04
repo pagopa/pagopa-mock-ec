@@ -17,7 +17,7 @@ spec:
           image: mock-ec-image
           imagePullPolicy: Always
           ports:
-            - name: mock-ec-secondary
+            - name: mock-ec-sec
               containerPort: 8089
               protocol: TCP
           resources:

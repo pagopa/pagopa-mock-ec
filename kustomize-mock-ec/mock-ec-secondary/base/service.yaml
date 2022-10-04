@@ -4,7 +4,7 @@ metadata:
   name: mock-ec-secondary
 spec:
   ports:
-    - name: mock-ec-secondary
+    - name: mock-ec-sec
       port: 8089
       protocol: TCP
       targetPort: 8089

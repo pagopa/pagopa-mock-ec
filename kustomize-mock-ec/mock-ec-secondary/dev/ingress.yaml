@@ -15,6 +15,6 @@ spec:
             path: /mock-ec-secondary-dev(/|$)(.*)
             backend:
               service:
-                name: mock-ec-secondary
+                name: mock-ec-sec
                 port:
                   number: 8089
