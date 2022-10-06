@@ -31,8 +31,9 @@ stages:
               echo "##vso[task.setvariable variable=APP_VERSION;isOutput=true]$APP_VERSION"
             displayName: Set version
             name: getVar
-  - stage: build
-    displayName: "Build (${{ parameters.env }})"
+            
+  - stage: build_mock_ec_primary
+    displayName: "Build MOCK_EC_PRIMARY (${{ parameters.env }})"
     condition: succeeded()
     dependsOn:
       - retrieve_info
@@ -41,26 +42,64 @@ stages:
       - name: appVersion
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
-      - job: build_npm
-        displayName: buildnpm
+      - job: build_npm_mock_ec_primary
+        displayName: 'build stage for MOCK_EC_PRIMARY'
         steps:
         - task: NodeTool@0
           inputs:
             versionSpec: '16.x'
-          displayName: 'Install Node.js'
+          displayName: 'Install Node.js - MOCK_EC_PRIMARY'
         - script: |
             npm install --legacy-peer-deps
-          displayName: 'npm install'
+          displayName: 'npm install - MOCK_EC_PRIMARY'
         - script: |
             npm run generate build
             pwd
             ls -lrt
-          displayName: 'npm build'
+          displayName: 'npm build - MOCK_EC_PRIMARY'
         - script: |
             cp .nexi.env .env
-          displayName: 'Copy env'
+          displayName: 'Copy env - MOCK_EC_PRIMARY'
         - task: Docker@2
-          displayName: 'Build and push image'
+          displayName: 'Build and push image - MOCK_EC_PRIMARY'
+          inputs:
+              containerRegistry: $(container-registry-service-connection-${{ parameters.env }})
+              repository: $(repository)
+              command: 'buildAndPush'
+              Dockerfile: $(dockerfile)
+              tags: $(appVersion)
+              
+              
+  - stage: build_mock_ec_secondary
+    displayName: "Build MOCK_EC_SECONDARY (${{ parameters.env }})"
+    condition: succeeded()
+    dependsOn:
+      - retrieve_info
+    variables:
+      - group: nodo-integration-test-${{ parameters.env }}
+      - name: appVersion
+        value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
+    jobs:
+      - job: build_npm_mock_ec_secondary
+        displayName: 'build stage for MOCK_EC_SECONDARY'
+        steps:
+        - task: NodeTool@0
+          inputs:
+            versionSpec: '16.x'
+          displayName: 'Install Node.js - MOCK_EC_SECONDARY'
+        - script: |
+            npm install --legacy-peer-deps
+          displayName: 'npm install - MOCK_EC_SECONDARY'
+        - script: |
+            npm run generate build
+            pwd
+            ls -lrt
+          displayName: 'npm build - MOCK_EC_SECONDARY'
+        - script: |
+            cp .nexi_sec.env .env
+          displayName: 'Copy env - MOCK_EC_SECONDARY'
+        - task: Docker@2
+          displayName: 'Build and push image - MOCK_EC_SECONDARY'
           inputs:
               containerRegistry: $(container-registry-service-connection-${{ parameters.env }})
               repository: $(repository)
@@ -74,7 +113,7 @@ stages:
     condition: succeeded()
     dependsOn:
       - retrieve_info
-      - build
+      - build_mock_ec_primary
     variables:
       - group: nodo-integration-test-${{ parameters.env }}
       - name: appVersion  
@@ -103,7 +142,7 @@ stages:
     displayName: "Deploy MOCK_EC_PRIMARY - (${{ parameters.env }})"
     dependsOn:
       - retrieve_info
-      - build
+      - build_mock_ec_primary
       - push_manifest_mock_ec_primary
     variables:
       - group: nodo-integration-test-${{ parameters.env }}
@@ -137,7 +176,7 @@ stages:
     condition: succeeded()
     dependsOn:
       - retrieve_info
-      - build
+      - build_mock_ec_secondary
     variables:
       - group: nodo-integration-test-${{ parameters.env }}
       - name: appVersion  
@@ -166,7 +205,7 @@ stages:
     displayName: "Deploy MOCK_EC_SECONDARY - (${{ parameters.env }})"
     dependsOn:
       - retrieve_info
-      - build
+      - build_mock_ec_secondary
       - push_manifest_mock_ec_secondary
     variables:
       - group: nodo-integration-test-${{ parameters.env }}
