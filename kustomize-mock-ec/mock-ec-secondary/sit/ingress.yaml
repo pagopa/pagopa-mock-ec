@@ -12,7 +12,7 @@ spec:
     - http:
         paths:
           - pathType: Prefix
-            path: /mock-ec-secondary-sit(/|$)(.*)
+            path: /secondary-mock-ec-sit(/|$)(.*)
             backend:
               service:
                 name: mock-ec-sec
