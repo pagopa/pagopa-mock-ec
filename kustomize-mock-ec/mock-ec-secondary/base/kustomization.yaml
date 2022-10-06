@@ -1,5 +1,5 @@
 commonLabels:
-  app: mock-ec-secondary
+  app: mock-ec-sec
 
 resources:
   - deployment.yaml

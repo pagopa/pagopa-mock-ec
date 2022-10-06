@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mock-ec-secondary
+  name: mock-ec-sec
 spec:
   replicas: 1
   strategy:
@@ -18,7 +18,7 @@ spec:
           imagePullPolicy: Always
           ports:
             - name: mock-ec-sec
-              containerPort: 8089
+              containerPort: 8088
               protocol: TCP
           resources:
             requests:
