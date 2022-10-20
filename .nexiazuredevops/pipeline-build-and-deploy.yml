@@ -10,7 +10,8 @@ parameters:
       - dev
       - sit
 variables:
-  repository: 'mock-ec' 
+  repository_primary: 'mock-ec-primary' 
+  repository_secondary: 'mock-ec-secondary' 
   dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
   kustomizeFolderApp: '$(Build.SourcesDirectory)/kustomize-mock-ec'
   mock_ec_primary_var: 'mock-ec-primary'
@@ -64,7 +65,7 @@ stages:
           displayName: 'Build and push image - MOCK_EC_PRIMARY'
           inputs:
               containerRegistry: $(container-registry-service-connection-${{ parameters.env }})
-              repository: $(repository)
+              repository: $(repository_primary)
               command: 'buildAndPush'
               Dockerfile: $(dockerfile)
               tags: $(appVersion)
@@ -102,7 +103,7 @@ stages:
           displayName: 'Build and push image - MOCK_EC_SECONDARY'
           inputs:
               containerRegistry: $(container-registry-service-connection-${{ parameters.env }})
-              repository: $(repository)
+              repository: $(repository_secondary)
               command: 'buildAndPush'
               Dockerfile: $(dockerfile)
               tags: $(appVersion)
@@ -131,11 +132,11 @@ stages:
               action: "bake"
               renderType: 'kustomize'
               kustomizationPath: $(kustomizeFolderApp)/$(mock_ec_primary_var)/${{ parameters.env }}
-              containers: $(repository-docker-${{ parameters.env }})/$(repository):$(appVersion)
+              containers: $(repository-docker-${{ parameters.env }})/$(repository_primary):$(appVersion)
             displayName: "Create manifest MOCK_EC_PRIMARY app (${{ parameters.env }})"
           - publish: $(bakeApp.manifestsBundle)
             displayName: "Publish manifest MOCK_EC_PRIMARY app (${{ parameters.env }})"
-            artifact: $(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_primary_var)
+            artifact: $(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)
 
             
   - stage: deploy_mock_ec_primary
@@ -156,19 +157,19 @@ stages:
         steps:
           - checkout: none
           - script: |
-              ls -la $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_primary_var)
-              rm -rf $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_primary_var)
-            displayName: "Clean old cached files $(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_primary_var)"
+              ls -la $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)
+              rm -rf $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)
+            displayName: "Clean old cached files $(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)"
           - download: current
-            artifact: $(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_primary_var)
-            displayName: "Download manifest $(repository) app $(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_primary_var)"
+            artifact: $(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)
+            displayName: "Download manifest $(repository_primary) app $(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)"
           - task: KubernetesManifest@0
-            displayName: "Deploy manifest for $(repository) app"
+            displayName: "Deploy manifest for $(repository_primary) app"
             inputs:
               action: 'deploy'
               kubernetesServiceConnection:  $(kubernetes-service-connection-mock-ec-${{ parameters.env }})
               namespace: $(mock-ec-kubernetes-namespace-${{ parameters.env }})
-              manifests: $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_primary_var)/*.yaml
+              manifests: $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)/*.yaml
 
 
   - stage: push_manifest_mock_ec_secondary
@@ -194,11 +195,11 @@ stages:
               action: "bake"
               renderType: 'kustomize'
               kustomizationPath: $(kustomizeFolderApp)/$(mock_ec_secondary_var)/${{ parameters.env }}
-              containers: $(repository-docker-${{ parameters.env }})/$(repository):$(appVersion)
+              containers: $(repository-docker-${{ parameters.env }})/$(repository_secondary):$(appVersion)
             displayName: "Create manifest MOCK_EC_SECONDARY) app (${{ parameters.env }})"
           - publish: $(bakeApp.manifestsBundle)
             displayName: "Publish manifest MOCK_EC_SECONDARY app (${{ parameters.env }})"
-            artifact: $(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_secondary_var)
+            artifact: $(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)
 
             
   - stage: deploy_mock_ec_secondary
@@ -219,16 +220,16 @@ stages:
         steps:
           - checkout: none
           - script: |
-              ls -la $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_secondary_var)
-              rm -rf $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_secondary_var)
-            displayName: "Clean old cached files $(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_secondary_var)"
+              ls -la $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)
+              rm -rf $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)
+            displayName: "Clean old cached files $(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)"
           - download: current
-            artifact: $(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_secondary_var)
-            displayName: "Download manifest $(repository) app $(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_secondary_var)"
+            artifact: $(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)
+            displayName: "Download manifest $(repository_secondary) app $(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)"
           - task: KubernetesManifest@0
-            displayName: "Deploy manifest for $(repository) app"
+            displayName: "Deploy manifest for $(repository_secondary) app"
             inputs:
               action: 'deploy'
               kubernetesServiceConnection:  $(kubernetes-service-connection-mock-ec-${{ parameters.env }})
               namespace: $(mock-ec-kubernetes-namespace-${{ parameters.env }})
-              manifests: $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository)-manifest-app-$(mock_ec_secondary_var)/*.yaml
+              manifests: $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)/*.yaml
