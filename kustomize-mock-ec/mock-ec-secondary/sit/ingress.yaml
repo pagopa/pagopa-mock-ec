@@ -17,4 +17,4 @@ spec:
               service:
                 name: mock-ec-sec
                 port:
-                  number: 8089
+                  number: 8088
