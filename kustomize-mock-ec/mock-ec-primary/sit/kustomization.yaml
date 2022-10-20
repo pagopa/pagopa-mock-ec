@@ -5,7 +5,7 @@ namespace: mock-ec-sit
 
 images:
   - name: mock-ec-image
-    newName: nodopasitregistry.azurecr.io/mock-ec
+    newName: nodopasitregistry.azurecr.io/mock-ec-primary
     newTag: 0.0.1
 
 resources:
