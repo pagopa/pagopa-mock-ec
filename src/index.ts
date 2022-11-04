@@ -20,10 +20,9 @@ const config = Configuration.decode(CONFIG).getOrElseL(errors => {
 // Create the Express Application
 App.newExpressApp(config, dbNotices, dbAmounts, noticenumberRequests, noticenumberResponses)
   .then(app => {
-
     const options = {
-      key: fs.readFileSync(`${__dirname}/../cert/server-key.pem`),
-      cert: fs.readFileSync(`${__dirname}/../cert/server-crt.pem`),
+      // key: fs.readFileSync(`${__dirname}/../cert/server-key.pem`),
+      // cert: fs.readFileSync(`${__dirname}/../cert/server-crt.pem`),
       ca: [
         fs.readFileSync(`${__dirname}/../cert/client-ca-crt.pem`),
 //          fs.readFileSync(`${__dirname}/dev/api-platform-pagopa-it-chain.pem`)
@@ -34,8 +33,6 @@ App.newExpressApp(config, dbNotices, dbAmounts, noticenumberRequests, noticenumb
       // will make it to the specified route specified
       rejectUnauthorized: true,
     };
-
-    // app.set('options', options);
 
     // Create a HTTP server from the new Express Application
     const server = https.createServer(options, app);
