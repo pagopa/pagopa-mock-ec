@@ -31,7 +31,7 @@ App.newExpressApp(config, dbNotices, dbAmounts, noticenumberRequests, noticenumb
       requestCert: true,
       // As specified as "true", so no unauthenticated traffic
       // will make it to the specified route specified
-      rejectUnauthorized: true,
+      rejectUnauthorized: false,
     };
 
     // Create a HTTP server from the new Express Application
