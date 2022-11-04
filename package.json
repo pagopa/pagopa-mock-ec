@@ -73,6 +73,9 @@
     "winston": "^3.2.1",
     "xml2js": "^0.4.23"
   },
+  "engines": {
+    "node": "14.17.6"
+  },
   "jest": {
     "testEnvironment": "node",
     "collectCoverage": true,
