@@ -21,8 +21,8 @@ const config = Configuration.decode(CONFIG).getOrElseL(errors => {
 App.newExpressApp(config, dbNotices, dbAmounts, noticenumberRequests, noticenumberResponses)
   .then(app => {
     const options = {
-      // key: fs.readFileSync(`${__dirname}/../cert/server-key.pem`),
-      // cert: fs.readFileSync(`${__dirname}/../cert/server-crt.pem`),
+      key: fs.readFileSync(`${__dirname}/../cert/server-key.pem`),
+      cert: fs.readFileSync(`${__dirname}/../cert/server-crt.pem`),
       ca: [
         fs.readFileSync(`${__dirname}/../cert/client-ca-crt.pem`),
 //          fs.readFileSync(`${__dirname}/dev/api-platform-pagopa-it-chain.pem`)
