@@ -4,7 +4,7 @@ import * as App from './app';
 import { CONFIG, Configuration } from './config';
 import { POSITIONS_STATUS } from './utils/helper';
 import { logger } from './utils/logger';
-const fs = require('fs');
+// const fs = require('fs');
 // const https = require("https");
 
 const dbNotices: Map<string, POSITIONS_STATUS> = new Map<string, POSITIONS_STATUS>();
