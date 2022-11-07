@@ -11,7 +11,6 @@ import {
   paErrorVerify,
   paGetPaymentRes,
   paVerifyPaymentNoticeRes,
-  pspNotifyPaymentRes,
   paGetPaymentV2Response,
   paSendRTV2Response,
 } from './fixtures/nodoNewMod3Responses';
@@ -64,7 +63,6 @@ const faultId = '77777777777';
 const verifySoapRequest = 'pafn:paverifypaymentnoticereq';
 const activateSoapRequest = 'pafn:pagetpaymentreq';
 const sentReceipt = 'pafn:pasendrtreq';
-const pspnotifypaymentreq = 'pfn:pspnotifypaymentreq';
 const paaVerificaRPTreq = 'ppt:paaverificarpt';
 const paaAttivaRPTreq = 'ppt:paaattivarpt';
 const paaInviaRTreq = 'ppt:paainviart';
