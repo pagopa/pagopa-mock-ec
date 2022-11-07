@@ -1,9 +1,18 @@
-import * as http from 'http';
+// import * as http from 'http';
+const https = require("https");
 import { reporters } from 'italia-ts-commons';
 import * as App from './app';
 import { CONFIG, Configuration } from './config';
 import { POSITIONS_STATUS } from './utils/helper';
 import { logger } from './utils/logger';
+
+const options = {
+  // Requesting the client to provide a certificate, to authenticate.
+  requestCert: true,
+  // As specified as "true", so no unauthenticated traffic
+  // will make it to the specified route specified
+  rejectUnauthorized: false
+};
 
 const dbNotices: Map<string, POSITIONS_STATUS> = new Map<string, POSITIONS_STATUS>();
 const dbAmounts: Map<string, number> = new Map<string, number>();
@@ -19,7 +28,7 @@ const config = Configuration.decode(CONFIG).getOrElseL(errors => {
 App.newExpressApp(config, dbNotices, dbAmounts, noticenumberRequests, noticenumberResponses)
   .then(app => {
     // Create a HTTP server from the new Express Application
-    const server = http.createServer(app);
+    const server = https.createServer(options, app);
     server.listen(config.PA_MOCK.PORT);
 
     logger.info(`Server started at on port:${config.PA_MOCK.PORT}`);
