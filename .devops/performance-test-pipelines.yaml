@@ -1,0 +1,63 @@
+# azure-pipelines.yml
+trigger: none
+
+pool:
+  name: pagopa-dev-loadtest-linux
+
+parameters:
+  - name: "API_SUBSCRIPTION_KEY"
+    displayName: "API_SUBSCRIPTION_KEY"
+    type: string
+  - name: "ENVIRONMENT"
+    displayName: "Environment"
+    type: string
+    values:
+      - "dev"
+      - "uat"
+  - name: "ID_PSP"
+    displayName: "ID_PSP"
+    type: string
+  - name: "ID_BROKER_PSP"
+    displayName: "ID_BROKER_PSP"
+    type: string
+  - name: "ID_CHANNEL"
+    displayName: "ID_CHANNEL"
+    type: string
+  - name: "ID_CI"
+    displayName: "ID_CI"
+    type: string
+  - name: "ID_BROKER_PA"
+    displayName: "ID_BROKER_PA"
+    type: string
+  - name: "ID_STATION"
+    displayName: "ID_STATION"
+    type: string
+  - name: "NOTICE_NUMBER"
+    displayName: "NOTICE_NUMBER"
+    type: string
+  - name: "TEST_TYPE"
+    displayName: "Test type"
+    type: string
+    values:
+      - "load"
+      - "ramping"
+      - "single"
+      - "spike"
+      - "stress"
+  - name: "SCRIPT"
+    displayName: "Script name"
+    type: string
+    values:
+      - node_pa
+      - psp_node_pa
+
+steps:
+  - script: |
+      cd ./performance-tests/src
+      docker pull grafana/k6
+    displayName: Pull k6 image
+
+  - script: |
+      cd ./performance-test
+      sh ./run_performance_test.sh ${{ parameters.ENVIRONMENT }} ${{ parameters.TEST_TYPE }} ${{ parameters.SCRIPT }} nuovaconnettivita ${{ parameters.API_SUBSCRIPTION_KEY }}
+    displayName: Run k6 ${{ parameters.SCRIPT }} on ${{ parameters.ENVIRONMENT }}

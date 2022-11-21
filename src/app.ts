@@ -235,6 +235,20 @@ export async function newExpressApp(
   app.post(config.PA_MOCK.ROUTES.PPT_NODO, async (req, res) => {
     logger.info(`>>> rx REQUEST :`);
     logger.info(JSON.stringify(req.body));
+
+    logger.info(
+            new Date() +
+            " " +
+            req.connection.remoteAddress +
+            " " +
+            req.method +
+            " " +
+            req.url +
+            "- CN "
+            //+req.socket.getPeerCertificate().subject.CN
+    );
+
+
     try {
       const soapRequest = req.body['soapenv:envelope']['soapenv:body'][0];
       // 1. paVerifyPaymentNotice

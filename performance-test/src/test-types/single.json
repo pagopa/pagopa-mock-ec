@@ -1,0 +1,26 @@
+{
+  "summaryTrendStats": [
+    "avg",
+    "min",
+    "med",
+    "max",
+    "p(95)",
+    "p(99)",
+    "p(99.99)",
+    "count"
+  ],
+  "vus": 1,
+  "iteration": 1,
+  "thresholds": {
+    "http_req_failed": [
+      "rate<0.1"
+    ],
+    "http_req_duration": [
+      "p(99)<3000"
+    ],
+    "http_req_duration{gpsMethod:CreateSpontaneousPayment}": [
+      "p(95)<1000"
+    ]
+  }
+}
+

@@ -1,0 +1,2 @@
+- `fullchain.pem` and `privkey.pem` are cert and private key related to `mockec.ddns.net`
+- `api-dev-platform-pagopa-it-chain.pem` and `api-uat-platform-pagopa-it-chain.pem` are 

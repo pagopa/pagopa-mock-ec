@@ -1,0 +1,10 @@
+{
+  "environment": [
+    {
+      "env": "uat",
+      "host": "https://api.uat.platform.pagopa.it/nodo-auth/node-for-psp/v1"
+    }
+  ]
+}
+
+
