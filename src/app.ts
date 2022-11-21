@@ -31,7 +31,7 @@ import {
   PAA_SINTASSI_XSD,
   POSITIONS_STATUS,
 } from './utils/helper';
-import { logger, log_event_tx } from './utils/logger';
+import { log_event_tx } from './utils/logger';
 import { paVerify17, paVerify18, paVerify19, paVerify20, paVerify21, paVerify22 } from './fixtures/fixVerifyResponse';
 import {
   paActivate17,
@@ -148,7 +148,7 @@ export async function newExpressApp(
   app.use(express.urlencoded());
   app.use(bodyParserXml({}));
 
-  logger.info(`Path ${config.PA_MOCK.ROUTES.PPT_NODO} ...`);
+  // logger.info(`Path ${config.PA_MOCK.ROUTES.PPT_NODO} ...`);
 
   // health check
   app.get(`${config.PA_MOCK.ROUTES.PPT_NODO}/info`, async (_, res) => res.status(200).send({ status: 'iamalive' }));
@@ -233,20 +233,20 @@ export async function newExpressApp(
   // eslint-disable-next-line complexity
   // eslint-disable-next-line sonarjs/cognitive-complexity, complexity
   app.post(config.PA_MOCK.ROUTES.PPT_NODO, async (req, res) => {
-    logger.info(`>>> rx REQUEST :`);
-    logger.info(JSON.stringify(req.body));
+    // logger.info(`>>> rx REQUEST :`);
+    // logger.info(JSON.stringify(req.body));
 
-    logger.info(
-            new Date() +
-            " " +
-            req.connection.remoteAddress +
-            " " +
-            req.method +
-            " " +
-            req.url +
-            "- CN "
-            //+req.socket.getPeerCertificate().subject.CN
-    );
+    // logger.info(
+    //         new Date() +
+    //         " " +
+    //         req.connection.remoteAddress +
+    //         " " +
+    //         req.method +
+    //         " " +
+    //         req.url +
+    //         "- CN "
+    //         //+req.socket.getPeerCertificate().subject.CN
+    // );
 
 
     try {
@@ -255,7 +255,7 @@ export async function newExpressApp(
       if (soapRequest[verifySoapRequest]) {
         if (paVerifyPaymentNoticeQueue.length > 0) {
           const customResponse = paVerifyPaymentNoticeQueue.shift();
-          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          // logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res
             .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
             .send(customResponse);
@@ -479,7 +479,7 @@ export async function newExpressApp(
       if (soapRequest[activateSoapRequest]) {
         if (paGetPaymentQueue.length > 0) {
           const customResponse = paGetPaymentQueue.shift();
-          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          // logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res
             .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
             .send(customResponse);
@@ -846,7 +846,7 @@ export async function newExpressApp(
       if (soapRequest[sentReceipt]) {
         if (paSendRTQueue.length > 0) {
           const customResponse = paSendRTQueue.shift();
-          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          // logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res
             .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
             .send(customResponse);
@@ -877,7 +877,7 @@ export async function newExpressApp(
       if (soapRequest[pspnotifypaymentreq]) {
         if (pspNotifyPaymentQueue.length > 0) {
           const customResponse = pspNotifyPaymentQueue.shift();
-          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          // logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res
             .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
             .send(customResponse);
@@ -906,7 +906,7 @@ export async function newExpressApp(
       if (soapRequest[paaVerificaRPTreq]) {
         if (paaVerificaRPTQueue.length > 0) {
           const customResponse = paaVerificaRPTQueue.shift();
-          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          // logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res
             .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
             .send(customResponse);
@@ -920,7 +920,7 @@ export async function newExpressApp(
       if (soapRequest[paaAttivaRPTreq]) {
         if (paaAttivaRPTQueue.length > 0) {
           const customResponse = paaAttivaRPTQueue.shift();
-          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          // logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res
             .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
             .send(customResponse);
@@ -940,13 +940,13 @@ export async function newExpressApp(
         )
       ) {
         // The SOAP Request not implemented
-        logger.info(`The SOAP Request ${JSON.stringify(soapRequest)} not implemented`);
+        // logger.info(`The SOAP Request ${JSON.stringify(soapRequest)} not implemented`);
         res.status(404).send('Not found');
       }
       // tslint:disable-next-line: prettier
     } catch (error) {
       // The SOAP Request isnt' correct
-      logger.info(`The SOAP Request isnt' correct`);
+      // logger.info(`The SOAP Request isnt' correct`);
       res.status(500).send('Internal Server Error :( ');
     }
     // tslint:disable-next-line: no-empty

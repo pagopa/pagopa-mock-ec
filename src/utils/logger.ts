@@ -21,6 +21,6 @@ export function disableConsoleLog(): void {
 }
 
 export function log_event_tx(resp: MockResponse): void {
-  logger.info(`>>> tx RESPONSE [${resp[0]}]: `);
-  logger.info(resp[1]);
+  // logger.info(`>>> tx RESPONSE [${resp[0]}]: `);
+  // logger.info(resp[1]);
 }
