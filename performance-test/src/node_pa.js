@@ -15,12 +15,13 @@ const varsArray = new SharedArray('vars', function () {
 });
 // workaround to use shared array (only array should be used)
 const vars = varsArray[0];
-const rootUrl = `${vars.host}`;
+const rootUrl = `${vars.forwarderHost}`;
 const env = `${vars.env}`;
 const primitives = vars.primitives;
 
 export default function node_pa() {
-	const soapAction = 'paVerifyPaymentNotice';
+	const debug = "DEBUG" in __ENV ? __ENV.DEBUG : false;
+ 	const soapAction = 'paVerifyPaymentNotice';
 	let headers = {
 		'SOAPAction': soapAction,
 		'Content-Type': 'text/xml',
@@ -41,11 +42,17 @@ export default function node_pa() {
 	for (let key of Object.keys(__ENV)) {
 		payload = payload.replace(key, __ENV[key]);
 	}
-
-	console.log("PAYLOAD", payload)
+	if (debug) {
+		console.log("REQ PAYLOAD", payload)
+	}
 
 	let response = primitive(rootUrl, payload, params);
 	let responseData = {};
-	responseData[soapAction] = (response) => response.status === 200;
+	responseData[soapAction] = (response) => {
+		if (debug) {
+			console.log("RESPONSE", JSON.stringify(response));
+		}
+		return response.status === 200;
+	};
 	check(response, responseData);
 }

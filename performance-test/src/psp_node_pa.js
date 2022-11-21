@@ -15,7 +15,7 @@ const varsArray = new SharedArray('vars', function () {
 });
 // workaround to use shared array (only array should be used)
 const vars = varsArray[0];
-const rootUrl = `${vars.host}`;
+const rootUrl = `${vars.nodeHost}`;
 const env = `${vars.env}`;
 const primitives = vars.primitives;
 

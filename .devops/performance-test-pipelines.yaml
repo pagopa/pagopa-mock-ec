@@ -26,8 +26,8 @@ parameters:
   - name: "ID_CI"
     displayName: "ID_CI"
     type: string
-  - name: "ID_BROKER_PA"
-    displayName: "ID_BROKER_PA"
+  - name: "ID_BROKER_CI"
+    displayName: "ID_BROKER_CI"
     type: string
   - name: "ID_STATION"
     displayName: "ID_STATION"

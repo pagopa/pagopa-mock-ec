@@ -2,10 +2,11 @@
   "environment": [
     {
       "env": "local",
-      "host": "http://localhost:8082/forward",
+      "forwarderHost": "http://localhost:8082/forward",
+      "nodeHost": "http://localhost:8081/webservices/input",
       "primitives": {
         "verifyPaymentNotice": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:nod=\"http://pagopa-api.pagopa.gov.it/node/nodeForPsp.xsd\"><soapenv:Header/><soapenv:Body><nod:verifyPaymentNoticeReq><idPSP>ID_PSP</idPSP><idBrokerPSP>ID_BROKER_PSP</idBrokerPSP><idChannel>ID_CHANNEL</idChannel><password>PLACEHOLDER</password><qrCode><fiscalCode>ID_CI</fiscalCode><noticeNumber>NOTICE_NUMBER</noticeNumber></qrCode></nod:verifyPaymentNoticeReq></soapenv:Body></soapenv:Envelope>",
-        "paVerifyPaymentNotice": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:pafn=\"http://pagopa-api.pagopa.gov.it/node/nodeForPsp.xsd\"><soapenv:Header /><soapenv:Body><pafn:paVerifyPaymentNoticeReq><idPA>ID_CI</idPA><idBrokerPA>ID_BROKER_PA</idBrokerPA><idStation>ID_STATION</idStation><password>PLACEHOLDER</password><qrCode><fiscalCode>ID_CI</fiscalCode><noticeNumber>NOTICE_NUMBER</noticeNumber></qrCode></pafn:paVerifyPaymentNoticeReq></soapenv:Body></soapenv:Envelope>"
+        "paVerifyPaymentNotice": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:pafn=\"http://pagopa-api.pagopa.gov.it/node/nodeForPsp.xsd\"><soapenv:Header /><soapenv:Body><pafn:paVerifyPaymentNoticeReq><idPA>ID_CI</idPA><idBrokerPA>ID_BROKER_CI</idBrokerPA><idStation>ID_STATION</idStation><password>PLACEHOLDER</password><qrCode><fiscalCode>ID_CI</fiscalCode><noticeNumber>NOTICE_NUMBER</noticeNumber></qrCode></pafn:paVerifyPaymentNoticeReq></soapenv:Body></soapenv:Envelope>"
       }
     }
   ]
