@@ -26,6 +26,9 @@ pr: none
 # $(HEALTHCHECK_CONTAINER_SUBNET)
 # $(HEALTHCHECK_ENDPOINT)
 variables:
+  imageRepository: '$(IMAGE_REPOSITORY_NAME)'
+  nameSpace: '$(K8S_NAMESPACE)'
+
   ${{ if eq(parameters['environment'], 'dev') }}:
     DEPLOY_TYPE: $[variables['DEV_DEPLOY_TYPE']]
     AZURE_SUBSCRIPTION: $(DEV_AZURE_SUBSCRIPTION)
@@ -33,6 +36,7 @@ variables:
     WEB_APP_RESOURCE_GROUP_NAME: $(DEV_WEB_APP_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(DEV_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_VNET: $(DEV_HEALTHCHECK_CONTAINER_VNET)
+    poolImage: 'pagopa-dev-linux'
   ${{ if eq(parameters['environment'], 'uat') }}:
     DEPLOY_TYPE: $[variables['UAT_DEPLOY_TYPE']]
     AZURE_SUBSCRIPTION: $(UAT_AZURE_SUBSCRIPTION)
@@ -40,6 +44,7 @@ variables:
     WEB_APP_RESOURCE_GROUP_NAME: $(UAT_WEB_APP_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(UAT_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_VNET: $(UAT_HEALTHCHECK_CONTAINER_VNET)
+    poolImage: 'pagopa-uat-linux'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -155,64 +160,41 @@ stages:
           - publish: $(System.DefaultWorkingDirectory)/bundle
             artifact: Bundle
 
-  # Deploy
-  - stage: 'Deploy_to_${{ parameters.environment }}'
+  # Deploy on K8s with Helm
+  - stage: Deploy
+    condition: succeeded()
     dependsOn:
-      - Prepare_artifact
+      - Release
+    variables:
+      deploy_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
     jobs:
-      - job: 'do_deploy_staging_slot_and_swap'
-        condition: eq(variables.DEPLOY_TYPE, 'staging_slot_and_swap')
-        steps:
-          - checkout: none
-          - download: current
-            artifact: Bundle
+      - deployment: "deploy"
+        pool:
+          name: $(poolImage)
+        environment: ${{ parameters['ENV'] }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                  persistCredentials: true
 
-          - task: AzureWebApp@1
-            inputs:
-              azureSubscription: '$(AZURE_SUBSCRIPTION)'
-              resourceGroupName: '$(WEB_APP_RESOURCE_GROUP_NAME)'
-              appType: 'webApp'
-              appName: '$(WEB_APP_NAME)'
-              package: '$(Pipeline.Workspace)/Bundle'
-              deploymentMethod: 'auto'
-              deployToSlotOrASE: true
-              slotName: 'staging'
-            displayName: 'Deploy to staging slot'
+                - script: |
+                    git checkout $(sourceBranch)
+                  displayName: Checkout and update branch
 
-          # - template: templates/rest-healthcheck/template.yaml@pagopaCommons
-          #   parameters:
-          #     azureSubscription: "$(AZURE_SUBSCRIPTION)"
-          #     appName: "$(WEB_APP_NAME)"
-          #     endpoint: "$(HEALTHCHECK_ENDPOINT)"
-          #     endpointType: "public"
-          #     containerInstanceResourceGroup: ""
-          #     containerInstanceVNet: ""
-          #     containerInstanceSubnet: ""
+                - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
+                  parameters:
+                    DEPLOY_VERSION: $(deploy_version)
 
-          - task: AzureAppServiceManage@0
-            inputs:
-              azureSubscription: '$(AZURE_SUBSCRIPTION)'
-              resourceGroupName: '$(WEB_APP_RESOURCE_GROUP_NAME)'
-              appName: '$(WEB_APP_NAME)'
-              sourceSlot: 'staging'
-              swapWithProduction: true
-            displayName: 'Swap with production slot'
-
-      - job: 'do_deploy_production_slot'
-        condition: eq(variables.DEPLOY_TYPE, 'production_slot')
-        steps:
-          - checkout: none
-          - download: current
-            artifact: Bundle
-
-          - task: AzureWebApp@1
-            inputs:
-              azureSubscription: '$(AZURE_SUBSCRIPTION)'
-              resourceGroupName: '$(WEB_APP_RESOURCE_GROUP_NAME)'
-              appType: 'webApp'
-              appName: '$(WEB_APP_NAME)'
-              package: '$(Pipeline.Workspace)/Bundle'
-              deploymentMethod: 'auto'
-              deployToSlotOrASE: true
-              slotName: 'production'
-            displayName: 'Deploy to production slot'
+                - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                  parameters:
+                    DO_DEPLOY: true
+                    ENV: ${{ parameters['ENV'] }}
+                    KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
+                    NAMESPACE: $(nameSpace)
+                    APP_NAME: $(imageRepository)
+                    VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
+                    DEPLOY_VERSION: $(deploy_version)
+                    APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
+                    APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
