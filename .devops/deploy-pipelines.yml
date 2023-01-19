@@ -9,7 +9,7 @@ parameters:
       - minor
       - patch
     default: minor
-  - name: environment
+  - name: ENV
     displayName: Target Environment
     type: string
     default: dev
@@ -29,7 +29,7 @@ variables:
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
   nameSpace: '$(K8S_NAMESPACE)'
 
-  ${{ if eq(parameters['environment'], 'dev') }}:
+  ${{ if eq(parameters['ENV'], 'dev') }}:
     DEPLOY_TYPE: $[variables['DEV_DEPLOY_TYPE']]
     AZURE_SUBSCRIPTION: $(DEV_AZURE_SUBSCRIPTION)
     WEB_APP_NAME: $(DEV_WEB_APP_NAME)
@@ -37,7 +37,7 @@ variables:
     HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(DEV_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_VNET: $(DEV_HEALTHCHECK_CONTAINER_VNET)
     poolImage: 'pagopa-dev-linux'
-  ${{ if eq(parameters['environment'], 'uat') }}:
+  ${{ if eq(parameters['ENV'], 'uat') }}:
     DEPLOY_TYPE: $[variables['UAT_DEPLOY_TYPE']]
     AZURE_SUBSCRIPTION: $(UAT_AZURE_SUBSCRIPTION)
     WEB_APP_NAME: $(UAT_WEB_APP_NAME)
