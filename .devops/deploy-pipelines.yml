@@ -138,27 +138,29 @@ stages:
     jobs:
       - job: 'prepare_artifact'
         steps:
-          # Build application
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
-            parameters:
-              # On the assumption that this stage is executed only when Relase stage is,
-              #  with this parameter we set the reference the deploy script must pull changes from.
-              # The branch/tag name is calculated from the source branch
-              #  ex: Build.SourceBranch=refs/heads/master --> master
-              #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
-              gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
           - script: |
-              yarn build
-            displayName: 'Build'
-
-          - template: templates/docker-release/template.yaml@pagopaCommons
-            parameters:
-              CONTAINER_REGISTRY_SERVICE_CONN: $(dockerRegistryServiceConnection)
-              CONTAINER_REGISTRY_FQDN: $(dockerRegistryFqdn)
-              DOCKER_IMAGE_NAME: $(imageRepository)
-              DOCKER_IMAGE_TAG: "$(next_version)$(current_version)"
-              FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
-              DOCKERFILE: Dockerfile
+              echo "skip"
+          # Build application
+          #- template: templates/node-job-setup/template.yaml@pagopaCommons
+          #  parameters:
+          #    # On the assumption that this stage is executed only when Relase stage is,
+          #    #  with this parameter we set the reference the deploy script must pull changes from.
+          #    # The branch/tag name is calculated from the source branch
+          #    #  ex: Build.SourceBranch=refs/heads/master --> master
+          #    #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
+          #    gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
+          #- script: |
+          #    yarn build
+          #  displayName: 'Build'
+          #
+          #- template: templates/docker-release/template.yaml@pagopaCommons
+          #  parameters:
+          #    CONTAINER_REGISTRY_SERVICE_CONN: $(dockerRegistryServiceConnection)
+          #    CONTAINER_REGISTRY_FQDN: $(dockerRegistryFqdn)
+          #    DOCKER_IMAGE_NAME: $(imageRepository)
+          #    DOCKER_IMAGE_TAG: "$(next_version)$(current_version)"
+          #    FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+          #    DOCKERFILE: Dockerfile
 
   # Deploy on K8s with Helm
   - stage: Deploy
@@ -181,6 +183,7 @@ stages:
                 - checkout: self
                   persistCredentials: true
 
+                - script: echo "version:$(next_version)$(current_version)"
                 - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
                   parameters:
                     DEPLOY_VERSION: $(next_version)$(current_version)
