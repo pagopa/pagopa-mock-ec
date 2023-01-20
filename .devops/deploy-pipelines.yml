@@ -134,7 +134,7 @@ stages:
     dependsOn:
       - Release
     variables:
-      deploy_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]$[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
+      deploy_version: "$[ stageDependencies.Release.make_release.outputs['next_version.value'] ]$[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]"
     jobs:
       - job: 'prepare_artifact'
         steps:
