@@ -1,9 +1,7 @@
 #!/bin/bash
 
 ENV=dev
-IMAGE_VERSION="3.10.0-SNAPSHOT"
-
-FILE_CONFIG_PATH_LOGBACK=helm/config/${ENV}/logback.xml
+IMAGE_VERSION="1.6.13"
 
 clean (){
   #$> clean "helm"
@@ -21,7 +19,7 @@ fixVersion () {
 }
 
 ########## APP ############
-helm uninstall --namespace nodo pagopawebbo
+helm uninstall --namespace nodo pagopamockec
 clean "helm"
 
 helm repo add microservice-chart https://pagopa.github.io/aks-microservice-chart-blueprint
@@ -31,5 +29,4 @@ fixVersion "helm/Chart.yaml"
 
 helm upgrade --install --namespace nodo \
     --values helm/values-${ENV}.yaml \
-    --set-file 'microservice-chart.fileConfig.logback\.xml'="${FILE_CONFIG_PATH_LOGBACK}" \
-    pagopawebbo helm
+    pagopamockec helm
