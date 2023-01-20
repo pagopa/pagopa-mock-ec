@@ -101,18 +101,6 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
-      - job: get_current_version
-        condition: ne(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
-        steps:
-          - script: |
-              APP_VERSION=$(jq -r .version package.json)
-              echo "current version is $APP_VERSION"
-              echo "##vso[task.setvariable variable=value;isOutput=true]$APP_VERSION"
-            displayName: Set version
-            name: current_version
-          - script: |
-              echo "We assume this reference to be a valid release: $(Build.SourceBranch). Therefore, there is no need to bundle a new release."
-            displayName: 'Skip release bundle'
       - job: make_release
         condition: eq(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
         steps:
