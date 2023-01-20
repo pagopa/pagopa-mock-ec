@@ -170,7 +170,7 @@ stages:
       - Prepare_artifact
     variables:
       next_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
-      current_version: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
+      deploy_version: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
     jobs:
       - deployment: "deploy"
         pool:
@@ -186,7 +186,7 @@ stages:
                 - script: echo "version:[$(next_version)-$(current_version)]"
                 - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
                   parameters:
-                    DEPLOY_VERSION: $(current_version)
+                    DEPLOY_VERSION: $(deploy_version)
 
                 - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
                   parameters:
@@ -196,6 +196,6 @@ stages:
                     NAMESPACE: $(nameSpace)
                     APP_NAME: $(imageRepository)
                     VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
-                    DEPLOY_VERSION: $(current_version)
+                    DEPLOY_VERSION: $(deploy_version)
                     APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
                     APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
