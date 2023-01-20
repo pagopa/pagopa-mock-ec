@@ -72,13 +72,13 @@ microservice-chart:
           type: Utilization
           value: "75"
   envConfig:
-    TIMEOUT_DELAY: 5000
+    TIMEOUT_DELAY: "5000"
     PPT_NODO: "/servizi/PagamentiTelematiciRPT"
-    PORT: 8089
+    PORT: "8089"
     CC_BANK_PRIMARY_EC: "IT96R0123454321000000012345"
     CC_BANK_SECONDARY_EC: "IT04O0100003245350008332100"
     TEST_DEBUG: "Y"
-    AUX_DIGIT: 3
+    AUX_DIGIT: "3"
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
