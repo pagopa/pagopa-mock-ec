@@ -133,11 +133,8 @@ stages:
     dependsOn:
       - Release
     variables:
-      - name: deploy_version
-        ${{ if eq(stageDependencies.Release.make_release.outputs['next_version.value'], '') }}:
-          value: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
-        ${{ else }}:
-          value: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
+      - next_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
+      - current_version: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
     jobs:
       - job: 'prepare_artifact'
         steps:
@@ -151,7 +148,6 @@ stages:
               #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
               gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
           - script: |
-              echo "DEPLOY VERSSSSSSSSSION = $(deploy_version)"
               yarn build
             displayName: 'Build'
 
@@ -160,7 +156,7 @@ stages:
               CONTAINER_REGISTRY_SERVICE_CONN: $(dockerRegistryServiceConnection)
               CONTAINER_REGISTRY_FQDN: $(dockerRegistryFqdn)
               DOCKER_IMAGE_NAME: $(imageRepository)
-              DOCKER_IMAGE_TAG: $(deploy_version)
+              DOCKER_IMAGE_TAG: "$(next_version)$(current_version)"
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
               DOCKERFILE: Dockerfile
 
@@ -171,11 +167,8 @@ stages:
       - Release
       - Prepare_artifact
     variables:
-      - name: deploy_version
-        ${{ if eq(stageDependencies.Release.make_release.outputs['next_version.value'], '') }}:
-          value: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
-        ${{ else }}:
-          value: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
+      - next_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
+      - current_version: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
     jobs:
       - deployment: "deploy"
         pool:
@@ -194,7 +187,7 @@ stages:
 
                 - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
                   parameters:
-                    DEPLOY_VERSION: $(deploy_version)
+                    DEPLOY_VERSION: "$(next_version)$(current_version)"
 
                 - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
                   parameters:
@@ -204,6 +197,6 @@ stages:
                     NAMESPACE: $(nameSpace)
                     APP_NAME: $(imageRepository)
                     VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
-                    DEPLOY_VERSION: $(deploy_version)
+                    DEPLOY_VERSION: "$(next_version)$(current_version)"
                     APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
                     APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
