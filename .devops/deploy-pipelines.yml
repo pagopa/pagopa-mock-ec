@@ -133,8 +133,8 @@ stages:
     dependsOn:
       - Release
     variables:
-      - next_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
-      - current_version: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
+      next_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
+      current_version: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
     jobs:
       - job: 'prepare_artifact'
         steps:
@@ -167,8 +167,8 @@ stages:
       - Release
       - Prepare_artifact
     variables:
-      - next_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
-      - current_version: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
+      next_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
+      current_version: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
     jobs:
       - deployment: "deploy"
         pool:
