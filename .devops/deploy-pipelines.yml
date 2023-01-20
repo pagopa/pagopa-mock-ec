@@ -134,7 +134,7 @@ stages:
       - Release
     variables:
       - name: deploy_version
-        ${{ if eq($[ stageDependencies.Release.make_release.outputs['next_version.value'] ], '') }}:
+        ${{ if eq(stageDependencies.Release.make_release.outputs['next_version.value'], '') }}:
           value: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
         ${{ else }}:
           value: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
@@ -172,7 +172,7 @@ stages:
       - Prepare_artifact
     variables:
       - name: deploy_version
-        ${{ if eq($[ stageDependencies.Release.make_release.outputs['next_version.value'] ], '') }}:
+        ${{ if eq(stageDependencies.Release.make_release.outputs['next_version.value'], '') }}:
           value: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
         ${{ else }}:
           value: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
