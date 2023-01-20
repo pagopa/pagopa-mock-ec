@@ -1,4 +1,4 @@
-nodo:
+microservice-chart:
   namespace: "nodo"
   nameOverride: ""
   fullnameOverride: ""
