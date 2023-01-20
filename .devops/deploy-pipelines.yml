@@ -182,6 +182,7 @@ stages:
                   persistCredentials: true
 
                 - script: |
+                    echo "$(next_version) $(current_version)"
                     git checkout $(sourceBranch)
                   displayName: Checkout and update branch
 
