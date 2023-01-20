@@ -16,6 +16,13 @@ parameters:
     values:
       - dev
       - uat
+  - name: "FORCE_REPLACE_DOCKER_IMAGE"
+    displayName: "Force the existing docker image to be replaced"
+    type: boolean
+    default: False
+    values:
+      - False
+      - True
 
 # Only manual activations are intended
 trigger: none
@@ -30,6 +37,8 @@ variables:
   nameSpace: '$(K8S_NAMESPACE)'
 
   ${{ if eq(parameters['ENV'], 'dev') }}:
+    dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
+    dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
     AZURE_SUBSCRIPTION: $(DEV_AZURE_SUBSCRIPTION)
     WEB_APP_NAME: $(DEV_WEB_APP_NAME)
     WEB_APP_RESOURCE_GROUP_NAME: $(DEV_WEB_APP_RESOURCE_GROUP_NAME)
@@ -40,6 +49,8 @@ variables:
     appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
   ${{ if eq(parameters['ENV'], 'uat') }}:
+    dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
+    dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
     AZURE_SUBSCRIPTION: $(UAT_AZURE_SUBSCRIPTION)
     WEB_APP_NAME: $(UAT_WEB_APP_NAME)
     WEB_APP_RESOURCE_GROUP_NAME: $(UAT_WEB_APP_RESOURCE_GROUP_NAME)
@@ -115,6 +126,8 @@ stages:
   - stage: Prepare_artifact
     dependsOn:
       - Release
+    variables:
+      deploy_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
     jobs:
       - job: 'prepare_artifact'
         steps:
@@ -131,38 +144,14 @@ stages:
               yarn build
             displayName: 'Build'
 
-          # Copy application to
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: '$(System.DefaultWorkingDirectory)'
-              TargetFolder: '$(System.DefaultWorkingDirectory)/bundle'
-              Contents: |
-                **/*
-                web.config
-                !.git/**/*
-                !**/*.js.map
-                !**/*.ts
-                !.vscode/**/*
-                !.devops/**/*
-                !.prettierrc
-                !.gitignore
-                !README.md
-                !jest.integration.js
-                !test
-                !tsconfig.json
-                !tslint.json
-                !yarn.lock
-                !Dangerfile.js
-                !CODEOWNERS
-                !Dockerfile
-                !preview.hbs
-                !.auto-changelog.json
-                !api_pagopa.yaml
-                !__*/**/*
-            displayName: 'Copy deploy files'
-
-          - publish: $(System.DefaultWorkingDirectory)/bundle
-            artifact: Bundle
+          - template: templates/docker-release/template.yaml@pagopaCommons
+            parameters:
+              CONTAINER_REGISTRY_SERVICE_CONN: $(dockerRegistryServiceConnection)
+              CONTAINER_REGISTRY_FQDN: $(dockerRegistryFqdn)
+              DOCKER_IMAGE_NAME: $(imageRepository)
+              DOCKER_IMAGE_TAG: $(deploy_version)
+              FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+              DOCKERFILE: Dockerfile
 
   # Deploy on K8s with Helm
   - stage: Deploy
