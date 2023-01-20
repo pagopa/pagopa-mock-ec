@@ -183,7 +183,7 @@ stages:
 
                 - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
                   parameters:
-                    DEPLOY_VERSION: "$(next_version)$(current_version)"
+                    DEPLOY_VERSION: $(next_version)$(current_version)
 
                 - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
                   parameters:
