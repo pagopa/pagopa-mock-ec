@@ -171,7 +171,11 @@ stages:
       - Release
       - Prepare_artifact
     variables:
-      deploy_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
+      - name: deploy_version
+        ${{ if eq(stageDependencies.Release.make_release.outputs['next_version.value'], '') }}:
+          value: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
+        ${{ else }}:
+          value: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
     jobs:
       - deployment: "deploy"
         pool:
