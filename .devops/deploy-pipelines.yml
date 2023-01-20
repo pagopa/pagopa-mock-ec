@@ -183,7 +183,7 @@ stages:
                 - checkout: self
                   persistCredentials: true
 
-                - script: echo "version:[$(next_version)-$(current_version)]"
+                - script: echo "version:[$(next_version)-$(deploy_version)]"
                 - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
                   parameters:
                     DEPLOY_VERSION: $(deploy_version)
