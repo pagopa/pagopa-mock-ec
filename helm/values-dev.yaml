@@ -31,16 +31,6 @@ basemock: &basemock
     type: ClusterIP
     ports:
       - 8080
-  ingress:
-    create: true
-    host: "weudev.nodo.internal.dev.platform.pagopa.it"
-    path: /mock-ec(/|$)(.*)
-    pathType: Prefix
-    servicePort: 8080
-    annotations:
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
-    proxyBodySize: 100m
-    rewriteTarget: /$2
   serviceAccount:
     create: false
   securityContext:
