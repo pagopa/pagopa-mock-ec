@@ -29,4 +29,6 @@ fixVersion "helm/Chart.yaml"
 
 helm upgrade --install --namespace nodo \
     --values helm/values-${ENV}.yaml \
+    --set 'mock-primary.image.tag'="${IMAGE_VERSION}" \
+    --set 'mock-secondary.image.tag'="${IMAGE_VERSION}" \
     pagopamockec helm

@@ -196,3 +196,6 @@ stages:
                     DEPLOY_VERSION: $(next_version)$(current_version)
                     APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
                     APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
+                    ARGUMENTS: >-
+                      --set mock-primary.image.tag="$(deploy_version)"
+                      --set mock-secondary.image.tag="$(deploy_version)"
