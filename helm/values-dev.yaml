@@ -73,7 +73,7 @@ microservice-chart:
           value: "75"
   envConfig:
     TIMEOUT_DELAY: "5000"
-    PPT_NODO: ""
+    PPT_NODO: "/mock"
     PORT: "8089"
     CC_BANK_PRIMARY_EC: "IT96R0123454321000000012345"
     CC_BANK_SECONDARY_EC: "IT04O0100003245350008332100"
