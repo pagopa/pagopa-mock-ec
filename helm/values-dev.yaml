@@ -15,13 +15,13 @@ basemock: &basemock
   readinessProbe:
     handlerType: tcpSocket
     tcpSocket:
-      port: 8089
+      port: 8080
     initialDelaySeconds: 20
     periodSeconds: 10
   livenessProbe:
     handlerType: tcpSocket
     tcpSocket:
-      port: 8089
+      port: 8080
     initialDelaySeconds: 30
     periodSeconds: 20
   deployment:
@@ -30,13 +30,13 @@ basemock: &basemock
     create: true
     type: ClusterIP
     ports:
-      - 8089
+      - 8080
   ingress:
     create: true
     host: "weudev.nodo.internal.dev.platform.pagopa.it"
     path: /mock-ec(/|$)(.*)
     pathType: Prefix
-    servicePort: 8089
+    servicePort: 8080
     annotations:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
     proxyBodySize: 100m
@@ -74,7 +74,7 @@ basemock: &basemock
   envConfig:
     TIMEOUT_DELAY: "5000"
     PPT_NODO: "/mock"
-    PORT: "8089"
+    PORT: "8080"
     CC_BANK_PRIMARY_EC: "IT96R0123454321000000012345"
     CC_BANK_SECONDARY_EC: "IT04O0100003245350008332100"
     TEST_DEBUG: "Y"
@@ -96,7 +96,7 @@ mock-primary:
     host: "weudev.nodo.internal.dev.platform.pagopa.it"
     path: /mock-ec(/|$)(.*)
     pathType: Prefix
-    servicePort: 8089
+    servicePort: 8080
     annotations:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
     proxyBodySize: 100m
@@ -109,7 +109,7 @@ mock-secondary:
     host: "weudev.nodo.internal.dev.platform.pagopa.it"
     path: /mock-ec-secondary(/|$)(.*)
     pathType: Prefix
-    servicePort: 8089
+    servicePort: 8080
     annotations:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
     proxyBodySize: 100m
