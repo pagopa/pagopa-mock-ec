@@ -13,3 +13,4 @@ dependencies:
     version: 2.4.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: mock-secondary
+
