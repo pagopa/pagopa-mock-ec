@@ -94,7 +94,7 @@ mock-primary:
   ingress:
     create: true
     host: "weudev.nodo.internal.dev.platform.pagopa.it"
-    path: /mock-ec-primary(/|$)(.*)
+    path: /mock-ec(/|$)(.*)
     pathType: Prefix
     servicePort: 8089
     annotations:
