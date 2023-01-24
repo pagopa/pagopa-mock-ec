@@ -1,4 +1,4 @@
-microservice-chart:
+basemock: &basemock
   namespace: "nodo"
   nameOverride: ""
   fullnameOverride: ""
@@ -88,3 +88,29 @@ microservice-chart:
                 operator: In
                 values:
                   - "true"
+
+mock-primary:
+  !!merge <<: *basemock
+  ingress:
+    create: true
+    host: "weudev.nodo.internal.dev.platform.pagopa.it"
+    path: /mock-ec-primary(/|$)(.*)
+    pathType: Prefix
+    servicePort: 8089
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
+    proxyBodySize: 100m
+    rewriteTarget: /$2
+
+mock-secondary:
+  !!merge <<: *basemock
+  ingress:
+    create: true
+    host: "weudev.nodo.internal.dev.platform.pagopa.it"
+    path: /mock-ec-secondary(/|$)(.*)
+    pathType: Prefix
+    servicePort: 8089
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
+    proxyBodySize: 100m
+    rewriteTarget: /$2
