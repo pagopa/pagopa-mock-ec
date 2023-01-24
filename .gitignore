@@ -16,3 +16,5 @@ cert/*.csr
 cert_local
 .venv
 venv/
+/helm/Chart.lock
+/helm/charts/
