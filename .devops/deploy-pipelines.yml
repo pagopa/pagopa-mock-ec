@@ -1,4 +1,9 @@
-# Azure DevOps pipeline to release a new version and deploy to production.
+# Only manual activations are intended
+trigger: none
+pr: none
+
+pool:
+  vmImage: 'ubuntu-latest'
 
 parameters:
   - name: 'SEMVER'
@@ -15,6 +20,8 @@ parameters:
     default: dev
     values:
       - dev
+      - it
+      - prf
       - uat
   - name: "FORCE_REPLACE_DOCKER_IMAGE"
     displayName: "Force the existing docker image to be replaced"
@@ -23,10 +30,6 @@ parameters:
     values:
       - False
       - True
-
-# Only manual activations are intended
-trigger: none
-pr: none
 
 # variables setted on azdevops to avoid circular dependency warning
 # $(DEFAULT_BRANCH)
@@ -48,6 +51,33 @@ variables:
     kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
     appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
+    appName: $(imageRepository)
+  ${{ if eq(parameters['ENV'], 'it') }}:
+    dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
+    dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
+    AZURE_SUBSCRIPTION: $(DEV_AZURE_SUBSCRIPTION)
+    WEB_APP_NAME: $(DEV_WEB_APP_NAME)
+    WEB_APP_RESOURCE_GROUP_NAME: $(DEV_WEB_APP_RESOURCE_GROUP_NAME)
+    HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(DEV_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
+    HEALTHCHECK_CONTAINER_VNET: $(DEV_HEALTHCHECK_CONTAINER_VNET)
+    poolImage: 'pagopa-dev-linux'
+    kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
+    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
+    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
+    appName: '$(imageRepository)-replica'
+  ${{ if eq(parameters['ENV'], 'prf') }}:
+    dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
+    dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
+    AZURE_SUBSCRIPTION: $(UAT_AZURE_SUBSCRIPTION)
+    WEB_APP_NAME: $(UAT_WEB_APP_NAME)
+    WEB_APP_RESOURCE_GROUP_NAME: $(UAT_WEB_APP_RESOURCE_GROUP_NAME)
+    HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(UAT_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
+    HEALTHCHECK_CONTAINER_VNET: $(UAT_HEALTHCHECK_CONTAINER_VNET)
+    poolImage: 'pagopa-uat-linux'
+    kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
+    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
+    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
+    appName: '$(imageRepository)-replica'
   ${{ if eq(parameters['ENV'], 'uat') }}:
     dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
     dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
@@ -60,17 +90,17 @@ variables:
     kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
     appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
+    appName: $(imageRepository)
 
-pool:
-  vmImage: 'ubuntu-latest'
 
 resources:
   repositories:
     - repository: pagopaCommons
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v3.5.0
+      ref: refs/tags/v3.6.0
       endpoint: 'io-azure-devops-github-ro'
+
 
 stages:
   - stage: EchoDbg
@@ -191,7 +221,7 @@ stages:
                     ENV: ${{ parameters['ENV'] }}
                     KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
                     NAMESPACE: $(nameSpace)
-                    APP_NAME: $(imageRepository)
+                    APP_NAME: $(appName)
                     VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
                     DEPLOY_VERSION: $(next_version)$(current_version)
                     APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
