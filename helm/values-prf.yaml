@@ -89,7 +89,7 @@ mock-primary:
   ingress:
     create: true
     host: "weuuat.nodo.internal.uat.platform.pagopa.it"
-    path: /mock-replica-ec(/|$)(.*)
+    path: /mock-ec-replica(/|$)(.*)
     pathType: Prefix
     servicePort: 8080
     annotations:
@@ -102,7 +102,7 @@ mock-secondary:
   ingress:
     create: true
     host: "weuuat.nodo.internal.uat.platform.pagopa.it"
-    path: /mock-replica-ec-secondary(/|$)(.*)
+    path: /mock-ec-secondary-replica(/|$)(.*)
     pathType: Prefix
     servicePort: 8080
     annotations:
