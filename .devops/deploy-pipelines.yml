@@ -58,7 +58,7 @@ variables:
     HEALTHCHECK_CONTAINER_VNET: $(UAT_HEALTHCHECK_CONTAINER_VNET)
     poolImage: 'pagopa-uat-linux'
     kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
-    ppInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
+    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
 
 pool:
