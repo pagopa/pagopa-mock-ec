@@ -69,6 +69,11 @@ basemock: &basemock
     CC_BANK_SECONDARY_EC: "IT04O0100003245350008332100"
     TEST_DEBUG: "Y"
     AUX_DIGIT: "3"
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: "nodo"
+      effect: NoSchedule
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
