@@ -1,4 +1,4 @@
-FROM node:14-alpine
+FROM toolbox.sia.eu/docker/node:14-alpine
 
 RUN pwd
 RUN ls -lrt
