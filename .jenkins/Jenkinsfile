@@ -1,0 +1,90 @@
+pipeline {
+    agent { label 'MockNodoPagoPA' }
+
+    environment {
+        DOCKER_REGISTRY = "https://toolbox.sia.eu/docker_nodo_pagopa" 
+        //IMAGE_NAME = "$SBT_VERSION" // //TODO image name can be only the version if the image is pushed in a folder named "nodo"
+        DOCKERFILE_PATH = "Dockerfile"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                withCredentials([gitUsernamePassword(credentialsId: 'openshift-server-sia', gitToolName: 'git-tool')]) {
+                        sh 'git config --global http.sslVerify "false" '
+                        sh 'git config --global http.postBuffer 1048576000'
+                        sh 'git config --global http.proxy http://csproxy:8080'
+                        sh 'git config --global https.proxy http://csproxy:8080'
+                        sh 'git config --global -l'
+                        sh 'git clone -b $BRANCH https://github.com/pagopa/pagopa-mock-ec .'
+                }
+            }
+        }
+
+        stage('Get Info'){
+            steps {
+                script {
+                    env.APP_VERSION = sh(script:"jq -r .version package.json", returnStdout: true).trim()
+                    sh("echo ${env.APP_VERSION}")
+                }
+            }
+        }
+        
+        stage('Build') {
+            steps{
+                script {
+                    nodejs(nodeJSInstallationName: 'NodeJS-16.18.0') {    
+                        sh("npm config set registry https://toolbox.sia.eu/artifactory/api/npm/npm-repo/")
+                        sh("npm config set strict-ssl false")
+                        sh("npm install --legacy-peer-deps")
+                        sh("npm run generate build")
+                    }
+                }
+            }
+        }
+        
+        
+        stage('Build image MOCK-EC-PRIMARY') {
+            steps{
+                script {
+                    tag = "toolbox.sia.eu/docker_nodo_pagopa/mock-ec-primary:" + env.APP_VERSION.toLowerCase()
+                    sh("cp .nexi.env .env")
+                    dockerImage = docker.build("${tag}")
+                }
+            }
+        }
+
+        stage('Push Image MOCK-EC-PRIMARY') {
+            steps{
+                script {
+                    docker.withRegistry("${env.DOCKER_REGISTRY}", 'accenture_user' ) {
+                        dockerImage.push()
+                    }
+                    sh("docker rmi ${tag}")
+                }
+            }
+        }
+        
+        stage('Build image MOCK-EC-SECONDARY') {
+            steps{
+                script {
+                    tag = "toolbox.sia.eu/docker_nodo_pagopa/mock-ec-secondary:" + env.APP_VERSION.toLowerCase()
+                    sh("cp .nexi_sec.env .env")
+                    dockerImage = docker.build("${tag}")
+                }
+            }
+        }
+
+        stage('Push Image MOCK-EC-SECONDARY') {
+            steps{
+                script {
+                    docker.withRegistry("${env.DOCKER_REGISTRY}", 'accenture_user' ) {
+                        dockerImage.push()
+                    }
+                    sh("docker rmi ${tag}")
+                }
+            }
+        }
+    }    
+}
