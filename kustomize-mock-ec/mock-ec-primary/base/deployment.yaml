@@ -27,3 +27,13 @@ spec:
             limits:
               memory: 2Gi
               cpu: 400m
+      imagePullSecrets:
+        - name: regcred
+      nodeSelector:
+        envnodopa: sit-uat
+      tolerations:
+      - key: "envnodopa"
+        operator: "Equal"
+        value: "sit-uat"
+        effect: "NoExecute"   
+

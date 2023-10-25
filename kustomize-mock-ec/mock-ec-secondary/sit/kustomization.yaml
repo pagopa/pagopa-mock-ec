@@ -5,13 +5,12 @@ namespace: mock-ec-sit
 
 images:
   - name: mock-ec-image
-    newName: nodopasitregistry.azurecr.io/mock-ec-secondary
-    newTag: 0.0.1
+    newName: toolbox.sia.eu/docker-pagopa/mock-ec-secondary
+    newTag: 1.6.13
 
 resources:
-  - namespace.yaml
-  - ingress.yaml
   - ../base
+  - route.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

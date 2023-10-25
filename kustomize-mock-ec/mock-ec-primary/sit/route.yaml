@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: "mock-ec" 
+spec:
+  host: mock-ec-primary-sit.tst-npc.sia.eu
+  port:
+    targetPort: 8089
+  path: "/"
+  to:
+    kind: Service
+    name: "mock-ec"
+    weight: 100
+  wildcardPolicy: None
