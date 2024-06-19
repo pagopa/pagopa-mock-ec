@@ -6,7 +6,7 @@ spec:
   host: test.nexi.ndp.pagopa.it
   port:
     targetPort: 8088
-  path: "/mock-ec-secondary-sit.tst-npc.sia.eu"
+  path: "/mock-ec-secondary-sit"
   to:
     kind: Service
     name: "mock-ec-sec"
