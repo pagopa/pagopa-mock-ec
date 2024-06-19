@@ -3,10 +3,10 @@ kind: Route
 metadata:
   name: "mock-ec" 
 spec:
-  host: test.nexi.ndp.pagopa.it
+  host: mock-ec-primary-sit.nexigroup.com
   port:
     targetPort: 8089
-  path: "/mock-ec-primary-sit"
+  path: "/"
   to:
     kind: Service
     name: "mock-ec"
