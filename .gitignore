@@ -18,3 +18,5 @@ cert_local
 venv/
 /helm/Chart.lock
 /helm/charts/
+/.project
+.settings
