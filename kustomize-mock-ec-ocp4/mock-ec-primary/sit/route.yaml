@@ -1,14 +1,28 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: "mock-ec" 
+  name: mock-ec-test
+  namespace: mock-ec-sit
 spec:
-  host: mock-ec-primary-sit.nexigroup.com
   port:
     targetPort: 8089
-  path: "/"
   to:
     kind: Service
-    name: "mock-ec"
+    name: mock-ec
     weight: 100
   wildcardPolicy: None
+
+#apiVersion: route.openshift.io/v1
+#kind: Route
+#metadata:
+#  name: "mock-ec" 
+#spec:
+#  host: mock-ec-primary-sit.nexigroup.com
+#  port:
+#    targetPort: 8089
+#  path: "/"
+#  to:
+#    kind: Service
+#    name: "mock-ec"
+#    weight: 100
+#  wildcardPolicy: None
