@@ -65,7 +65,7 @@ const activateSoapRequest = 'pafn:pagetpaymentreq';
 const sentReceipt = 'pafn:pasendrtreq';
 const paaVerificaRPTreq = 'ppt:paaverificarpt';
 const paaAttivaRPTreq = 'ppt:paaattivarpt';
-const paaInviaRTreq = 'ppt:paainviart';
+const paaInviaRTreq = 'ns3:paainviart';
 const paDemandPaymentNoticereq = 'pafn:pademandpaymentnoticerequest';
 const paaChiediNumeroAvvisoreq = 'ppt:paachiedinumeroavviso';
 const paGetPaymentV2req = 'pafn:pagetpaymentv2request';
@@ -296,7 +296,7 @@ export async function newExpressApp(
   // eslint-disable-next-line complexity
   // eslint-disable-next-line sonarjs/cognitive-complexity, complexity
   app.post(config.PA_MOCK.ROUTES.PPT_NODO, async (req, res) => {
-    logger.info(`>>> rx REQUEST :`);
+    logger.info(`>>> rx REQUEST:`);
     logger.info(JSON.stringify(req.body));
     const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
     try {
