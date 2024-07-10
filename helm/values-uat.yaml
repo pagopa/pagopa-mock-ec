@@ -79,10 +79,10 @@ basemock: &basemock
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: nodo
+              - key: node_type
                 operator: In
                 values:
-                  - "true"
+                  - user
 
 mock-primary:
   !!merge <<: *basemock
