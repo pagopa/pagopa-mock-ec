@@ -37,6 +37,7 @@ import {
   paVerify21,
   paVerify22,
   paVerify23,
+  paVerify24,
 } from './fixtures/fixVerifyResponse';
 import {
   paActivate17,
@@ -46,6 +47,7 @@ import {
   paActivate21,
   paActivate22,
   paActivate23,
+  paActivate24,
 } from './fixtures/fixActivateResponse';
 
 const paVerifyPaymentNoticeQueue = new Array<string>();
@@ -89,6 +91,7 @@ const avviso21 = new RegExp('^30220.*'); // fix response
 const avviso22 = new RegExp('^30221.*'); // fix response
 const avviso23 = new RegExp('^30222.*'); // fix response
 const avviso24 = new RegExp('^30223.*'); // fix response
+const avviso25 = new RegExp('^30224.*'); // fix response
 const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random su 2 transfers
 const avvisoUnder1 = new RegExp('^30288.*'); // random under 1 euro + + random su 2 transfers
 
@@ -271,6 +274,8 @@ export async function newExpressApp(
           return res.status(200).send(paVerify22);
         } else if (avviso24.test(noticenumber)) {
           return res.status(200).send(paVerify23);
+        } else if (avviso25.test(noticenumber)) {
+          return res.status(200).send(paVerify24);
         }
 
         if (testDebug.toUpperCase() === 'Y') {
@@ -300,6 +305,7 @@ export async function newExpressApp(
           avviso16.test(noticenumber) ||
           avviso17.test(noticenumber) ||
           avviso24.test(noticenumber) ||
+          avviso25.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
@@ -320,7 +326,8 @@ export async function newExpressApp(
           avviso15.test(noticenumber) ||
           avviso16.test(noticenumber) ||
           avviso17.test(noticenumber) ||
-          avviso24.test(noticenumber);
+          avviso24.test(noticenumber) ||
+          avviso25.test(noticenumber);
 
         const isAmountComplete1bis =
           avviso7.test(noticenumber) ||
@@ -520,6 +527,11 @@ export async function newExpressApp(
             creditorReferenceId,
           });
           return res.status(paActivate23res[0]).send(paActivate23res[1]);
+        } else if (avviso25.test(noticenumber)) {
+          const paActivate24res = paActivate24({
+            creditorReferenceId,
+          });
+          return res.status(paActivate24res[0]).send(paActivate24res[1]);
         }
 
         const isFixedError = avvisoErrore.test(noticenumber);
@@ -556,6 +568,7 @@ export async function newExpressApp(
           avviso16.test(noticenumber) ||
           avviso17.test(noticenumber) ||
           avviso24.test(noticenumber) ||
+          avviso25.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
