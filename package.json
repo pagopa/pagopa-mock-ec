@@ -67,7 +67,7 @@
     "io-ts": "1.8.5",
     "italia-ts-commons": "^5.1.0",
     "morgan": "^1.10.0",
-    "node-forge": "^0.9.1",
+    "node-forge": "^1.0.0",
     "queue-fifo": "^0.2.6",
     "soap": "^0.27.1",
     "winston": "^3.2.1",
