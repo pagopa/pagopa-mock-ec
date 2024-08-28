@@ -221,6 +221,17 @@ The tribute is 120.00 EUR divided in 2 transfers:
 | -------------------- | ------------------- | -------------------- |
 | 302**20**xxxxxxxxxxx | CCPost              | CCBank               |
 
+### Tribute 15
+
+Same as Tribute 10, but with a returned `dueDate` with XSD format (e.g. `2024-10-05+02:00`).
+
+The tribute is 120.00 EUR divided in 2 transfers:
+- Transfer 1 : 0101101IM, 100.00€ due to **EC_TE**
+- Transfer 2 : 0201102IM, 20.00€ due to **EC_TE**
+
+| Notice number        | CC Comune di Milano | CC Comune di Milano |
+| -------------------- | ------------------- | -------------------- |
+| 302**24**xxxxxxxxxxx | CCPost              | CCBank               |
 
 
 ### Edge cases
