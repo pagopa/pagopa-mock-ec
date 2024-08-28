@@ -14,10 +14,7 @@ import {
   pspNotifyPaymentRes,
 } from './fixtures/nodoNewMod3Responses';
 
-import { 
-  paaVerificaRPTRisposta,
-  paaAttivaRPTRisposta,
- } from './fixtures/nodoNewMod3Responses_oldEc';
+import { paaVerificaRPTRisposta, paaAttivaRPTRisposta } from './fixtures/nodoNewMod3Responses_oldEc';
 
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
@@ -32,7 +29,15 @@ import {
   POSITIONS_STATUS,
 } from './utils/helper';
 import { logger, log_event_tx } from './utils/logger';
-import { paVerify17, paVerify18, paVerify19, paVerify20, paVerify21, paVerify22 } from './fixtures/fixVerifyResponse';
+import {
+  paVerify17,
+  paVerify18,
+  paVerify19,
+  paVerify20,
+  paVerify21,
+  paVerify22,
+  paVerify23,
+} from './fixtures/fixVerifyResponse';
 import {
   paActivate17,
   paActivate18,
@@ -40,6 +45,7 @@ import {
   paActivate20,
   paActivate21,
   paActivate22,
+  paActivate23,
 } from './fixtures/fixActivateResponse';
 
 const paVerifyPaymentNoticeQueue = new Array<string>();
@@ -57,7 +63,6 @@ const sentReceipt = 'pafn:pasendrtreq';
 const pspnotifypaymentreq = 'pspfn:pspnotifypaymentreq';
 const paaVerificaRPTreq = 'ppt:paaverificarpt';
 const paaAttivaRPTreq = 'ppt:paaattivarpt';
-
 
 const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
 const avviso2 = new RegExp('^30201.*'); // CCPost + CCBank
@@ -83,6 +88,7 @@ const avviso20 = new RegExp('^30219.*'); // fix response
 const avviso21 = new RegExp('^30220.*'); // fix response
 const avviso22 = new RegExp('^30221.*'); // fix response
 const avviso23 = new RegExp('^30222.*'); // fix response
+const avviso24 = new RegExp('^30223.*'); // fix response
 const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random su 2 transfers
 const avvisoUnder1 = new RegExp('^30288.*'); // random under 1 euro + + random su 2 transfers
 
@@ -216,14 +222,14 @@ export async function newExpressApp(
         res.status(200).send(`${req.params.primitive} saved. ${pspNotifyPaymentQueue.length} pushed`);
       }
     } else if (req.params.primitive === 'paaAttivaRPT') {
-        if (String(req.query.override).toLowerCase() === 'true') {
-          paaAttivaRPTQueue.pop();
-          paaAttivaRPTQueue.push(req.rawBody);
-          res.status(200).send(`${req.params.primitive} updated`);
-        } else {
-          paaAttivaRPTQueue.push(req.rawBody);
-          res.status(200).send(`${req.params.primitive} saved. ${paaAttivaRPTQueue.length} pushed`);
-        }
+      if (String(req.query.override).toLowerCase() === 'true') {
+        paaAttivaRPTQueue.pop();
+        paaAttivaRPTQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        paaAttivaRPTQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paaAttivaRPTQueue.length} pushed`);
+      }
     } else {
       res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
     }
@@ -263,6 +269,8 @@ export async function newExpressApp(
           return res.status(200).send(paVerify21);
         } else if (avviso23.test(noticenumber)) {
           return res.status(200).send(paVerify22);
+        } else if (avviso24.test(noticenumber)) {
+          return res.status(200).send(paVerify23);
         }
 
         if (testDebug.toUpperCase() === 'Y') {
@@ -291,6 +299,7 @@ export async function newExpressApp(
           avviso15.test(noticenumber) ||
           avviso16.test(noticenumber) ||
           avviso17.test(noticenumber) ||
+          avviso24.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
@@ -310,7 +319,8 @@ export async function newExpressApp(
           avviso4.test(noticenumber) ||
           avviso15.test(noticenumber) ||
           avviso16.test(noticenumber) ||
-          avviso17.test(noticenumber);
+          avviso17.test(noticenumber) ||
+          avviso24.test(noticenumber);
 
         const isAmountComplete1bis =
           avviso7.test(noticenumber) ||
@@ -505,6 +515,11 @@ export async function newExpressApp(
             creditorReferenceId,
           });
           return res.status(paActivate22res[0]).send(paActivate22res[1]);
+        } else if (avviso24.test(noticenumber)) {
+          const paActivate23res = paActivate23({
+            creditorReferenceId,
+          });
+          return res.status(paActivate23res[0]).send(paActivate23res[1]);
         }
 
         const isFixedError = avvisoErrore.test(noticenumber);
@@ -540,6 +555,7 @@ export async function newExpressApp(
           avviso15.test(noticenumber) ||
           avviso16.test(noticenumber) ||
           avviso17.test(noticenumber) ||
+          avviso24.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
@@ -901,7 +917,7 @@ export async function newExpressApp(
         log_event_tx(paaVerificaRPTRisposta);
         return res.status(+paaVerificaRPTRisposta[0]).send(paaVerificaRPTRisposta[1]);
       }
-      
+
       // 6. paaAttivaRPT
       if (soapRequest[paaAttivaRPTreq]) {
         if (paaAttivaRPTQueue.length > 0) {

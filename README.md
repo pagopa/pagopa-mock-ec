@@ -124,7 +124,7 @@ The tribute is 0.30 EUR divided in 2 transfers:
 | -------------------- | -------- | ------------------- | ------------------------------ |
 | 302**13**xxxxxxxxxxx | CCPost   | CCBank              | multibeneficiary (TARI + TEFA) |
 
-#### Tribute 7
+### Tribute 7
 
 The amount of the tribute is 120€ and divided in 3 transfers:
 
@@ -136,7 +136,7 @@ The amount of the tribute is 120€ and divided in 3 transfers:
 | -------------------- | -------- | ------------------- | ----------------- |
 | 302**14**xxxxxxxxxxx | CCPost   | CCBank              | CCBank            |
 
-#### Tribute 8
+### Tribute 8
 
 The amount of the tribute is 120€ and divided in 4 transfers:
 
@@ -149,7 +149,7 @@ The amount of the tribute is 120€ and divided in 4 transfers:
 | -------------------- | -------- | ----------------------- | ----------------- | ----------------------- |
 | 302**15**xxxxxxxxxxx | CCPost   | CCBank                  | CCBank            | CCBank                  |
 
-#### Tribute 9
+### Tribute 9
 
 The amount of the tribute is is 120€ and divided in 5 transfers: 
 
@@ -174,7 +174,7 @@ The tribute is 120.00 EUR divided in 2 transfers:
 | 302**17**xxxxxxxxxxx | CCPost   | CCPost   |
 | 302**21**xxxxxxxxxxx | CCPost   | CCBank   |
 
-#### Tribute 12
+### Tribute 11
 
 The amount of the tribute is 120€ and divided in 3 transfers:
 
@@ -189,6 +189,20 @@ The amount of the tribute is 120€ and divided in 3 transfers:
 
 ### Tribute 12
 
+The amount of the tribute is 120€ and divided in 3 transfers:
+
+- Transfer 1 : 70€ due to **EC_TE**
+- Transfer 2 : 30€ due to **EC_TE**
+- Transfer 3 : 20€ due to **EC_TE**
+
+It is the same as tribute 11, with the exception that the returned `companyName` is 140 characters long
+
+| Notice number        | CC EC_TE | CC EC_TE | CC EC_TE|
+| -------------------- | -------- | ---------| --------|
+| 302**23**xxxxxxxxxxx | CCBank   | CCBank   | CCPost  |
+
+### Tribute 13
+
 The tribute is 120.00 EUR divided in 2 transfers:
 - Transfer 1 : Oneri SUAP 1, 100.00€ due to **Comune di Milano**
 - Transfer 2 : Oneri SUAP 2, 20.00€ due to **Comune di Bitetto**
@@ -197,7 +211,7 @@ The tribute is 120.00 EUR divided in 2 transfers:
 | -------------------- | ------------------- | -------------------- |
 | 302**18**xxxxxxxxxxx | CCPost              | CCBank               |
 
-### Tribute 13
+### Tribute 14
 
 The tribute is 120.00 EUR divided in 2 transfers:
 - Transfer 1 : Oneri SUAP 1, 100.00€ due to **Comune di Milano**
