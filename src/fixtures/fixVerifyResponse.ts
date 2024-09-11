@@ -181,3 +181,18 @@ export const paVerify24 = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlso
         </paf:paVerifyPaymentNoticeRes>
     </soapenv:Body>
 </soapenv:Envelope>`;
+
+export const paVerifyPagamentoDuplicato = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
+    <soapenv:Header />
+    <soapenv:Body>
+        <paf:paVerifyPaymentNoticeRes>
+            <outcome>KO</outcome>
+            <fault>
+                <faultCode>PAA_PAGAMENTO_DUPLICATO</faultCode>
+                <faultString>Errore mockato - caso PAA_PAGAMENTO_DUPLICATO</faultString>
+                <id>77777777777</id>
+            </fault>
+        </paf:paVerifyPaymentNoticeRes>
+    </soapenv:Body>
+</soapenv:Envelope>`;

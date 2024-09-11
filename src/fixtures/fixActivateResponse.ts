@@ -451,3 +451,21 @@ export const paActivate24 = (params: IActivateRequest): MockResponse => [
   </soapenv:Body>
   </soapenv:Envelope>`,
 ];
+
+export const paActivatePagamentoDuplicato = (params: IActivateRequest): MockResponse => [
+  200,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
+    <soapenv:Header />
+    <soapenv:Body>
+        <paf:paGetPaymentRes>
+            <outcome>KO</outcome>
+            <fault>
+                <faultCode>PAA_PAGAMENTO_DUPLICATO</faultCode>
+                <faultString>Errore mockato - caso PAA_PAGAMENTO_DUPLICATO</faultString>
+                <id>77777777777</id>
+            </fault>
+        </paf:paGetPaymentRes>
+    </soapenv:Body>
+    </soapenv:Envelope>`,
+];

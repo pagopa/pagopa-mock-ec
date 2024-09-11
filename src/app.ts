@@ -38,6 +38,7 @@ import {
   paVerify22,
   paVerify23,
   paVerify24,
+  paVerifyPagamentoDuplicato,
 } from './fixtures/fixVerifyResponse';
 import {
   paActivate17,
@@ -48,6 +49,7 @@ import {
   paActivate22,
   paActivate23,
   paActivate24,
+  paActivatePagamentoDuplicato,
 } from './fixtures/fixActivateResponse';
 
 const paVerifyPaymentNoticeQueue = new Array<string>();
@@ -95,12 +97,12 @@ const avviso25 = new RegExp('^30224.*'); // fix response
 const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random su 2 transfers
 const avvisoUnder1 = new RegExp('^30288.*'); // random under 1 euro + + random su 2 transfers
 
-const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
-
-const avvisoTimeout = new RegExp('^30298.*'); // timeout
-const avvisoErrore = new RegExp('^30297.*'); // paErrorVerify
-
+// Special error cases
+const avvisoPagamentoDuplicato = new RegExp('^30295.*'); // fix response
 const avvisoErroreXSD = new RegExp('^30296.*'); // PAA_SINTASSI_XSD
+const avvisoErrore = new RegExp('^30297.*'); // paErrorVerify
+const avvisoTimeout = new RegExp('^30298.*'); // timeout
+const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
 
 const amount1 = 100.0;
 const amount1bis = 70.0;
@@ -276,6 +278,8 @@ export async function newExpressApp(
           return res.status(200).send(paVerify23);
         } else if (avviso25.test(noticenumber)) {
           return res.status(200).send(paVerify24);
+        } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
+          return res.status(200).send(paVerifyPagamentoDuplicato);
         }
 
         if (testDebug.toUpperCase() === 'Y') {
@@ -532,6 +536,11 @@ export async function newExpressApp(
             creditorReferenceId,
           });
           return res.status(paActivate24res[0]).send(paActivate24res[1]);
+        } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
+          const paActivateDuplicatoRes = paActivatePagamentoDuplicato({
+            creditorReferenceId,
+          });
+          return res.status(paActivateDuplicatoRes[0]).send(paActivateDuplicatoRes[1]);
         }
 
         const isFixedError = avvisoErrore.test(noticenumber);
