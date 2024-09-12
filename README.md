@@ -238,14 +238,16 @@ The tribute is 120.00 EUR divided in 2 transfers:
 
 The following edge cases are available (stateless, based on notice number)
 
-| Notice number        | Description            |
-| -------------------- | ---------------------- |
-| 302**97**xxxxxxxxxxx | Station not reacheable |
-| 302**98**xxxxxxxxxxx | Station timeout        |
-| 302**99**xxxxxxxxxxx | Payment expired        |
-| 302**YY**xxxxxxxxxxx | Payment unknown        |
+| Notice number        | Description                                          |
+| -------------------- | ---------------------------------------------------- |
+| 302**95**xxxxxxxxxxx | Notice already paid                                  |
+| 302**96**xxxxxxxxxxx | EC is returning a response with a syntax error       |
+| 302**97**xxxxxxxxxxx | EC Station not reacheable                            |
+| 302**98**xxxxxxxxxxx | EC Station timeout                                   |
+| 302**99**xxxxxxxxxxx | Payment expired                                      |
+| 302**YY**xxxxxxxxxxx | Payment unknown                                      |
 
-**_NOTE:_** YY: every code not mentioned before -> from 17 to 96
+**_NOTE:_** YY: every code not mentioned before -> from 17 to 94
 
 <br>
 <!-- 
