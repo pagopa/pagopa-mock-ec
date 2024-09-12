@@ -452,7 +452,7 @@ export const paActivate24 = (params: IActivateRequest): MockResponse => [
   </soapenv:Envelope>`,
 ];
 
-export const paActivatePagamentoDuplicato = (params: IActivateRequest): MockResponse => [
+export const paActivatePagamentoDuplicato = (): MockResponse => [
   200,
   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">

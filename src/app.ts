@@ -98,7 +98,7 @@ const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random
 const avvisoUnder1 = new RegExp('^30288.*'); // random under 1 euro + + random su 2 transfers
 
 // Special error cases
-const avvisoPagamentoDuplicato = new RegExp('^30295.*'); // fix response
+const avvisoPagamentoDuplicato = new RegExp('^30295.*'); // PAA_PAGAMENTO_DUPLICATO
 const avvisoErroreXSD = new RegExp('^30296.*'); // PAA_SINTASSI_XSD
 const avvisoErrore = new RegExp('^30297.*'); // paErrorVerify
 const avvisoTimeout = new RegExp('^30298.*'); // timeout
@@ -537,9 +537,7 @@ export async function newExpressApp(
           });
           return res.status(paActivate24res[0]).send(paActivate24res[1]);
         } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
-          const paActivateDuplicatoRes = paActivatePagamentoDuplicato({
-            creditorReferenceId,
-          });
+          const paActivateDuplicatoRes = paActivatePagamentoDuplicato();
           return res.status(paActivateDuplicatoRes[0]).send(paActivateDuplicatoRes[1]);
         }
 
