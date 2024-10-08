@@ -76,8 +76,8 @@ export const paaAttivaRPTRisposta: MockResponse = [
 ];
 
 export const paaInviaRTRisposta: MockResponse = [
-   200,
-   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/">
+  200,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/">
    <soapenv:Header/>
    <soapenv:Body>
       <ws:paaInviaRTRisposta>

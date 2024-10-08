@@ -14,7 +14,11 @@ import {
   pspNotifyPaymentRes,
 } from './fixtures/nodoNewMod3Responses';
 
-import { paaVerificaRPTRisposta, paaAttivaRPTRisposta, paaInviaRTRisposta } from './fixtures/nodoNewMod3Responses_oldEc';
+import {
+  paaVerificaRPTRisposta,
+  paaAttivaRPTRisposta,
+  paaInviaRTRisposta,
+} from './fixtures/nodoNewMod3Responses_oldEc';
 
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
