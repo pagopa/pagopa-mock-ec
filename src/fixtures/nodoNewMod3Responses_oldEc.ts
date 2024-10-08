@@ -83,13 +83,15 @@ export const paaInviaRTRisposta: MockResponse = [
    <soapenv:Body>
       <ws:paaInviaRTRisposta>
          <paaInviaRTRisposta>
-            <esito>OK</esito>
+            <esito>KO</esito>
+            <fault>
+                <faultCode>PAA_RT_DUPLICATA</faultCode>
+            </fault>
          </paaInviaRTRisposta>
       </ws:paaInviaRTRisposta>
    </soapenv:Body>
 </soapenv:Envelope>`,
 ];
-
 
 export const paDemandPaymentNoticeRisposta: MockResponse = [
    200,
