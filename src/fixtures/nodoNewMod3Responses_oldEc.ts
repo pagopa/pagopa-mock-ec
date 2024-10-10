@@ -83,9 +83,101 @@ export const paaInviaRTRisposta: MockResponse = [
    <soapenv:Body>
       <ws:paaInviaRTRisposta>
          <paaInviaRTRisposta>
+            <esito>OK</esito>
+         </paaInviaRTRisposta>
+      </ws:paaInviaRTRisposta>
+   </soapenv:Body>
+</soapenv:Envelope>`,
+];
+
+export const paaInviaRTRispostaErr01: MockResponse = [
+   200,
+   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ws:paaInviaRTRisposta>
+         <paaInviaRTRisposta>
+            <esito>KO</esito>
+            <fault>
+                <faultCode>TEST2_RTP_EC_BLOCKED_PAYMENT</faultCode>
+                <faultString></faultString>
+                <description>Mocked response</description>
+            </fault>
+         </paaInviaRTRisposta>
+      </ws:paaInviaRTRisposta>
+   </soapenv:Body>
+</soapenv:Envelope>`,
+];
+
+export const paaInviaRTRispostaErr02: MockResponse = [
+   200,
+   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ws:paaInviaRTRisposta>
+         <paaInviaRTRisposta>
+            <esito>KO</esito>
+            <fault>
+                <faultCode></faultCode>
+                <faultString></faultString>
+                <description>Mocked response</description>
+            </fault>
+         </paaInviaRTRisposta>
+      </ws:paaInviaRTRisposta>
+   </soapenv:Body>
+</soapenv:Envelope>`,
+];
+
+export const paaInviaRTRispostaErr03: MockResponse = [
+   200,
+   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ws:paaInviaRTRisposta>
+         <paaInviaRTRisposta>
+            <esito>KO</esito>
+         </paaInviaRTRisposta>
+      </ws:paaInviaRTRisposta>
+   </soapenv:Body>
+</soapenv:Envelope>`,
+];
+
+export const paaInviaRTRispostaErr04: MockResponse = [
+   200,
+   `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>503 Service Unavailable</title></meta><body><div class="container"><h1>503 Service Unavailable</h1><p>We are currently undergoing maintenance or the server is temporarily overloaded. Please try again later.</p><p>Powered by Mocker</p></div></body></meta></head></html>`,
+];
+
+export const paaInviaRTRispostaErr05: MockResponse = [
+   200,
+   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ws:paaInviaRTRisposta>
+         <paaInviaRTRisposta>
+            <esito>KO</esito>
+            <fault>
+                <faultCode>PAA_SYSTEM_ERROR</faultCode>
+                <faultString></faultString>
+                <description>Mocked response</description>
+            </fault>
+         </paaInviaRTRisposta>
+      </ws:paaInviaRTRisposta>
+   </soapenv:Body>
+</soapenv:Envelope>`,
+];
+
+export const paaInviaRTRispostaErr06: MockResponse = [
+   200,
+   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ws:paaInviaRTRisposta>
+         <paaInviaRTRisposta>
             <esito>KO</esito>
             <fault>
                 <faultCode>PAA_RT_DUPLICATA</faultCode>
+                <faultString></faultString>
+                <description>Mocked response</description>
             </fault>
          </paaInviaRTRisposta>
       </ws:paaInviaRTRisposta>

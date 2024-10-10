@@ -18,9 +18,15 @@ import {
 import {
   paaVerificaRPTRisposta,
   paaAttivaRPTRisposta,
-  paaInviaRTRisposta,
   paDemandPaymentNoticeRisposta,
   paaChiediNumeroAvvisoRisposta,
+  paaInviaRTRisposta,
+  paaInviaRTRispostaErr01,
+  paaInviaRTRispostaErr02,
+  paaInviaRTRispostaErr03,
+  paaInviaRTRispostaErr04,
+  paaInviaRTRispostaErr05,
+  paaInviaRTRispostaErr06,
 } from './fixtures/nodoNewMod3Responses_oldEc';
 
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
@@ -1087,44 +1093,23 @@ export async function newExpressApp(
 
       // 6. paaInviaRT
       if (soapRequest[paaInviaRTreq]) {
-        if (paaInviaRTQueue.length > 0) {
-          const customResponse = paaInviaRTQueue.shift();
-          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          if (customResponse !== undefined) {
-            let convert = await xml2js.parseStringPromise(customResponse);
-            if (convert['soapenv:Envelope']['soapenv:Body']) {
-              if (convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta']) {
-                if (convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0]['paaInviaRTRisposta']) {
-                    let delay = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0]['paaInviaRTRisposta'][0].delay;
-                    let irraggiungibile = convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0]['paaInviaRTRisposta'][0].irraggiungibile;
-                    if(irraggiungibile) {
-                        throw new TypeError("irraggiungibile");
-                    }
-                    if (delay) {
-                      logger.info('>>> start timeout')
-                      delete convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0]['paaInviaRTRisposta'][0].delay;
-                      const builder = new xml2js.Builder();
-                      const xml = builder.buildObject(convert);
-                      var delay_numb: number = +delay[0];
-                      logger.info(delay_numb);
-                      await sleep(delay_numb);
-                      return ritorno(res, xml);
-                    } else {
-                      return ritorno(res, customResponse);
-                    }
-                } else {
-                  return ritorno(res, customResponse);
-                }
-              } else {
-                return ritorno(res, customResponse);
-              }
-            } else {
-              return ritorno(res, customResponse);
-            }
-          }
+        logger.info(`>>> rx [${req.body['soapenv:envelope']['soapenv:header'][0]['ppthead:intestazioneppt'][0]['identificativounivocoversamento'][0]}]: `);
+        const iuv = req.body['soapenv:envelope']['soapenv:header'][0]['ppthead:intestazioneppt'][0]['identificativounivocoversamento'][0];
+        if (iuv.toLowerCase().includes('err01')) {
+          return res.status(+paaInviaRTRispostaErr01[0]).send(paaInviaRTRispostaErr01[1]);
+        } else if (iuv.toLowerCase().includes('err02')) {
+          return res.status(+paaInviaRTRispostaErr02[0]).send(paaInviaRTRispostaErr02[1]);
+        } else if (iuv.toLowerCase().includes('err03')) {
+          return res.status(+paaInviaRTRispostaErr03[0]).send(paaInviaRTRispostaErr03[1]);
+        } else if (iuv.toLowerCase().includes('err04')) {
+          return res.status(+paaInviaRTRispostaErr04[0]).send(paaInviaRTRispostaErr04[1]);
+        } else if (iuv.toLowerCase().includes('err05')) {
+          return res.status(+paaInviaRTRispostaErr05[0]).send(paaInviaRTRispostaErr05[1]);
+        } else if (iuv.toLowerCase().includes('err06')) {
+          return res.status(+paaInviaRTRispostaErr06[0]).send(paaInviaRTRispostaErr06[1]);
+        } else {
+          return res.status(+paaInviaRTRisposta[0]).send(paaInviaRTRisposta[1]);
         }
-        log_event_tx(paaInviaRTRisposta);
-        return res.status(+paaInviaRTRisposta[0]).send(paaInviaRTRisposta[1]);
       }
 
       // 7. paDemandPaymentNotice
