@@ -143,7 +143,7 @@ export const paaInviaRTRispostaErr03: MockResponse = [
 ];
 
 export const paaInviaRTRispostaErr04: MockResponse = [
-   200,
+   503,
    `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>503 Service Unavailable</title></meta><body><div class="container"><h1>503 Service Unavailable</h1><p>We are currently undergoing maintenance or the server is temporarily overloaded. Please try again later.</p><p>Powered by Mocker</p></div></body></meta></head></html>`,
 ];
 
