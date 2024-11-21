@@ -29,8 +29,8 @@ spec:
               cpu: 400m
       imagePullSecrets:
         - name: regcred
-      nodeSelector:
-        envnodopa: sit-uat
+      #nodeSelector:
+      #  envnodopa: sit-uat
       tolerations:
       - key: "envnodopa"
         operator: "Equal"
