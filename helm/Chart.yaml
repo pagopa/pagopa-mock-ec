@@ -12,5 +12,9 @@ dependencies:
   - name: microservice-chart
     version: 2.4.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
+    alias: mock-ec-replica
+  - name: microservice-chart
+    version: 2.4.0
+    repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: mock-secondary
 

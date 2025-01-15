@@ -84,7 +84,7 @@ basemock: &basemock
                 values:
                   - "true"
 
-mock-primary:
+mock-ec-replica:
   !!merge <<: *basemock
   ingress:
     create: true
