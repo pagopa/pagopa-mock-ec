@@ -228,3 +228,4 @@ stages:
                     ARGUMENTS: >-
                       --set mock-primary.image.tag="$(next_version)$(current_version)"
                       --set mock-secondary.image.tag="$(next_version)$(current_version)"
+                      --set mock-ec-replica.image.tag="$(next_version)$(current_version)"
