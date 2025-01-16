@@ -120,11 +120,11 @@ const onBollettino = ' su bollettino';
 
 // tslint:disable-next-line: no-big-function
 export async function newExpressApp(
-  config: Configuration,
-  db: Map<string, POSITIONS_STATUS>,
-  dbAmounts: Map<string, number>,
-  noticenumberRequests: Map<string, JSON>,
-  noticenumberResponses: Map<string, JSON>,
+        config: Configuration,
+        db: Map<string, POSITIONS_STATUS>,
+        dbAmounts: Map<string, number>,
+        noticenumberRequests: Map<string, JSON>,
+        noticenumberResponses: Map<string, JSON>,
 ): Promise<Express.Application> {
   // config params...
   const TIMEOUT_SEC = config.PA_MOCK.NM3_DATA.TIMETOUT_SEC;
@@ -254,8 +254,8 @@ export async function newExpressApp(
           const customResponse = paVerifyPaymentNoticeQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res
-            .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
-            .send(customResponse);
+          .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
+          .send(customResponse);
         }
 
         const paVerifyPaymentNotice = soapRequest[verifySoapRequest][0];
@@ -291,27 +291,27 @@ export async function newExpressApp(
         const isErrorXsd = avvisoErroreXSD.test(noticenumber);
 
         const isValidNotice =
-          avviso1.test(noticenumber) ||
-          avviso2.test(noticenumber) ||
-          avviso3.test(noticenumber) ||
-          avviso4.test(noticenumber) ||
-          avviso5.test(noticenumber) ||
-          avviso6.test(noticenumber) ||
-          avviso7.test(noticenumber) ||
-          avviso8.test(noticenumber) ||
-          avviso9.test(noticenumber) ||
-          avviso10.test(noticenumber) ||
-          avviso11.test(noticenumber) ||
-          avviso12.test(noticenumber) ||
-          avviso13.test(noticenumber) ||
-          avviso14.test(noticenumber) ||
-          avviso15.test(noticenumber) ||
-          avviso16.test(noticenumber) ||
-          avviso17.test(noticenumber) ||
-          avviso24.test(noticenumber) ||
-          avviso25.test(noticenumber) ||
-          avvisoOver5000.test(noticenumber) ||
-          avvisoUnder1.test(noticenumber);
+                avviso1.test(noticenumber) ||
+                avviso2.test(noticenumber) ||
+                avviso3.test(noticenumber) ||
+                avviso4.test(noticenumber) ||
+                avviso5.test(noticenumber) ||
+                avviso6.test(noticenumber) ||
+                avviso7.test(noticenumber) ||
+                avviso8.test(noticenumber) ||
+                avviso9.test(noticenumber) ||
+                avviso10.test(noticenumber) ||
+                avviso11.test(noticenumber) ||
+                avviso12.test(noticenumber) ||
+                avviso13.test(noticenumber) ||
+                avviso14.test(noticenumber) ||
+                avviso15.test(noticenumber) ||
+                avviso16.test(noticenumber) ||
+                avviso17.test(noticenumber) ||
+                avviso24.test(noticenumber) ||
+                avviso25.test(noticenumber) ||
+                avvisoOver5000.test(noticenumber) ||
+                avvisoUnder1.test(noticenumber);
 
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
         const isOver5000 = avvisoOver5000.test(noticenumber);
@@ -323,48 +323,48 @@ export async function newExpressApp(
         const isAmount1 = avviso5.test(noticenumber) || avviso6.test(noticenumber);
         const isAmount1bis = avviso11.test(noticenumber) || avviso12.test(noticenumber);
         const isAmountComplete1 =
-          avviso1.test(noticenumber) ||
-          avviso2.test(noticenumber) ||
-          avviso3.test(noticenumber) ||
-          avviso4.test(noticenumber) ||
-          avviso15.test(noticenumber) ||
-          avviso16.test(noticenumber) ||
-          avviso17.test(noticenumber) ||
-          avviso24.test(noticenumber) ||
-          avviso25.test(noticenumber);
+                avviso1.test(noticenumber) ||
+                avviso2.test(noticenumber) ||
+                avviso3.test(noticenumber) ||
+                avviso4.test(noticenumber) ||
+                avviso15.test(noticenumber) ||
+                avviso16.test(noticenumber) ||
+                avviso17.test(noticenumber) ||
+                avviso24.test(noticenumber) ||
+                avviso25.test(noticenumber);
 
         const isAmountComplete1bis =
-          avviso7.test(noticenumber) ||
-          avviso8.test(noticenumber) ||
-          avviso9.test(noticenumber) ||
-          avviso10.test(noticenumber);
+                avviso7.test(noticenumber) ||
+                avviso8.test(noticenumber) ||
+                avviso9.test(noticenumber) ||
+                avviso10.test(noticenumber);
 
         const transferTypeRes =
-          avviso1.test(noticenumber) ||
-          avviso5.test(noticenumber) ||
-          avviso7.test(noticenumber) ||
-          avviso11.test(noticenumber)
-            ? StTransferType_type_pafnEnum.POSTAL
-            : undefined;
+                avviso1.test(noticenumber) ||
+                avviso5.test(noticenumber) ||
+                avviso7.test(noticenumber) ||
+                avviso11.test(noticenumber)
+                        ? StTransferType_type_pafnEnum.POSTAL
+                        : undefined;
 
         // eslint-disable-next-line functional/no-let
         let amountRes = isAmount1
-          ? amount1.toFixed(2)
-          : isAmount1bis
-          ? amount1bis.toFixed(2)
-          : isAmountComplete1
-          ? (amount1 + amount2).toFixed(2)
-          : isAmountComplete1bis
-          ? (amount1bis + amount2bis).toFixed(2)
-          : isFixOver
-          ? (amount1Over + amount2Over).toFixed(2)
-          : isFixUnder
-          ? (amount1Under + amount2Under).toFixed(2)
-          : isOver5000
-          ? getRandomArbitrary(5000, 10000).toFixed(2)
-          : isUnder1
-          ? getRandomArbitrary(0, 1).toFixed(2)
-          : 0;
+                ? amount1.toFixed(2)
+                : isAmount1bis
+                        ? amount1bis.toFixed(2)
+                        : isAmountComplete1
+                                ? (amount1 + amount2).toFixed(2)
+                                : isAmountComplete1bis
+                                        ? (amount1bis + amount2bis).toFixed(2)
+                                        : isFixOver
+                                                ? (amount1Over + amount2Over).toFixed(2)
+                                                : isFixUnder
+                                                        ? (amount1Under + amount2Under).toFixed(2)
+                                                        : isOver5000
+                                                                ? getRandomArbitrary(5000, 10000).toFixed(2)
+                                                                : isUnder1
+                                                                        ? getRandomArbitrary(0, 1).toFixed(2)
+                                                                        : 0;
 
         const customAmount = noticenumber[0].substring(14, 18); // xx.xx
         // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
@@ -399,7 +399,7 @@ export async function newExpressApp(
           const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
             fault: {
               description:
-                'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
+                      'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
@@ -444,11 +444,11 @@ export async function newExpressApp(
             const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
               fault: {
                 faultCode:
-                  b === POSITIONS_STATUS.IN_PROGRESS
-                    ? PAA_PAGAMENTO_IN_CORSO.value
-                    : b === POSITIONS_STATUS.CLOSE
-                    ? PAA_PAGAMENTO_DUPLICATO.value
-                    : '_UNDEFINE_',
+                        b === POSITIONS_STATUS.IN_PROGRESS
+                                ? PAA_PAGAMENTO_IN_CORSO.value
+                                : b === POSITIONS_STATUS.CLOSE
+                                        ? PAA_PAGAMENTO_DUPLICATO.value
+                                        : '_UNDEFINE_',
                 faultString: `Errore ${noticenumber}`,
                 id: faultId,
               },
@@ -488,8 +488,8 @@ export async function newExpressApp(
           const customResponse = paGetPaymentQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res
-            .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
-            .send(customResponse);
+          .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
+          .send(customResponse);
         }
         const paGetPayment = soapRequest[activateSoapRequest][0];
         const fiscalcode = paGetPayment.qrcode[0].fiscalcode;
@@ -549,35 +549,35 @@ export async function newExpressApp(
         }
 
         const isNoticeWith120 =
-          avviso1.test(noticenumber) ||
-          avviso2.test(noticenumber) ||
-          avviso3.test(noticenumber) ||
-          avviso4.test(noticenumber) ||
-          avviso5.test(noticenumber) ||
-          avviso6.test(noticenumber);
+                avviso1.test(noticenumber) ||
+                avviso2.test(noticenumber) ||
+                avviso3.test(noticenumber) ||
+                avviso4.test(noticenumber) ||
+                avviso5.test(noticenumber) ||
+                avviso6.test(noticenumber);
 
         const isValidNotice =
-          avviso1.test(noticenumber) ||
-          avviso2.test(noticenumber) ||
-          avviso3.test(noticenumber) ||
-          avviso4.test(noticenumber) ||
-          avviso5.test(noticenumber) ||
-          avviso6.test(noticenumber) ||
-          avviso7.test(noticenumber) ||
-          avviso8.test(noticenumber) ||
-          avviso9.test(noticenumber) ||
-          avviso10.test(noticenumber) ||
-          avviso11.test(noticenumber) ||
-          avviso12.test(noticenumber) ||
-          avviso13.test(noticenumber) ||
-          avviso14.test(noticenumber) ||
-          avviso15.test(noticenumber) ||
-          avviso16.test(noticenumber) ||
-          avviso17.test(noticenumber) ||
-          avviso24.test(noticenumber) ||
-          avviso25.test(noticenumber) ||
-          avvisoOver5000.test(noticenumber) ||
-          avvisoUnder1.test(noticenumber);
+                avviso1.test(noticenumber) ||
+                avviso2.test(noticenumber) ||
+                avviso3.test(noticenumber) ||
+                avviso4.test(noticenumber) ||
+                avviso5.test(noticenumber) ||
+                avviso6.test(noticenumber) ||
+                avviso7.test(noticenumber) ||
+                avviso8.test(noticenumber) ||
+                avviso9.test(noticenumber) ||
+                avviso10.test(noticenumber) ||
+                avviso11.test(noticenumber) ||
+                avviso12.test(noticenumber) ||
+                avviso13.test(noticenumber) ||
+                avviso14.test(noticenumber) ||
+                avviso15.test(noticenumber) ||
+                avviso16.test(noticenumber) ||
+                avviso17.test(noticenumber) ||
+                avviso24.test(noticenumber) ||
+                avviso25.test(noticenumber) ||
+                avvisoOver5000.test(noticenumber) ||
+                avvisoUnder1.test(noticenumber);
 
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
         const isOver5000 = avvisoOver5000.test(noticenumber);
@@ -591,38 +591,38 @@ export async function newExpressApp(
         const isSmartAmount = avviso5smart.test(noticenumber);
 
         const isAmountComplete1 =
-          avviso1.test(noticenumber) ||
-          avviso2.test(noticenumber) ||
-          avviso3.test(noticenumber) ||
-          avviso4.test(noticenumber) ||
-          avviso15.test(noticenumber) ||
-          avviso16.test(noticenumber) ||
-          avviso17.test(noticenumber);
+                avviso1.test(noticenumber) ||
+                avviso2.test(noticenumber) ||
+                avviso3.test(noticenumber) ||
+                avviso4.test(noticenumber) ||
+                avviso15.test(noticenumber) ||
+                avviso16.test(noticenumber) ||
+                avviso17.test(noticenumber);
 
         const isAmountComplete1bis =
-          avviso7.test(noticenumber) ||
-          avviso8.test(noticenumber) ||
-          avviso9.test(noticenumber) ||
-          avviso10.test(noticenumber);
+                avviso7.test(noticenumber) ||
+                avviso8.test(noticenumber) ||
+                avviso9.test(noticenumber) ||
+                avviso10.test(noticenumber);
 
         // eslint-disable-next-line functional/no-let
         let amountRes = isAmount1
-          ? amount1.toFixed(2)
-          : isAmount1bis
-          ? amount1bis.toFixed(2)
-          : isAmountComplete1
-          ? (amount1 + amount2).toFixed(2)
-          : isAmountComplete1bis
-          ? (amount1bis + amount2bis).toFixed(2)
-          : isFixOver
-          ? (amount1Over + amount2Over).toFixed(2)
-          : isFixUnder
-          ? (amount1Under + amount2Under).toFixed(2)
-          : isOver5000 || isUnder1
-          ? dbAmounts.has(noticenumber[0])
-            ? dbAmounts.get(noticenumber[0])
-            : 0
-          : 0;
+                ? amount1.toFixed(2)
+                : isAmount1bis
+                        ? amount1bis.toFixed(2)
+                        : isAmountComplete1
+                                ? (amount1 + amount2).toFixed(2)
+                                : isAmountComplete1bis
+                                        ? (amount1bis + amount2bis).toFixed(2)
+                                        : isFixOver
+                                                ? (amount1Over + amount2Over).toFixed(2)
+                                                : isFixUnder
+                                                        ? (amount1Under + amount2Under).toFixed(2)
+                                                        : isOver5000 || isUnder1
+                                                                ? dbAmounts.has(noticenumber[0])
+                                                                        ? dbAmounts.get(noticenumber[0])
+                                                                        : 0
+                                                                : 0;
 
         const amountSession = dbAmounts.has(noticenumber[0]) ? dbAmounts.get(noticenumber[0]) : 0;
         const amountSession1 = amountSession ? amountSession / 2 : 0;
@@ -630,30 +630,30 @@ export async function newExpressApp(
 
         // eslint-disable-next-line functional/no-let
         let amountPrimaryRes = isFixOver
-          ? amount1Over.toFixed(2)
-          : isFixUnder
-          ? amount1Under.toFixed(2)
-          : isOver5000 || isUnder1
-          ? amountSession1.toFixed(2)
-          : isNoticeWith120
-          ? amount1.toFixed(2)
-          : amount1bis.toFixed(2);
+                ? amount1Over.toFixed(2)
+                : isFixUnder
+                        ? amount1Under.toFixed(2)
+                        : isOver5000 || isUnder1
+                                ? amountSession1.toFixed(2)
+                                : isNoticeWith120
+                                        ? amount1.toFixed(2)
+                                        : amount1bis.toFixed(2);
 
         const amountSecondaryRes = isFixOver
-          ? amount2Over.toFixed(2)
-          : isFixUnder
-          ? amount2Under.toFixed(2)
-          : isOver5000 || isUnder1
-          ? amountSession2.toFixed(2)
-          : isNoticeWith120
-          ? amount2.toFixed(2)
-          : amount2bis.toFixed(2);
+                ? amount2Over.toFixed(2)
+                : isFixUnder
+                        ? amount2Under.toFixed(2)
+                        : isOver5000 || isUnder1
+                                ? amountSession2.toFixed(2)
+                                : isNoticeWith120
+                                        ? amount2.toFixed(2)
+                                        : amount2bis.toFixed(2);
 
         const customAmount = noticenumber[0].substring(14, 18); // xx.xx
         /* eslint-disable */
         amountPrimaryRes = isSmartAmount
-          ? +customAmount.substring(0, 2) + '.' + customAmount.substring(2, 4)
-          : amountPrimaryRes;
+                ? +customAmount.substring(0, 2) + '.' + customAmount.substring(2, 4)
+                : amountPrimaryRes;
         amountRes = isSmartAmount ? +customAmount.substring(0, 2) + '.' + customAmount.substring(2, 4) : amountRes;
         /* eslint-enable */
 
@@ -668,7 +668,7 @@ export async function newExpressApp(
           const paGetPaymentResponse = paGetPaymentRes({
             fault: {
               description:
-                'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
+                      'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
@@ -724,11 +724,11 @@ export async function newExpressApp(
               outcome: 'KO',
               fault: {
                 faultCode:
-                  b === POSITIONS_STATUS.IN_PROGRESS
-                    ? PAA_PAGAMENTO_IN_CORSO.value
-                    : b === POSITIONS_STATUS.CLOSE
-                    ? PAA_PAGAMENTO_DUPLICATO.value
-                    : '_UNDEFINE_',
+                        b === POSITIONS_STATUS.IN_PROGRESS
+                                ? PAA_PAGAMENTO_IN_CORSO.value
+                                : b === POSITIONS_STATUS.CLOSE
+                                        ? PAA_PAGAMENTO_DUPLICATO.value
+                                        : '_UNDEFINE_',
                 faultString: `Errore ${noticenumber}`,
                 id: faultId,
               },
@@ -741,11 +741,11 @@ export async function newExpressApp(
 
             // retrive 0,1,2,3 from noticenumber
             const idIbanAvviso: number =
-              isOver5000 || isUnder1
-                ? 1 // Math.round(getRandomArbitrary(0, 11))
-                : isFixOver || isFixUnder
-                ? 1 // Fix Over and Under come avviso2
-                : +noticenumber[0].substring(3, 5);
+                    isOver5000 || isUnder1
+                            ? 1 // Math.round(getRandomArbitrary(0, 11))
+                            : isFixOver || isFixUnder
+                                    ? 1 // Fix Over and Under come avviso2
+                                    : +noticenumber[0].substring(3, 5);
             // eslint-disable-next-line functional/no-let
             let iban1;
             // eslint-disable-next-line functional/no-let
@@ -821,19 +821,19 @@ export async function newExpressApp(
             const paGetPaymentResponse = paGetPaymentRes({
               amount: amountRes,
               amountPrimary:
-                iban2 !== null ? amountPrimaryRes : isOver5000 || isUnder1 ? amountSession1 : amountPrimaryRes,
+                      iban2 !== null ? amountPrimaryRes : isOver5000 || isUnder1 ? amountSession1 : amountPrimaryRes,
               amountSecondary: amountSecondaryRes,
               amount3: (iban5 ? 10 : iban4 ? 10 : 20).toFixed(2),
               amount4: (iban5 ? 5 : 10).toFixed(2),
               amount5: '5.00',
               creditorReferenceId,
               description:
-                avviso5.test(noticenumber) ||
-                avviso6.test(noticenumber) ||
-                avviso11.test(noticenumber) ||
-                avviso12.test(noticenumber)
-                  ? descriptionMono
-                  : descriptionAll,
+                      avviso5.test(noticenumber) ||
+                      avviso6.test(noticenumber) ||
+                      avviso11.test(noticenumber) ||
+                      avviso12.test(noticenumber)
+                              ? descriptionMono
+                              : descriptionAll,
               fiscalCodePA: fiscalcode,
               iban_1: iban1,
               iban_2: iban2,
@@ -870,8 +870,8 @@ export async function newExpressApp(
           const customResponse = paSendRTQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res
-            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-            .send(customResponse);
+          .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
+          .send(customResponse);
         }
         const sentReceiptReq = soapRequest[sentReceipt][0];
         const auxdigit = config.PA_MOCK.AUX_DIGIT;
@@ -901,8 +901,8 @@ export async function newExpressApp(
           const customResponse = pspNotifyPaymentQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res
-            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-            .send(customResponse);
+          .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
+          .send(customResponse);
         }
         const pspnotifypayment = soapRequest[pspnotifypaymentreq][0];
         const auxdigit = config.PA_MOCK.AUX_DIGIT;
@@ -930,8 +930,8 @@ export async function newExpressApp(
           const customResponse = paaVerificaRPTQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res
-            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-            .send(customResponse);
+          .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
+          .send(customResponse);
         }
 
         log_event_tx(paaVerificaRPTRisposta);
@@ -944,8 +944,8 @@ export async function newExpressApp(
           const customResponse = paaAttivaRPTQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res
-            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-            .send(customResponse);
+          .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
+          .send(customResponse);
         }
 
         log_event_tx(paaAttivaRPTRisposta);
@@ -953,13 +953,13 @@ export async function newExpressApp(
       }
 
       if (
-        !(
-          soapRequest[sentReceipt] ||
-          soapRequest[activateSoapRequest] ||
-          soapRequest[verifySoapRequest] ||
-          soapRequest[paaVerificaRPTreq] ||
-          soapRequest[paaAttivaRPTreq]
-        )
+              !(
+                      soapRequest[sentReceipt] ||
+                      soapRequest[activateSoapRequest] ||
+                      soapRequest[verifySoapRequest] ||
+                      soapRequest[paaVerificaRPTreq] ||
+                      soapRequest[paaAttivaRPTreq]
+              )
       ) {
         // The SOAP Request not implemented
         logger.info(`The SOAP Request ${JSON.stringify(soapRequest)} not implemented`);
