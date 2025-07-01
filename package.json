@@ -5,6 +5,9 @@
   "repository": "https://github.com/pagopa/io-pagopa-node-mock.git",
   "author": "https://pagopa.it",
   "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "start": "node dist/index.js",
     "build": "npm-run-all -s clean generate build:*",
