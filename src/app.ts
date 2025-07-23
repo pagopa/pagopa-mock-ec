@@ -543,7 +543,7 @@ export async function newExpressApp(
           });
           return res.status(paActivate24res[0]).send(paActivate24res[1]);
         } else if (avviso26.test(noticenumber)) {
-          const paActivate24res = paActivate25({
+          const paActivate25res = paActivate25({
             creditorReferenceId,
           });
           return res.status(paActivate25res[0]).send(paActivate25res[1]);
