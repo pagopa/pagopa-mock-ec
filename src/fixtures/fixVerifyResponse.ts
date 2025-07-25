@@ -190,7 +190,7 @@ export const paVerify25 = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlso
             <outcome>OK</outcome>
             <paymentList>
                 <paymentOptionDescription>
-                    <amount>999999999.99</amount>
+                    <amount>999000000.99</amount>
                     <options>EQ</options>
                     <dueDate>2030-07-31+02:00</dueDate>
                     <detailDescription>pagamentoTest</detailDescription>
