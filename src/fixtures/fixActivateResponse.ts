@@ -431,9 +431,17 @@ export const paActivate24 = (params: IActivateRequest): MockResponse => [
               <transferList>
                   <transfer>
                       <idTransfer>1</idTransfer>
-                      <transferAmount>999999999.99</transferAmount>
+                      <transferAmount>100.00</transferAmount>
                       <fiscalCodePA>77777777777</fiscalCodePA>
                       <IBAN>IT57N0760114800000011050036</IBAN>
+                      <remittanceInformation>remittance information</remittanceInformation>
+                      <transferCategory>0101101IM</transferCategory>
+                  </transfer>
+                  <transfer>
+                      <idTransfer>2</idTransfer>
+                      <transferAmount>20.00</transferAmount>
+                      <fiscalCodePA>77777777777</fiscalCodePA>
+                      <IBAN>IT86H0760101000000000001015</IBAN>
                       <remittanceInformation>remittance information</remittanceInformation>
                       <transferCategory>0101101IM</transferCategory>
                   </transfer>
@@ -454,7 +462,7 @@ export const paActivate25 = (params: IActivateRequest): MockResponse => [
           <outcome>OK</outcome>
           <data>
               <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
-              <paymentAmount>999999999.99</paymentAmount>
+              <paymentAmount>999000000.99</paymentAmount>
               <dueDate>2021-07-31+02:00</dueDate>
               <description>pagamentoTest</description>
               <companyName>company PA</companyName>
@@ -476,17 +484,9 @@ export const paActivate25 = (params: IActivateRequest): MockResponse => [
               <transferList>
                   <transfer>
                       <idTransfer>1</idTransfer>
-                      <transferAmount>100.00</transferAmount>
+                      <transferAmount>999000000.99</transferAmount>
                       <fiscalCodePA>77777777777</fiscalCodePA>
                       <IBAN>IT57N0760114800000011050036</IBAN>
-                      <remittanceInformation>remittance information</remittanceInformation>
-                      <transferCategory>0101101IM</transferCategory>
-                  </transfer>
-                  <transfer>
-                      <idTransfer>2</idTransfer>
-                      <transferAmount>20.00</transferAmount>
-                      <fiscalCodePA>77777777777</fiscalCodePA>
-                      <IBAN>IT86H0760101000000000001015</IBAN>
                       <remittanceInformation>remittance information</remittanceInformation>
                       <transferCategory>0101101IM</transferCategory>
                   </transfer>
