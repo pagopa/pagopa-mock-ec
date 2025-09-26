@@ -15,6 +15,7 @@ parameters:
     default: dev
     values:
       - dev
+      - uat
   - name: DEPLOY_TYPE
     displayName: Deployment type
     type: string
