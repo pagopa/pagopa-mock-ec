@@ -165,7 +165,7 @@ stages:
       - Prepare_artifact
     jobs:
       - job: 'do_deploy_staging_slot_and_swap'
-        condition: eq(${{ parameters.DEPLOY_TYPE }}, 'staging_slot_and_swap')
+        condition: eq('${{ parameters.DEPLOY_TYPE }}', 'staging_slot_and_swap')
         steps:
           - checkout: none
           - download: current
@@ -203,7 +203,7 @@ stages:
             displayName: 'Swap with production slot'
 
       - job: 'do_deploy_production_slot'
-        condition: eq(${{ parameters.DEPLOY_TYPE }}, 'production_slot')
+        condition: eq('${{ parameters.DEPLOY_TYPE }}', 'production_slot')
         steps:
           - checkout: none
           - download: current
