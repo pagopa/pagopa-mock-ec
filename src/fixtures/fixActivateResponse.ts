@@ -514,7 +514,7 @@ export const paActivate25 = (params: IActivateRequest): MockResponse => [
                       <fiscalCodePA>77777777777</fiscalCodePA>
                       <richiestaMarcaDaBollo>
                         <hashDocumento>hashDocumento</hashDocumento>
-                        <tipoBollo>tipoBollo</hashDocumento>
+                        <tipoBollo>01</hashDocumento>
                         <provinciaResidenza>BA</hashDocumento>
                       </richiestaMarcaDaBollo>
                       <remittanceInformation>remittance information</remittanceInformation>
