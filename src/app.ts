@@ -50,6 +50,7 @@ import {
   paActivate23,
   paActivate24,
   paActivatePagamentoDuplicato,
+  paActivate25,
 } from './fixtures/fixActivateResponse';
 
 const paVerifyPaymentNoticeQueue = new Array<string>();
@@ -94,6 +95,7 @@ const avviso22 = new RegExp('^30221.*'); // fix response
 const avviso23 = new RegExp('^30222.*'); // fix response
 const avviso24 = new RegExp('^30223.*'); // fix response
 const avviso25 = new RegExp('^30224.*'); // fix response
+const avviso26 = new RegExp('^30225.*'); // fix response with valued MDB section
 const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random su 2 transfers
 const avvisoUnder1 = new RegExp('^30288.*'); // random under 1 euro + + random su 2 transfers
 
@@ -539,6 +541,11 @@ export async function newExpressApp(
         } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           const paActivateDuplicatoRes = paActivatePagamentoDuplicato();
           return res.status(paActivateDuplicatoRes[0]).send(paActivateDuplicatoRes[1]);
+        } else if (avviso26.test(noticenumber)) {
+          const paActivate25res = paActivate25({
+            creditorReferenceId,
+          });
+          return res.status(paActivate25res[0]).send(paActivate25res[1]);
         }
 
         const isFixedError = avvisoErrore.test(noticenumber);
