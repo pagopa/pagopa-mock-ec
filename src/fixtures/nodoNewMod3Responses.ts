@@ -36,6 +36,7 @@ interface IActivateRequest {
   fullName?: string;
   email?: string;
   CF?: string;
+  mdb?: string;
 }
 
 interface IRTRequest {
@@ -198,7 +199,25 @@ export const paGetPaymentRes = (params: IActivateRequest): MockResponse => [
                         <transferCategory>0201102IM</transferCategory>
                       </transfer>`
                           : ''
-                      }                                            
+                      }
+                      ${
+                        params.mdb
+                          ? // tslint:disable-next-line: no-nested-template-literals
+                            `<transfer>
+                        <idTransfer>6</idTransfer>
+                        <transferAmount>${params.amount5}</transferAmount>
+                        <fiscalCodePA>01199250158</fiscalCodePA>
+                        <IBAN>${params.iban_5}</IBAN>
+                        <remittanceInformation>TEFA Comune Milano${params.remittanceInformation2Bollettino}</remittanceInformation>
+                        <transferCategory>0201102IM</transferCategory>
+                        <ctRichiestaMarcaDaBollo>
+                          <hashDocumento>hashDocumento</hashDocumento>
+                          <tipoBollo>tipoBollo</tipoBollo>
+                          <provinciaResidenza>Roma</provinciaResidenza>
+                        </ctRichiestaMarcaDaBollo>
+                      </transfer>`
+                          : ''
+                      }                                         
                     </transferList>
                   </data>`
               : ''
