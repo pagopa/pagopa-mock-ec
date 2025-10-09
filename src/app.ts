@@ -855,6 +855,7 @@ export async function newExpressApp(
               fullName,
               email,
               CF,
+              mdb: isFixOver ? "true" : undefined
             });
 
             log_event_tx(paGetPaymentResponse);
