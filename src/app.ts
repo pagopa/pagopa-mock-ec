@@ -61,6 +61,8 @@ const pspNotifyPaymentQueue = new Array<string>();
 const paaVerificaRPTQueue = new Array<string>();
 const paaAttivaRPTQueue = new Array<string>();
 
+const escapeHtml = require('escape-html');
+
 const faultId = '77777777777';
 
 const verifySoapRequest = 'pafn:paverifypaymentnoticereq';
@@ -546,8 +548,8 @@ export async function newExpressApp(
           const paActivate25res = paActivate25({
             creditorReferenceId,
           });
-          return res.status(paActivate25res[0]).send(paActivate25res[1]);
-        }else if (avvisoPagamentoDuplicato.test(noticenumber)) {
+          return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
+        } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           const paActivateDuplicatoRes = paActivatePagamentoDuplicato();
           return res.status(paActivateDuplicatoRes[0]).send(paActivateDuplicatoRes[1]);
         }
