@@ -509,7 +509,7 @@ export const paActivate25 = (params: IActivateRequest): MockResponse => [
   </soapenv:Envelope>`,
 ];
 
-export const paActivate26 = (params: IActivateRequest): MockResponse => [
+export const paActivate27 = (params: IActivateRequest): MockResponse => [
   200,
   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
   xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
