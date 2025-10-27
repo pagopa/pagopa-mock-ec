@@ -553,11 +553,12 @@ export async function newExpressApp(
             creditorReferenceId,
           });
           return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
-          const paActivate25res = paActivate26({
+        } else if (avviso27.test(noticenumber)) {
+          const activateResponse = paActivate26({
             creditorReferenceId,
           });
-          return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
-        } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
+          return res.status(activateResponse[0]).send(escapeHtml(activateResponse[1]));
+        }  else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           const paActivateDuplicatoRes = paActivatePagamentoDuplicato();
           return res.status(paActivateDuplicatoRes[0]).send(paActivateDuplicatoRes[1]);
         }
