@@ -453,20 +453,20 @@ export async function newExpressApp(
         let amountRes = isAmount1
           ? amount1.toFixed(2)
           : isAmount1bis
-          ? amount1bis.toFixed(2)
-          : isAmountComplete1
-          ? (amount1 + amount2).toFixed(2)
-          : isAmountComplete1bis
-          ? (amount1bis + amount2bis).toFixed(2)
-          : isFixOver
-          ? (amount1Over + amount2Over).toFixed(2)
-          : isFixUnder
-          ? (amount1Under + amount2Under).toFixed(2)
-          : isOver5000
-          ? getRandomArbitrary(5000, 10000).toFixed(2)
-          : isUnder1
-          ? getRandomArbitrary(0, 1).toFixed(2)
-          : 0;
+            ? amount1bis.toFixed(2)
+            : isAmountComplete1
+              ? (amount1 + amount2).toFixed(2)
+              : isAmountComplete1bis
+                ? (amount1bis + amount2bis).toFixed(2)
+                : isFixOver
+                  ? (amount1Over + amount2Over).toFixed(2)
+                  : isFixUnder
+                    ? (amount1Under + amount2Under).toFixed(2)
+                    : isOver5000
+                      ? getRandomArbitrary(5000, 10000).toFixed(2)
+                      : isUnder1
+                        ? getRandomArbitrary(0, 1).toFixed(2)
+                        : 0;
 
         const customAmount = noticenumber[0].substring(14, 18); // xx.xx
         // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
@@ -740,20 +740,20 @@ export async function newExpressApp(
         let amountRes = isAmount1
           ? amount1.toFixed(2)
           : isAmount1bis
-          ? amount1bis.toFixed(2)
-          : isAmountComplete1
-          ? (amount1 + amount2).toFixed(2)
-          : isAmountComplete1bis
-          ? (amount1bis + amount2bis).toFixed(2)
-          : isFixOver
-          ? (amount1Over + amount2Over).toFixed(2)
-          : isFixUnder
-          ? (amount1Under + amount2Under).toFixed(2)
-          : isOver5000 || isUnder1
-          ? dbAmounts.has(noticenumber[0])
-            ? dbAmounts.get(noticenumber[0])
-            : 0
-          : 0;
+            ? amount1bis.toFixed(2)
+            : isAmountComplete1
+              ? (amount1 + amount2).toFixed(2)
+              : isAmountComplete1bis
+                ? (amount1bis + amount2bis).toFixed(2)
+                : isFixOver
+                  ? (amount1Over + amount2Over).toFixed(2)
+                  : isFixUnder
+                    ? (amount1Under + amount2Under).toFixed(2)
+                    : isOver5000 || isUnder1
+                      ? dbAmounts.has(noticenumber[0])
+                        ? dbAmounts.get(noticenumber[0])
+                        : 0
+                      : 0;
 
         const amountSession = dbAmounts.has(noticenumber[0]) ? dbAmounts.get(noticenumber[0]) : 0;
         const amountSession1 = amountSession ? amountSession / 2 : 0;
@@ -763,22 +763,22 @@ export async function newExpressApp(
         let amountPrimaryRes = isFixOver
           ? amount1Over.toFixed(2)
           : isFixUnder
-          ? amount1Under.toFixed(2)
-          : isOver5000 || isUnder1
-          ? amountSession1.toFixed(2)
-          : isNoticeWith120
-          ? amount1.toFixed(2)
-          : amount1bis.toFixed(2);
+            ? amount1Under.toFixed(2)
+            : isOver5000 || isUnder1
+              ? amountSession1.toFixed(2)
+              : isNoticeWith120
+                ? amount1.toFixed(2)
+                : amount1bis.toFixed(2);
 
         const amountSecondaryRes = isFixOver
           ? amount2Over.toFixed(2)
           : isFixUnder
-          ? amount2Under.toFixed(2)
-          : isOver5000 || isUnder1
-          ? amountSession2.toFixed(2)
-          : isNoticeWith120
-          ? amount2.toFixed(2)
-          : amount2bis.toFixed(2);
+            ? amount2Under.toFixed(2)
+            : isOver5000 || isUnder1
+              ? amountSession2.toFixed(2)
+              : isNoticeWith120
+                ? amount2.toFixed(2)
+                : amount2bis.toFixed(2);
 
         const customAmount = noticenumber[0].substring(14, 18); // xx.xx
         /* eslint-disable */
