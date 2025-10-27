@@ -16,6 +16,12 @@ parameters:
     values:
       - dev
       - uat
+  - name: DEPLOY_TYPE
+    displayName: Deployment type
+    type: string
+    values:
+      - staging_slot_and_swap
+      - production_slot
 
 # Only manual activations are intended
 trigger: none
@@ -27,14 +33,12 @@ pr: none
 # $(HEALTHCHECK_ENDPOINT)
 variables:
   ${{ if eq(parameters['environment'], 'dev') }}:
-    DEPLOY_TYPE: $[variables['DEV_DEPLOY_TYPE']]
     AZURE_SUBSCRIPTION: $(DEV_AZURE_SUBSCRIPTION)
     WEB_APP_NAME: $(DEV_WEB_APP_NAME)
     WEB_APP_RESOURCE_GROUP_NAME: $(DEV_WEB_APP_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(DEV_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_VNET: $(DEV_HEALTHCHECK_CONTAINER_VNET)
   ${{ if eq(parameters['environment'], 'uat') }}:
-    DEPLOY_TYPE: $[variables['UAT_DEPLOY_TYPE']]
     AZURE_SUBSCRIPTION: $(UAT_AZURE_SUBSCRIPTION)
     WEB_APP_NAME: $(UAT_WEB_APP_NAME)
     WEB_APP_RESOURCE_GROUP_NAME: $(UAT_WEB_APP_RESOURCE_GROUP_NAME)
@@ -161,7 +165,7 @@ stages:
       - Prepare_artifact
     jobs:
       - job: 'do_deploy_staging_slot_and_swap'
-        condition: eq(variables.DEPLOY_TYPE, 'staging_slot_and_swap')
+        condition: eq('${{ parameters.DEPLOY_TYPE }}', 'staging_slot_and_swap')
         steps:
           - checkout: none
           - download: current
@@ -199,7 +203,7 @@ stages:
             displayName: 'Swap with production slot'
 
       - job: 'do_deploy_production_slot'
-        condition: eq(variables.DEPLOY_TYPE, 'production_slot')
+        condition: eq('${{ parameters.DEPLOY_TYPE }}', 'production_slot')
         steps:
           - checkout: none
           - download: current

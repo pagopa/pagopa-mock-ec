@@ -238,8 +238,16 @@ The tribute is 120.00 EUR divided in 2 transfers:
 The tribute is 999999999.99 EUR:
 
 | Notice number        | CC Comune di Milano | CC Comune di Milano |
-|----------------------| ------------------- | -------------------- |
-| 302**25**xxxxxxxxxxx | CCPost              | CCBank               |
+|----------------------|---------------------|---------------------|
+| 302**25**xxxxxxxxxxx | CCPost              | CCBank              |
+
+### Tribute 17
+
+The amount of the tribute is 3000€ later actualized as 3010€ on activation.
+
+| Notice number        | CC Comune di Milano | CC Comune di Milano |
+|----------------------|---------------------|---------------------|
+| 302**26**xxxxxxxxxxx | CCPost              | CCBank              |
 
 ### Edge cases
 
