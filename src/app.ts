@@ -560,10 +560,10 @@ export async function newExpressApp(
           });
           return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
         } else if (avviso27.test(noticenumber)) {
-          const paActivate26res = paActivate26({
+          const activateResponse  = paActivate26({
             creditorReferenceId,
           });
-          return res.status(paActivate26res[0]).send(escapeHtml(paActivate26res[1]));
+          return res.status(activateResponse[0]).send(escapeHtml(activateResponse[1]));
         } else if (avviso28.test(noticenumber)) {
           const paActivate27res = paActivate27({
             creditorReferenceId,
