@@ -243,23 +243,11 @@ The tribute is 999999999.99 EUR:
 
 ### Tribute 17
 
-Same as Tribute 10, but with the digital stamp (`richiestaMarcaDaBollo`) informations.
-
-The tribute is 120.00 EUR divided in 2 transfers:
-- Transfer 1 : 0101101IM, 100.00€ due to **EC_TE**
-- Transfer 2 : 0201102IM, 20.00€ due to **EC_TE**
-
-| Notice number        | CC Comune di Milano | CC Comune di Milano |
-|----------------------|---------------------|---------------------|
-| 302**26**xxxxxxxxxxx | CCPost              | CCBank              |
-
-### Tribute 18
-
 The amount of the tribute is 3000€ later actualized as 3010€ on activation.
 
 | Notice number        | CC Comune di Milano | CC Comune di Milano |
 |----------------------|---------------------|---------------------|
-| 302**27**xxxxxxxxxxx | CCPost              | CCBank              |
+| 302**26**xxxxxxxxxxx | CCPost              | CCBank              |
 
 ### Edge cases
 
