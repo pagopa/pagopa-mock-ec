@@ -100,7 +100,7 @@ const avviso22 = new RegExp('^30221.*'); // fix response
 const avviso23 = new RegExp('^30222.*'); // fix response
 const avviso24 = new RegExp('^30223.*'); // fix response
 const avviso25 = new RegExp('^30224.*'); // fix response
-const avviso26 = new RegExp('^30225.*'); // fix response 
+const avviso26 = new RegExp('^30225.*'); // fix response
 const avviso27 = new RegExp('^30226.*'); // fix response
 const avviso28 = new RegExp('^30227.*'); // fix response
 const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random su 2 transfers
@@ -291,9 +291,9 @@ export async function newExpressApp(
           return res.status(200).send(paVerify25);
         } else if (avviso27.test(noticenumber)) {
           return res.status(200).send(paVerify25);
-        }  else if (avviso28.test(noticenumber)) {
+        } else if (avviso28.test(noticenumber)) {
           return res.status(200).send(paVerify26);
-        }else if (avvisoPagamentoDuplicato.test(noticenumber)) {
+        } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           return res.status(200).send(paVerifyPagamentoDuplicato);
         }
 
@@ -560,7 +560,7 @@ export async function newExpressApp(
           });
           return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
         } else if (avviso27.test(noticenumber)) {
-          const activateResponse  = paActivate26({
+          const activateResponse = paActivate26({
             creditorReferenceId,
           });
           return res.status(activateResponse[0]).send(escapeHtml(activateResponse[1]));
