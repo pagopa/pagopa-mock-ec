@@ -557,7 +557,7 @@ export async function newExpressApp(
           const activateResponse = paActivate26({
             creditorReferenceId,
           });
-          return res.status(activateResponse[0]).send(escapeHtml(activateResponse[1]));
+          return res.status(activateResponse[0]).send(activateResponse[1]);
         }  else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           const paActivateDuplicatoRes = paActivatePagamentoDuplicato();
           return res.status(paActivateDuplicatoRes[0]).send(paActivateDuplicatoRes[1]);
