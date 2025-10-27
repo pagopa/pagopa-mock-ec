@@ -54,6 +54,7 @@ import {
   paActivate24,
   paActivate25,
   paActivate26,
+  paActivate27,
   paActivatePagamentoDuplicato,
 } from './fixtures/fixActivateResponse';
 
@@ -559,15 +560,15 @@ export async function newExpressApp(
           });
           return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
         } else if (avviso27.test(noticenumber)) {
-          const paActivate25res = paActivate25({
-            creditorReferenceId,
-          });
-          return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
-        } else if (avviso28.test(noticenumber)) {
           const paActivate26res = paActivate26({
             creditorReferenceId,
           });
           return res.status(paActivate26res[0]).send(escapeHtml(paActivate26res[1]));
+        } else if (avviso28.test(noticenumber)) {
+          const paActivate27res = paActivate27({
+            creditorReferenceId,
+          });
+          return res.status(paActivate27res[0]).send(escapeHtml(paActivate27res[1]));
         } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           const paActivateDuplicatoRes = paActivatePagamentoDuplicato();
           return res.status(paActivateDuplicatoRes[0]).send(paActivateDuplicatoRes[1]);
