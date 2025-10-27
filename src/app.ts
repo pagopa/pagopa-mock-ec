@@ -12,9 +12,17 @@ import {
   paGetPaymentRes,
   paVerifyPaymentNoticeRes,
   pspNotifyPaymentRes,
+  paGetPaymentV2Response,
+  paSendRTV2Response,
 } from './fixtures/nodoNewMod3Responses';
 
-import { paaVerificaRPTRisposta, paaAttivaRPTRisposta } from './fixtures/nodoNewMod3Responses_oldEc';
+import {
+  paaVerificaRPTRisposta,
+  paaAttivaRPTRisposta,
+  paaInviaRTRisposta,
+  paDemandPaymentNoticeRisposta,
+  paaChiediNumeroAvvisoRisposta,
+} from './fixtures/nodoNewMod3Responses_oldEc';
 
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
@@ -58,6 +66,11 @@ const paSendRTQueue = new Array<string>();
 const pspNotifyPaymentQueue = new Array<string>();
 const paaVerificaRPTQueue = new Array<string>();
 const paaAttivaRPTQueue = new Array<string>();
+const paaInviaRTQueue = new Array<string>();
+const paDemandPaymentNoticeQueue = new Array<string>();
+const paaChiediNumeroAvvisoQueue = new Array<string>();
+const paGetPaymentV2Queue = new Array<string>();
+const paSendRTV2Queue = new Array<string>();
 
 const faultId = '77777777777';
 
@@ -67,6 +80,11 @@ const sentReceipt = 'pafn:pasendrtreq';
 const pspnotifypaymentreq = 'pspfn:pspnotifypaymentreq';
 const paaVerificaRPTreq = 'ppt:paaverificarpt';
 const paaAttivaRPTreq = 'ppt:paaattivarpt';
+const paaInviaRTreq = 'ppt:paainviart';
+const paDemandPaymentNoticereq = 'pafn:pademandpaymentnoticerequest';
+const paaChiediNumeroAvvisoreq = 'ppt:paachiedinumeroavviso';
+const paGetPaymentV2req = 'pafn:pagetpaymentv2request';
+const paSendRTV2req = 'pafn:pasendrtv2request';
 
 const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
 const avviso2 = new RegExp('^30201.*'); // CCPost + CCBank
@@ -120,11 +138,11 @@ const onBollettino = ' su bollettino';
 
 // tslint:disable-next-line: no-big-function
 export async function newExpressApp(
-        config: Configuration,
-        db: Map<string, POSITIONS_STATUS>,
-        dbAmounts: Map<string, number>,
-        noticenumberRequests: Map<string, JSON>,
-        noticenumberResponses: Map<string, JSON>,
+  config: Configuration,
+  db: Map<string, POSITIONS_STATUS>,
+  dbAmounts: Map<string, number>,
+  noticenumberRequests: Map<string, JSON>,
+  noticenumberResponses: Map<string, JSON>,
 ): Promise<Express.Application> {
   // config params...
   const TIMEOUT_SEC = config.PA_MOCK.NM3_DATA.TIMETOUT_SEC;
@@ -235,10 +253,61 @@ export async function newExpressApp(
         paaAttivaRPTQueue.push(req.rawBody);
         res.status(200).send(`${req.params.primitive} saved. ${paaAttivaRPTQueue.length} pushed`);
       }
+    } else if (req.params.primitive === 'paaInviaRT') {
+      if (String(req.query.override).toLowerCase() === 'true') {
+        paaInviaRTQueue.pop();
+        paaInviaRTQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        paaInviaRTQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paaInviaRTQueue.length} pushed`);
+      }
+    } else if (req.params.primitive === 'paDemandPaymentNotice') {
+      if (String(req.query.override).toLowerCase() === 'true') {
+        paDemandPaymentNoticeQueue.pop();
+        paDemandPaymentNoticeQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        paDemandPaymentNoticeQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paDemandPaymentNoticeQueue.length} pushed`);
+      }
+    } else if (req.params.primitive === 'paaChiediNumeroAvviso') {
+      if (String(req.query.override).toLowerCase() === 'true') {
+        paaChiediNumeroAvvisoQueue.pop();
+        paaChiediNumeroAvvisoQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        paaChiediNumeroAvvisoQueue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paaChiediNumeroAvvisoQueue.length} pushed`);
+      }
+    } else if (req.params.primitive === 'paGetPaymentV2') {
+      if (String(req.query.override).toLowerCase() === 'true') {
+        paGetPaymentV2Queue.pop();
+        paGetPaymentV2Queue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        paGetPaymentV2Queue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paGetPaymentV2Queue.length} pushed`);
+      }
+    } else if (req.params.primitive === 'paSendRTV2') {
+      if (String(req.query.override).toLowerCase() === 'true') {
+        paSendRTV2Queue.pop();
+        paSendRTV2Queue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} updated`);
+      } else {
+        paSendRTV2Queue.push(req.rawBody);
+        res.status(200).send(`${req.params.primitive} saved. ${paSendRTV2Queue.length} pushed`);
+      }
     } else {
       res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
     }
   });
+
+  function ritorno(res: any, customResponse: string | undefined) {
+    return res
+      .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
+      .send(customResponse);
+  }
 
   // SOAP Server mock entrypoint
   // eslint-disable-next-line complexity
@@ -246,6 +315,7 @@ export async function newExpressApp(
   app.post(config.PA_MOCK.ROUTES.PPT_NODO, async (req, res) => {
     logger.info(`>>> rx REQUEST :`);
     logger.info(JSON.stringify(req.body));
+    const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
     try {
       const soapRequest = req.body['soapenv:envelope']['soapenv:body'][0];
       // 1. paVerifyPaymentNotice
@@ -253,9 +323,41 @@ export async function newExpressApp(
         if (paVerifyPaymentNoticeQueue.length > 0) {
           const customResponse = paVerifyPaymentNoticeQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-          .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
-          .send(customResponse);
+          // return res
+          //   .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
+          //   .send(customResponse);
+          if (customResponse !== undefined) {
+            const convert = await xml2js.parseStringPromise(customResponse);
+            if (convert['soapenv:Envelope']['soapenv:Body']) {
+              if (convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paVerifyPaymentNoticeRes']) {
+                const delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paVerifyPaymentNoticeRes'][0].delay;
+                const irraggiungibile =
+                  convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paVerifyPaymentNoticeRes'][0].irraggiungibile;
+                if (irraggiungibile) {
+                  throw new TypeError('irraggiungibile');
+                }
+                if (irraggiungibile) {
+                  throw new TypeError('irraggiungibile');
+                }
+                if (delay) {
+                  logger.info('>>> start timeout');
+                  delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paVerifyPaymentNoticeRes'][0].delay;
+                  const builder = new xml2js.Builder();
+                  const xml = builder.buildObject(convert);
+                  const delay_numb: number = +delay[0];
+                  logger.info(delay_numb);
+                  await sleep(delay_numb);
+                  return ritorno(res, xml);
+                } else {
+                  return ritorno(res, customResponse);
+                }
+              } else {
+                return ritorno(res, customResponse);
+              }
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
         }
 
         const paVerifyPaymentNotice = soapRequest[verifySoapRequest][0];
@@ -291,27 +393,27 @@ export async function newExpressApp(
         const isErrorXsd = avvisoErroreXSD.test(noticenumber);
 
         const isValidNotice =
-                avviso1.test(noticenumber) ||
-                avviso2.test(noticenumber) ||
-                avviso3.test(noticenumber) ||
-                avviso4.test(noticenumber) ||
-                avviso5.test(noticenumber) ||
-                avviso6.test(noticenumber) ||
-                avviso7.test(noticenumber) ||
-                avviso8.test(noticenumber) ||
-                avviso9.test(noticenumber) ||
-                avviso10.test(noticenumber) ||
-                avviso11.test(noticenumber) ||
-                avviso12.test(noticenumber) ||
-                avviso13.test(noticenumber) ||
-                avviso14.test(noticenumber) ||
-                avviso15.test(noticenumber) ||
-                avviso16.test(noticenumber) ||
-                avviso17.test(noticenumber) ||
-                avviso24.test(noticenumber) ||
-                avviso25.test(noticenumber) ||
-                avvisoOver5000.test(noticenumber) ||
-                avvisoUnder1.test(noticenumber);
+          avviso1.test(noticenumber) ||
+          avviso2.test(noticenumber) ||
+          avviso3.test(noticenumber) ||
+          avviso4.test(noticenumber) ||
+          avviso5.test(noticenumber) ||
+          avviso6.test(noticenumber) ||
+          avviso7.test(noticenumber) ||
+          avviso8.test(noticenumber) ||
+          avviso9.test(noticenumber) ||
+          avviso10.test(noticenumber) ||
+          avviso11.test(noticenumber) ||
+          avviso12.test(noticenumber) ||
+          avviso13.test(noticenumber) ||
+          avviso14.test(noticenumber) ||
+          avviso15.test(noticenumber) ||
+          avviso16.test(noticenumber) ||
+          avviso17.test(noticenumber) ||
+          avviso24.test(noticenumber) ||
+          avviso25.test(noticenumber) ||
+          avvisoOver5000.test(noticenumber) ||
+          avvisoUnder1.test(noticenumber);
 
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
         const isOver5000 = avvisoOver5000.test(noticenumber);
@@ -323,48 +425,48 @@ export async function newExpressApp(
         const isAmount1 = avviso5.test(noticenumber) || avviso6.test(noticenumber);
         const isAmount1bis = avviso11.test(noticenumber) || avviso12.test(noticenumber);
         const isAmountComplete1 =
-                avviso1.test(noticenumber) ||
-                avviso2.test(noticenumber) ||
-                avviso3.test(noticenumber) ||
-                avviso4.test(noticenumber) ||
-                avviso15.test(noticenumber) ||
-                avviso16.test(noticenumber) ||
-                avviso17.test(noticenumber) ||
-                avviso24.test(noticenumber) ||
-                avviso25.test(noticenumber);
+          avviso1.test(noticenumber) ||
+          avviso2.test(noticenumber) ||
+          avviso3.test(noticenumber) ||
+          avviso4.test(noticenumber) ||
+          avviso15.test(noticenumber) ||
+          avviso16.test(noticenumber) ||
+          avviso17.test(noticenumber) ||
+          avviso24.test(noticenumber) ||
+          avviso25.test(noticenumber);
 
         const isAmountComplete1bis =
-                avviso7.test(noticenumber) ||
-                avviso8.test(noticenumber) ||
-                avviso9.test(noticenumber) ||
-                avviso10.test(noticenumber);
+          avviso7.test(noticenumber) ||
+          avviso8.test(noticenumber) ||
+          avviso9.test(noticenumber) ||
+          avviso10.test(noticenumber);
 
         const transferTypeRes =
-                avviso1.test(noticenumber) ||
-                avviso5.test(noticenumber) ||
-                avviso7.test(noticenumber) ||
-                avviso11.test(noticenumber)
-                        ? StTransferType_type_pafnEnum.POSTAL
-                        : undefined;
+          avviso1.test(noticenumber) ||
+          avviso5.test(noticenumber) ||
+          avviso7.test(noticenumber) ||
+          avviso11.test(noticenumber)
+            ? StTransferType_type_pafnEnum.POSTAL
+            : undefined;
 
         // eslint-disable-next-line functional/no-let
         let amountRes = isAmount1
-                ? amount1.toFixed(2)
-                : isAmount1bis
-                        ? amount1bis.toFixed(2)
-                        : isAmountComplete1
-                                ? (amount1 + amount2).toFixed(2)
-                                : isAmountComplete1bis
-                                        ? (amount1bis + amount2bis).toFixed(2)
-                                        : isFixOver
-                                                ? (amount1Over + amount2Over).toFixed(2)
-                                                : isFixUnder
-                                                        ? (amount1Under + amount2Under).toFixed(2)
-                                                        : isOver5000
-                                                                ? getRandomArbitrary(5000, 10000).toFixed(2)
-                                                                : isUnder1
-                                                                        ? getRandomArbitrary(0, 1).toFixed(2)
-                                                                        : 0;
+          ? amount1.toFixed(2)
+          : isAmount1bis
+          ? amount1bis.toFixed(2)
+          : isAmountComplete1
+          ? (amount1 + amount2).toFixed(2)
+          : isAmountComplete1bis
+          ? (amount1bis + amount2bis).toFixed(2)
+          : isFixOver
+          ? (amount1Over + amount2Over).toFixed(2)
+          : isFixUnder
+          ? (amount1Under + amount2Under).toFixed(2)
+          : isOver5000
+          ? getRandomArbitrary(5000, 10000).toFixed(2)
+          : isUnder1
+          ? getRandomArbitrary(0, 1).toFixed(2)
+          : 0;
 
         const customAmount = noticenumber[0].substring(14, 18); // xx.xx
         // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
@@ -399,7 +501,7 @@ export async function newExpressApp(
           const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
             fault: {
               description:
-                      'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
+                'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
@@ -444,11 +546,11 @@ export async function newExpressApp(
             const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
               fault: {
                 faultCode:
-                        b === POSITIONS_STATUS.IN_PROGRESS
-                                ? PAA_PAGAMENTO_IN_CORSO.value
-                                : b === POSITIONS_STATUS.CLOSE
-                                        ? PAA_PAGAMENTO_DUPLICATO.value
-                                        : '_UNDEFINE_',
+                  b === POSITIONS_STATUS.IN_PROGRESS
+                    ? PAA_PAGAMENTO_IN_CORSO.value
+                    : b === POSITIONS_STATUS.CLOSE
+                    ? PAA_PAGAMENTO_DUPLICATO.value
+                    : '_UNDEFINE_',
                 faultString: `Errore ${noticenumber}`,
                 id: faultId,
               },
@@ -487,9 +589,38 @@ export async function newExpressApp(
         if (paGetPaymentQueue.length > 0) {
           const customResponse = paGetPaymentQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-          .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
-          .send(customResponse);
+          // return res
+          //   .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
+          //   .send(customResponse);
+          if (customResponse !== undefined) {
+            const convert = await xml2js.parseStringPromise(customResponse);
+            if (convert['soapenv:Envelope']['soapenv:Body']) {
+              if (convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes']) {
+                const delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'][0].delay;
+                const irraggiungibile =
+                  convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'].irraggiungibile;
+                if (irraggiungibile) {
+                  throw new TypeError('irraggiungibile');
+                }
+                if (delay) {
+                  logger.info('>>> start timeout');
+                  delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'][0].delay;
+                  const builder = new xml2js.Builder();
+                  const xml = builder.buildObject(convert);
+                  const delay_numb: number = +delay[0];
+                  logger.info(delay_numb);
+                  await sleep(delay_numb);
+                  return ritorno(res, xml);
+                } else {
+                  return ritorno(res, customResponse);
+                }
+              } else {
+                return ritorno(res, customResponse);
+              }
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
         }
         const paGetPayment = soapRequest[activateSoapRequest][0];
         const fiscalcode = paGetPayment.qrcode[0].fiscalcode;
@@ -549,35 +680,35 @@ export async function newExpressApp(
         }
 
         const isNoticeWith120 =
-                avviso1.test(noticenumber) ||
-                avviso2.test(noticenumber) ||
-                avviso3.test(noticenumber) ||
-                avviso4.test(noticenumber) ||
-                avviso5.test(noticenumber) ||
-                avviso6.test(noticenumber);
+          avviso1.test(noticenumber) ||
+          avviso2.test(noticenumber) ||
+          avviso3.test(noticenumber) ||
+          avviso4.test(noticenumber) ||
+          avviso5.test(noticenumber) ||
+          avviso6.test(noticenumber);
 
         const isValidNotice =
-                avviso1.test(noticenumber) ||
-                avviso2.test(noticenumber) ||
-                avviso3.test(noticenumber) ||
-                avviso4.test(noticenumber) ||
-                avviso5.test(noticenumber) ||
-                avviso6.test(noticenumber) ||
-                avviso7.test(noticenumber) ||
-                avviso8.test(noticenumber) ||
-                avviso9.test(noticenumber) ||
-                avviso10.test(noticenumber) ||
-                avviso11.test(noticenumber) ||
-                avviso12.test(noticenumber) ||
-                avviso13.test(noticenumber) ||
-                avviso14.test(noticenumber) ||
-                avviso15.test(noticenumber) ||
-                avviso16.test(noticenumber) ||
-                avviso17.test(noticenumber) ||
-                avviso24.test(noticenumber) ||
-                avviso25.test(noticenumber) ||
-                avvisoOver5000.test(noticenumber) ||
-                avvisoUnder1.test(noticenumber);
+          avviso1.test(noticenumber) ||
+          avviso2.test(noticenumber) ||
+          avviso3.test(noticenumber) ||
+          avviso4.test(noticenumber) ||
+          avviso5.test(noticenumber) ||
+          avviso6.test(noticenumber) ||
+          avviso7.test(noticenumber) ||
+          avviso8.test(noticenumber) ||
+          avviso9.test(noticenumber) ||
+          avviso10.test(noticenumber) ||
+          avviso11.test(noticenumber) ||
+          avviso12.test(noticenumber) ||
+          avviso13.test(noticenumber) ||
+          avviso14.test(noticenumber) ||
+          avviso15.test(noticenumber) ||
+          avviso16.test(noticenumber) ||
+          avviso17.test(noticenumber) ||
+          avviso24.test(noticenumber) ||
+          avviso25.test(noticenumber) ||
+          avvisoOver5000.test(noticenumber) ||
+          avvisoUnder1.test(noticenumber);
 
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
         const isOver5000 = avvisoOver5000.test(noticenumber);
@@ -591,38 +722,38 @@ export async function newExpressApp(
         const isSmartAmount = avviso5smart.test(noticenumber);
 
         const isAmountComplete1 =
-                avviso1.test(noticenumber) ||
-                avviso2.test(noticenumber) ||
-                avviso3.test(noticenumber) ||
-                avviso4.test(noticenumber) ||
-                avviso15.test(noticenumber) ||
-                avviso16.test(noticenumber) ||
-                avviso17.test(noticenumber);
+          avviso1.test(noticenumber) ||
+          avviso2.test(noticenumber) ||
+          avviso3.test(noticenumber) ||
+          avviso4.test(noticenumber) ||
+          avviso15.test(noticenumber) ||
+          avviso16.test(noticenumber) ||
+          avviso17.test(noticenumber);
 
         const isAmountComplete1bis =
-                avviso7.test(noticenumber) ||
-                avviso8.test(noticenumber) ||
-                avviso9.test(noticenumber) ||
-                avviso10.test(noticenumber);
+          avviso7.test(noticenumber) ||
+          avviso8.test(noticenumber) ||
+          avviso9.test(noticenumber) ||
+          avviso10.test(noticenumber);
 
         // eslint-disable-next-line functional/no-let
         let amountRes = isAmount1
-                ? amount1.toFixed(2)
-                : isAmount1bis
-                        ? amount1bis.toFixed(2)
-                        : isAmountComplete1
-                                ? (amount1 + amount2).toFixed(2)
-                                : isAmountComplete1bis
-                                        ? (amount1bis + amount2bis).toFixed(2)
-                                        : isFixOver
-                                                ? (amount1Over + amount2Over).toFixed(2)
-                                                : isFixUnder
-                                                        ? (amount1Under + amount2Under).toFixed(2)
-                                                        : isOver5000 || isUnder1
-                                                                ? dbAmounts.has(noticenumber[0])
-                                                                        ? dbAmounts.get(noticenumber[0])
-                                                                        : 0
-                                                                : 0;
+          ? amount1.toFixed(2)
+          : isAmount1bis
+          ? amount1bis.toFixed(2)
+          : isAmountComplete1
+          ? (amount1 + amount2).toFixed(2)
+          : isAmountComplete1bis
+          ? (amount1bis + amount2bis).toFixed(2)
+          : isFixOver
+          ? (amount1Over + amount2Over).toFixed(2)
+          : isFixUnder
+          ? (amount1Under + amount2Under).toFixed(2)
+          : isOver5000 || isUnder1
+          ? dbAmounts.has(noticenumber[0])
+            ? dbAmounts.get(noticenumber[0])
+            : 0
+          : 0;
 
         const amountSession = dbAmounts.has(noticenumber[0]) ? dbAmounts.get(noticenumber[0]) : 0;
         const amountSession1 = amountSession ? amountSession / 2 : 0;
@@ -630,24 +761,24 @@ export async function newExpressApp(
 
         // eslint-disable-next-line functional/no-let
         let amountPrimaryRes = isFixOver
-                ? amount1Over.toFixed(2)
-                : isFixUnder
-                        ? amount1Under.toFixed(2)
-                        : isOver5000 || isUnder1
-                                ? amountSession1.toFixed(2)
-                                : isNoticeWith120
-                                        ? amount1.toFixed(2)
-                                        : amount1bis.toFixed(2);
+          ? amount1Over.toFixed(2)
+          : isFixUnder
+          ? amount1Under.toFixed(2)
+          : isOver5000 || isUnder1
+          ? amountSession1.toFixed(2)
+          : isNoticeWith120
+          ? amount1.toFixed(2)
+          : amount1bis.toFixed(2);
 
         const amountSecondaryRes = isFixOver
-                ? amount2Over.toFixed(2)
-                : isFixUnder
-                        ? amount2Under.toFixed(2)
-                        : isOver5000 || isUnder1
-                                ? amountSession2.toFixed(2)
-                                : isNoticeWith120
-                                        ? amount2.toFixed(2)
-                                        : amount2bis.toFixed(2);
+          ? amount2Over.toFixed(2)
+          : isFixUnder
+          ? amount2Under.toFixed(2)
+          : isOver5000 || isUnder1
+          ? amountSession2.toFixed(2)
+          : isNoticeWith120
+          ? amount2.toFixed(2)
+          : amount2bis.toFixed(2);
 
         const customAmount = noticenumber[0].substring(14, 18); // xx.xx
         /* eslint-disable */
@@ -668,7 +799,7 @@ export async function newExpressApp(
           const paGetPaymentResponse = paGetPaymentRes({
             fault: {
               description:
-                      'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
+                'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
@@ -724,11 +855,11 @@ export async function newExpressApp(
               outcome: 'KO',
               fault: {
                 faultCode:
-                        b === POSITIONS_STATUS.IN_PROGRESS
-                                ? PAA_PAGAMENTO_IN_CORSO.value
-                                : b === POSITIONS_STATUS.CLOSE
-                                        ? PAA_PAGAMENTO_DUPLICATO.value
-                                        : '_UNDEFINE_',
+                  b === POSITIONS_STATUS.IN_PROGRESS
+                    ? PAA_PAGAMENTO_IN_CORSO.value
+                    : b === POSITIONS_STATUS.CLOSE
+                    ? PAA_PAGAMENTO_DUPLICATO.value
+                    : '_UNDEFINE_',
                 faultString: `Errore ${noticenumber}`,
                 id: faultId,
               },
@@ -741,11 +872,11 @@ export async function newExpressApp(
 
             // retrive 0,1,2,3 from noticenumber
             const idIbanAvviso: number =
-                    isOver5000 || isUnder1
-                            ? 1 // Math.round(getRandomArbitrary(0, 11))
-                            : isFixOver || isFixUnder
-                                    ? 1 // Fix Over and Under come avviso2
-                                    : +noticenumber[0].substring(3, 5);
+              isOver5000 || isUnder1
+                ? 1 // Math.round(getRandomArbitrary(0, 11))
+                : isFixOver || isFixUnder
+                ? 1 // Fix Over and Under come avviso2
+                : +noticenumber[0].substring(3, 5);
             // eslint-disable-next-line functional/no-let
             let iban1;
             // eslint-disable-next-line functional/no-let
@@ -821,19 +952,19 @@ export async function newExpressApp(
             const paGetPaymentResponse = paGetPaymentRes({
               amount: amountRes,
               amountPrimary:
-                      iban2 !== null ? amountPrimaryRes : isOver5000 || isUnder1 ? amountSession1 : amountPrimaryRes,
+                iban2 !== null ? amountPrimaryRes : isOver5000 || isUnder1 ? amountSession1 : amountPrimaryRes,
               amountSecondary: amountSecondaryRes,
               amount3: (iban5 ? 10 : iban4 ? 10 : 20).toFixed(2),
               amount4: (iban5 ? 5 : 10).toFixed(2),
               amount5: '5.00',
               creditorReferenceId,
               description:
-                      avviso5.test(noticenumber) ||
-                      avviso6.test(noticenumber) ||
-                      avviso11.test(noticenumber) ||
-                      avviso12.test(noticenumber)
-                              ? descriptionMono
-                              : descriptionAll,
+                avviso5.test(noticenumber) ||
+                avviso6.test(noticenumber) ||
+                avviso11.test(noticenumber) ||
+                avviso12.test(noticenumber)
+                  ? descriptionMono
+                  : descriptionAll,
               fiscalCodePA: fiscalcode,
               iban_1: iban1,
               iban_2: iban2,
@@ -869,9 +1000,38 @@ export async function newExpressApp(
         if (paSendRTQueue.length > 0) {
           const customResponse = paSendRTQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-          .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-          .send(customResponse);
+          // return res
+          //   .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
+          //   .send(customResponse);
+          if (customResponse !== undefined) {
+            const convert = await xml2js.parseStringPromise(customResponse);
+            if (convert['soapenv:Envelope']['soapenv:Body']) {
+              if (convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paSendRTRes']) {
+                const delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paSendRTRes'][0].delay;
+                const irraggiungibile =
+                  convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paSendRTRes'][0].irraggiungibile;
+                if (irraggiungibile) {
+                  throw new TypeError('irraggiungibile');
+                }
+                if (delay) {
+                  logger.info('>>> start timeout');
+                  delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paSendRTRes'][0].delay;
+                  const builder = new xml2js.Builder();
+                  const xml = builder.buildObject(convert);
+                  const delay_numb: number = +delay[0];
+                  logger.info(delay_numb);
+                  await sleep(delay_numb);
+                  return ritorno(res, xml);
+                } else {
+                  return ritorno(res, customResponse);
+                }
+              } else {
+                return ritorno(res, customResponse);
+              }
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
         }
         const sentReceiptReq = soapRequest[sentReceipt][0];
         const auxdigit = config.PA_MOCK.AUX_DIGIT;
@@ -901,8 +1061,8 @@ export async function newExpressApp(
           const customResponse = pspNotifyPaymentQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
           return res
-          .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-          .send(customResponse);
+            .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
+            .send(customResponse);
         }
         const pspnotifypayment = soapRequest[pspnotifypaymentreq][0];
         const auxdigit = config.PA_MOCK.AUX_DIGIT;
@@ -929,9 +1089,48 @@ export async function newExpressApp(
         if (paaVerificaRPTQueue.length > 0) {
           const customResponse = paaVerificaRPTQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-          .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-          .send(customResponse);
+          // return res
+          //   .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
+          //   .send(customResponse);
+          if (customResponse !== undefined) {
+            const convert = await xml2js.parseStringPromise(customResponse);
+            if (convert['soapenv:Envelope']['soapenv:Body']) {
+              if (convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaVerificaRPTRisposta']) {
+                if (
+                  convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaVerificaRPTRisposta'][0].paaVerificaRPTRisposta
+                ) {
+                  const delay =
+                    convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaVerificaRPTRisposta'][0]
+                      .paaVerificaRPTRisposta[0].delay;
+                  const irraggiungibile =
+                    convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaVerificaRPTRisposta'][0]
+                      .paaVerificaRPTRisposta[0].irraggiungibile;
+                  if (irraggiungibile) {
+                    throw new TypeError('irraggiungibile');
+                  }
+                  if (delay) {
+                    logger.info('>>> start timeout');
+                    delete convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaVerificaRPTRisposta'][0]
+                      .paaVerificaRPTRisposta[0].delay;
+                    const builder = new xml2js.Builder();
+                    const xml = builder.buildObject(convert);
+                    const delay_numb: number = +delay[0];
+                    logger.info(delay_numb);
+                    await sleep(delay_numb);
+                    return ritorno(res, xml);
+                  } else {
+                    return ritorno(res, customResponse);
+                  }
+                } else {
+                  return ritorno(res, customResponse);
+                }
+              } else {
+                return ritorno(res, customResponse);
+              }
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
         }
 
         log_event_tx(paaVerificaRPTRisposta);
@@ -943,23 +1142,281 @@ export async function newExpressApp(
         if (paaAttivaRPTQueue.length > 0) {
           const customResponse = paaAttivaRPTQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          return res
-          .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
-          .send(customResponse);
+          // return res
+          //   .status(customResponse && customResponse.includes('PAA_ERRORE_MOCK') ? 500 : 200)
+          //   .send(customResponse);
+          if (customResponse !== undefined) {
+            const convert = await xml2js.parseStringPromise(customResponse);
+            if (convert['soapenv:Envelope']['soapenv:Body']) {
+              if (convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaAttivaRPTRisposta']) {
+                if (convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaAttivaRPTRisposta'][0].paaAttivaRPTRisposta) {
+                  const delay =
+                    convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaAttivaRPTRisposta'][0].paaAttivaRPTRisposta[0]
+                      .delay;
+                  const irraggiungibile =
+                    convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaAttivaRPTRisposta'][0].paaAttivaRPTRisposta[0]
+                      .irraggiungibile;
+                  if (irraggiungibile) {
+                    throw new TypeError('irraggiungibile');
+                  }
+                  if (delay) {
+                    logger.info('>>> start timeout');
+                    delete convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaAttivaRPTRisposta'][0]
+                      .paaAttivaRPTRisposta[0].delay;
+                    const builder = new xml2js.Builder();
+                    const xml = builder.buildObject(convert);
+                    const delay_numb: number = +delay[0];
+                    logger.info(delay_numb);
+                    await sleep(delay_numb);
+                    return ritorno(res, xml);
+                  } else {
+                    return ritorno(res, customResponse);
+                  }
+                } else {
+                  return ritorno(res, customResponse);
+                }
+              } else {
+                return ritorno(res, customResponse);
+              }
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
         }
 
         log_event_tx(paaAttivaRPTRisposta);
         return res.status(+paaAttivaRPTRisposta[0]).send(paaAttivaRPTRisposta[1]);
       }
 
+      // 6. paaInviaRT
+      if (soapRequest[paaInviaRTreq]) {
+        if (paaInviaRTQueue.length > 0) {
+          const customResponse = paaInviaRTQueue.shift();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          if (customResponse !== undefined) {
+            const convert = await xml2js.parseStringPromise(customResponse);
+            if (convert['soapenv:Envelope']['soapenv:Body']) {
+              if (convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta']) {
+                if (convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0].paaInviaRTRisposta) {
+                  const delay =
+                    convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0].paaInviaRTRisposta[0]
+                      .delay;
+                  const irraggiungibile =
+                    convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0].paaInviaRTRisposta[0]
+                      .irraggiungibile;
+                  if (irraggiungibile) {
+                    throw new TypeError('irraggiungibile');
+                  }
+                  if (delay) {
+                    logger.info('>>> start timeout');
+                    delete convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaInviaRTRisposta'][0]
+                      .paaInviaRTRisposta[0].delay;
+                    const builder = new xml2js.Builder();
+                    const xml = builder.buildObject(convert);
+                    const delay_numb: number = +delay[0];
+                    logger.info(delay_numb);
+                    await sleep(delay_numb);
+                    return ritorno(res, xml);
+                  } else {
+                    return ritorno(res, customResponse);
+                  }
+                } else {
+                  return ritorno(res, customResponse);
+                }
+              } else {
+                return ritorno(res, customResponse);
+              }
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
+        }
+        log_event_tx(paaInviaRTRisposta);
+        return res.status(+paaInviaRTRisposta[0]).send(paaInviaRTRisposta[1]);
+      }
+
+      // 7. paDemandPaymentNotice
+      if (soapRequest[paDemandPaymentNoticereq]) {
+        if (paDemandPaymentNoticeQueue.length > 0) {
+          const customResponse = paDemandPaymentNoticeQueue.shift();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          if (customResponse !== undefined) {
+            const convert = await xml2js.parseStringPromise(customResponse);
+            if (convert['soapenv:Envelope']['soapenv:Body']) {
+              if (convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paDemandPaymentNoticeResponse']) {
+                const delay =
+                  convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paDemandPaymentNoticeResponse'][0].delay;
+                const irraggiungibile =
+                  convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paDemandPaymentNoticeResponse'][0]
+                    .irraggiungibile;
+                if (irraggiungibile) {
+                  throw new TypeError('irraggiungibile');
+                }
+                if (delay) {
+                  logger.info('>>> start timeout');
+                  delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paDemandPaymentNoticeResponse'][0].delay;
+                  const builder = new xml2js.Builder();
+                  const xml = builder.buildObject(convert);
+                  const delay_numb: number = +delay[0];
+                  logger.info(delay_numb);
+                  await sleep(delay_numb);
+                  return ritorno(res, xml);
+                } else {
+                  return ritorno(res, customResponse);
+                }
+              } else {
+                return ritorno(res, customResponse);
+              }
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
+        }
+        log_event_tx(paDemandPaymentNoticeRisposta);
+        return res.status(+paDemandPaymentNoticeRisposta[0]).send(paDemandPaymentNoticeRisposta[1]);
+      }
+
+      // 8. paaChiediNumeroAvviso
+      if (soapRequest[paaChiediNumeroAvvisoreq]) {
+        if (paaChiediNumeroAvvisoQueue.length > 0) {
+          const customResponse = paaChiediNumeroAvvisoQueue.shift();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          if (customResponse !== undefined) {
+            const convert = await xml2js.parseStringPromise(customResponse);
+            if (convert['soapenv:Envelope']['soapenv:Body']) {
+              if (convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaChiediNumeroAvvisoRisposta']) {
+                if (
+                  convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaChiediNumeroAvvisoRisposta'][0]
+                    .paaChiediNumeroAvvisoRisposta
+                ) {
+                  const delay =
+                    convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaChiediNumeroAvvisoRisposta'][0]
+                      .paaChiediNumeroAvvisoRisposta[0].delay;
+                  const irraggiungibile =
+                    convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaChiediNumeroAvvisoRisposta'][0]
+                      .paaChiediNumeroAvvisoRisposta[0].irraggiungibile;
+                  if (irraggiungibile) {
+                    throw new TypeError('irraggiungibile');
+                  }
+                  if (delay) {
+                    logger.info('>>> start timeout');
+                    delete convert['soapenv:Envelope']['soapenv:Body'][0]['ws:paaChiediNumeroAvvisoRisposta'][0]
+                      .paaChiediNumeroAvvisoRisposta[0].delay;
+                    const builder = new xml2js.Builder();
+                    const xml = builder.buildObject(convert);
+                    const delay_numb: number = +delay[0];
+                    logger.info(delay_numb);
+                    await sleep(delay_numb);
+                    return ritorno(res, xml);
+                  } else {
+                    return ritorno(res, customResponse);
+                  }
+                } else {
+                  return ritorno(res, customResponse);
+                }
+              } else {
+                return ritorno(res, customResponse);
+              }
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
+        }
+        log_event_tx(paaChiediNumeroAvvisoRisposta);
+        return res.status(+paaChiediNumeroAvvisoRisposta[0]).send(paaChiediNumeroAvvisoRisposta[1]);
+      }
+
+      // 9. paGetPaymentV2
+      if (soapRequest[paGetPaymentV2req]) {
+        if (paGetPaymentV2Queue.length > 0) {
+          const customResponse = paGetPaymentV2Queue.shift();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          if (customResponse !== undefined) {
+            const convert = await xml2js.parseStringPromise(customResponse);
+            if (convert['soapenv:Envelope']['soapenv:Body']) {
+              if (convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentV2Response']) {
+                const delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentV2Response'][0].delay;
+                const irraggiungibile =
+                  convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentV2Response'][0].irraggiungibile;
+                if (irraggiungibile) {
+                  throw new TypeError('irraggiungibile');
+                }
+                if (delay) {
+                  logger.info('>>> start timeout');
+                  delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentV2Response'][0].delay;
+                  const builder = new xml2js.Builder();
+                  const xml = builder.buildObject(convert);
+                  const delay_numb: number = +delay[0];
+                  logger.info(delay_numb);
+                  await sleep(delay_numb);
+                  return ritorno(res, xml);
+                } else {
+                  return ritorno(res, customResponse);
+                }
+              } else {
+                return ritorno(res, customResponse);
+              }
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
+        }
+        log_event_tx(paGetPaymentV2Response);
+        return res.status(+paGetPaymentV2Response[0]).send(paGetPaymentV2Response[1]);
+      }
+
+      // 10. paSendRTV2
+      if (soapRequest[paSendRTV2req]) {
+        if (paSendRTV2Queue.length > 0) {
+          const customResponse = paSendRTV2Queue.shift();
+          logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
+          if (customResponse !== undefined) {
+            const convert = await xml2js.parseStringPromise(customResponse);
+            if (convert['soapenv:Envelope']['soapenv:Body']) {
+              if (convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentV2Response']) {
+                const delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paSendRTV2Response'][0].delay;
+                const irraggiungibile =
+                  convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paSendRTV2Response'][0].irraggiungibile;
+                if (irraggiungibile) {
+                  throw new TypeError('irraggiungibile');
+                }
+                if (delay) {
+                  logger.info('>>> start timeout');
+                  delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paSendRTV2Response'][0].delay;
+                  const builder = new xml2js.Builder();
+                  const xml = builder.buildObject(convert);
+                  const delay_numb: number = +delay[0];
+                  logger.info(delay_numb);
+                  await sleep(delay_numb);
+                  return ritorno(res, xml);
+                } else {
+                  return ritorno(res, customResponse);
+                }
+              } else {
+                return ritorno(res, customResponse);
+              }
+            } else {
+              return ritorno(res, customResponse);
+            }
+          }
+        }
+        log_event_tx(paSendRTV2Response);
+        return res.status(+paSendRTV2Response[0]).send(paSendRTV2Response[1]);
+      }
+
       if (
-              !(
-                      soapRequest[sentReceipt] ||
-                      soapRequest[activateSoapRequest] ||
-                      soapRequest[verifySoapRequest] ||
-                      soapRequest[paaVerificaRPTreq] ||
-                      soapRequest[paaAttivaRPTreq]
-              )
+        !(
+          soapRequest[sentReceipt] ||
+          soapRequest[activateSoapRequest] ||
+          soapRequest[verifySoapRequest] ||
+          soapRequest[paaVerificaRPTreq] ||
+          soapRequest[paaAttivaRPTreq] ||
+          soapRequest[paaInviaRTreq] ||
+          soapRequest[paDemandPaymentNoticereq] ||
+          soapRequest[paaChiediNumeroAvvisoreq] ||
+          soapRequest[paGetPaymentV2req] ||
+          soapRequest[paSendRTV2req]
+        )
       ) {
         // The SOAP Request not implemented
         logger.info(`The SOAP Request ${JSON.stringify(soapRequest)} not implemented`);
