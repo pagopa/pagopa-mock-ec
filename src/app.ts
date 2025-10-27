@@ -99,7 +99,7 @@ const avviso23 = new RegExp('^30222.*'); // fix response
 const avviso24 = new RegExp('^30223.*'); // fix response
 const avviso25 = new RegExp('^30224.*'); // fix response
 const avviso26 = new RegExp('^30225.*'); // fix response
-const avviso27 = new RegExp('^30225.*'); // fix response
+const avviso27 = new RegExp('^30226.*'); // fix response
 const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random su 2 transfers
 const avvisoUnder1 = new RegExp('^30288.*'); // random under 1 euro + + random su 2 transfers
 
