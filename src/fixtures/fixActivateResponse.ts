@@ -512,11 +512,11 @@ export const paActivate25 = (params: IActivateRequest): MockResponse => [
                       <idTransfer>2</idTransfer>
                       <transferAmount>20.00</transferAmount>
                       <fiscalCodePA>77777777777</fiscalCodePA>
-                      <richiestaMarcaDaBollo>
+                      <ctRichiestaMarcaDaBollo>
                         <hashDocumento>hashDocumento</hashDocumento>
                         <tipoBollo>01</hashDocumento>
                         <provinciaResidenza>BA</hashDocumento>
-                      </richiestaMarcaDaBollo>
+                      </ctRichiestaMarcaDaBollo>
                       <remittanceInformation>remittance information</remittanceInformation>
                       <transferCategory>0101101IM</transferCategory>
                   </transfer>
