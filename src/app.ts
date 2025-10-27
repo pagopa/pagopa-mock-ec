@@ -287,7 +287,7 @@ export async function newExpressApp(
         } else if (avviso26.test(noticenumber)) {
           return res.status(200).send(paVerify25);
         } else if (avviso27.test(noticenumber)) {
-          return res.status(200).send(paVerify25);
+          return res.status(200).send(paVerify24);
         } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           return res.status(200).send(paVerifyPagamentoDuplicato);
         }
