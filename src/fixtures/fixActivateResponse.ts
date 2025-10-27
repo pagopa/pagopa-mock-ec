@@ -506,7 +506,7 @@ export const paActivate26 = (params: IActivateRequest): MockResponse => [
           <outcome>OK</outcome>
           <data>
               <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
-              <paymentAmount>120.00</paymentAmount>
+              <paymentAmount>3010.00</paymentAmount>
               <dueDate>2021-07-31+02:00</dueDate>
               <description>pagamentoTest</description>
               <companyName>company PA</companyName>
