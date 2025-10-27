@@ -528,21 +528,9 @@ export const paActivate26 = (params: IActivateRequest): MockResponse => [
               <transferList>
                   <transfer>
                       <idTransfer>1</idTransfer>
-                      <transferAmount>100.00</transferAmount>
+                      <transferAmount>3010.00</transferAmount>
                       <fiscalCodePA>77777777777</fiscalCodePA>
                       <IBAN>IT57N0760114800000011050036</IBAN>
-                      <remittanceInformation>remittance information</remittanceInformation>
-                      <transferCategory>0101101IM</transferCategory>
-                  </transfer>
-                  <transfer>
-                      <idTransfer>2</idTransfer>
-                      <transferAmount>20.00</transferAmount>
-                      <fiscalCodePA>77777777777</fiscalCodePA>
-                      <richiestaMarcaDaBollo>
-                        <hashDocumento>hashDocumento</hashDocumento>
-                        <tipoBollo>01</tipoBollo>
-                        <provinciaResidenza>BA</provinciaResidenza>
-                      </richiestaMarcaDaBollo>
                       <remittanceInformation>remittance information</remittanceInformation>
                       <transferCategory>0101101IM</transferCategory>
                   </transfer>
