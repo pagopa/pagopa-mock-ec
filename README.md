@@ -235,17 +235,11 @@ The tribute is 120.00 EUR divided in 2 transfers:
 
 ### Tribute 16
 
-Same as Tribute 10, but with the digital stamp (`richiestaMarcaDaBollo`) informations.
-
-The tribute is 120.00 EUR divided in 2 transfers:
-- Transfer 1 : 0101101IM, 100.00€ due to **EC_TE**
-- Transfer 2 : 0201102IM, 20.00€ due to **EC_TE**
+The tribute is 999999999.99 EUR:
 
 | Notice number        | CC Comune di Milano | CC Comune di Milano |
-| -------------------- | ------------------- | -------------------- |
+|----------------------| ------------------- | -------------------- |
 | 302**25**xxxxxxxxxxx | CCPost              | CCBank               |
-
-
 
 ### Edge cases
 
@@ -259,7 +253,6 @@ The following edge cases are available (stateless, based on notice number)
 | 302**98**xxxxxxxxxxx | EC Station timeout                                   |
 | 302**99**xxxxxxxxxxx | Payment expired                                      |
 | 302**YY**xxxxxxxxxxx | Payment unknown                                      |
-
 
 **_NOTE:_** YY: every code not mentioned before -> from 17 to 94
 

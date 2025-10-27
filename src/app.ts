@@ -6,6 +6,7 @@ import * as xml2js from 'xml2js';
 
 import bodyParser = require('body-parser');
 
+import escapeHtml = require('escape-html');
 import { Configuration } from './config';
 import {
   paErrorVerify,
@@ -52,6 +53,7 @@ import {
   paActivate23,
   paActivate24,
   paActivate25,
+  paActivate26,
   paActivate27,
   paActivatePagamentoDuplicato,
 } from './fixtures/fixActivateResponse';
@@ -98,8 +100,9 @@ const avviso22 = new RegExp('^30221.*'); // fix response
 const avviso23 = new RegExp('^30222.*'); // fix response
 const avviso24 = new RegExp('^30223.*'); // fix response
 const avviso25 = new RegExp('^30224.*'); // fix response
-const avviso26 = new RegExp('^30225.*'); // fix response
-const avviso28 = new RegExp('^30226.*'); // fix response
+const avviso26 = new RegExp('^30225.*'); // fix response 
+const avviso27 = new RegExp('^30226.*'); // fix response
+const avviso28 = new RegExp('^30227.*'); // fix response
 const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random su 2 transfers
 const avvisoUnder1 = new RegExp('^30288.*'); // random under 1 euro + + random su 2 transfers
 
@@ -286,9 +289,11 @@ export async function newExpressApp(
           return res.status(200).send(paVerify24);
         } else if (avviso26.test(noticenumber)) {
           return res.status(200).send(paVerify25);
-        } else if (avviso28.test(noticenumber)) {
+        } else if (avviso27.test(noticenumber)) {
+          return res.status(200).send(paVerify25);
+        }  else if (avviso28.test(noticenumber)) {
           return res.status(200).send(paVerify26);
-        } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
+        }else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           return res.status(200).send(paVerifyPagamentoDuplicato);
         }
 
@@ -321,6 +326,7 @@ export async function newExpressApp(
           avviso24.test(noticenumber) ||
           avviso25.test(noticenumber) ||
           avviso26.test(noticenumber) ||
+          avviso27.test(noticenumber) ||
           avviso28.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
@@ -553,8 +559,13 @@ export async function newExpressApp(
             creditorReferenceId,
           });
           return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
+        } else if (avviso27.test(noticenumber)) {
+          const paActivate25res = paActivate25({
+            creditorReferenceId,
+          });
+          return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
         } else if (avviso28.test(noticenumber)) {
-          const paActivate26res = paActivate27({
+          const paActivate26res = paActivate26({
             creditorReferenceId,
           });
           return res.status(paActivate26res[0]).send(escapeHtml(paActivate26res[1]));
@@ -599,6 +610,7 @@ export async function newExpressApp(
           avviso24.test(noticenumber) ||
           avviso25.test(noticenumber) ||
           avviso26.test(noticenumber) ||
+          avviso27.test(noticenumber) ||
           avviso28.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
