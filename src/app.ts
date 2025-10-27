@@ -54,7 +54,6 @@ import {
   paActivate24,
   paActivate25,
   paActivate26,
-  paActivate27,
   paActivatePagamentoDuplicato,
 } from './fixtures/fixActivateResponse';
 
