@@ -83,6 +83,10 @@ basemock: &basemock
                 operator: In
                 values:
                   - "true"
+#duplicate due to template
+service:
+  ports:
+    - 8080
 
 mock-primary:
   !!merge <<: *basemock
