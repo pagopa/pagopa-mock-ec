@@ -243,6 +243,7 @@ The tribute is 999999999.99 EUR:
 
 ### Tribute 17
 
+
 Same as Tribute 10, but with the digital stamp (`richiestaMarcaDaBollo`) informations.
 
 The tribute is 120.00 EUR divided in 2 transfers:

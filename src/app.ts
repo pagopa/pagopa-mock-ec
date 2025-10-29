@@ -40,6 +40,7 @@ import {
   paVerify23,
   paVerify24,
   paVerify25,
+  paVerify26,
   paVerifyPagamentoDuplicato,
 } from './fixtures/fixVerifyResponse';
 import {
@@ -52,6 +53,7 @@ import {
   paActivate23,
   paActivate24,
   paActivate25,
+  paActivate26,
   paActivatePagamentoDuplicato,
 } from './fixtures/fixActivateResponse';
 
@@ -327,6 +329,7 @@ export async function newExpressApp(
           avviso24.test(noticenumber) ||
           avviso25.test(noticenumber) ||
           avviso26.test(noticenumber) ||
+          avviso27.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
@@ -558,6 +561,11 @@ export async function newExpressApp(
             creditorReferenceId,
           });
           return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
+        } else if (avviso27.test(noticenumber)) {
+          const paActivate27res = paActivate26({
+            creditorReferenceId,
+          });
+          return res.status(paActivate27res[0]).send(paActivate27res[1]);
         } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           const paActivateDuplicatoRes = paActivatePagamentoDuplicato();
           return res.status(paActivateDuplicatoRes[0]).send(paActivateDuplicatoRes[1]);
@@ -599,6 +607,7 @@ export async function newExpressApp(
           avviso24.test(noticenumber) ||
           avviso25.test(noticenumber) ||
           avviso26.test(noticenumber) ||
+          avviso27.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
