@@ -112,6 +112,10 @@ mock-secondary:
     rewriteTarget: /$2
 
 #duplicate due to template
+service:
+  ports:
+    - 8080
+
 microservice-chart:
   namespace: "nodo"
   nameOverride: ""
