@@ -40,7 +40,6 @@ import {
   paVerify23,
   paVerify24,
   paVerify25,
-  paVerify26,
   paVerifyPagamentoDuplicato,
 } from './fixtures/fixVerifyResponse';
 import {
@@ -53,7 +52,6 @@ import {
   paActivate23,
   paActivate24,
   paActivate25,
-  paActivate26,
   paActivatePagamentoDuplicato,
 } from './fixtures/fixActivateResponse';
 
