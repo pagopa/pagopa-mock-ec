@@ -30,8 +30,7 @@ basemock: &basemock
     create: true
     type: ClusterIP
     ports:
-      - port: 8080
-        targetPort: 8080
+      - 8080
   serviceAccount:
     create: false
   securityContext:
