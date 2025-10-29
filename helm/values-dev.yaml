@@ -109,3 +109,10 @@ mock-secondary:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
     proxyBodySize: 100m
     rewriteTarget: /$2
+
+#spec.ports template
+service:
+  create: true
+  type: ClusterIP
+  ports:
+    - port: 8080
