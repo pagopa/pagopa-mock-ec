@@ -52,9 +52,14 @@ import {
   paActivate23,
   paActivate24,
   paActivate25,
-  paActivate26,
   paActivatePagamentoDuplicato,
 } from './fixtures/fixActivateResponse';
+
+import {
+  paActivate26,
+} from './fixtures/fixActivateV2Response';
+
+
 
 const paVerifyPaymentNoticeQueue = new Array<string>();
 const paGetPaymentQueue = new Array<string>();
@@ -67,6 +72,7 @@ const faultId = '77777777777';
 
 const verifySoapRequest = 'pafn:paverifypaymentnoticereq';
 const activateSoapRequest = 'pafn:pagetpaymentreq';
+const activateSoapRequestV2 = 'pafn:pagetpaymentv2request';
 const sentReceipt = 'pafn:pasendrtreq';
 const pspnotifypaymentreq = 'pspfn:pspnotifypaymentreq';
 const paaVerificaRPTreq = 'ppt:paaverificarpt';
@@ -99,7 +105,7 @@ const avviso23 = new RegExp('^30222.*'); // fix response
 const avviso24 = new RegExp('^30223.*'); // fix response
 const avviso25 = new RegExp('^30224.*'); // fix response
 const avviso26 = new RegExp('^30225.*'); // fix response
-const avviso27 = new RegExp('^30226.*'); // fix response
+const avviso27 = new RegExp('^30226.*'); // fix response for paGetPaymentV2
 const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random su 2 transfers
 const avvisoUnder1 = new RegExp('^30288.*'); // random under 1 euro + + random su 2 transfers
 
@@ -286,7 +292,7 @@ export async function newExpressApp(
           return res.status(200).send(paVerify24);
         } else if (avviso26.test(noticenumber)) {
           return res.status(200).send(paVerify25);
-        } else if (avviso27.test(noticenumber)) {
+        } else if (avviso27.test(noticenumber)) { // same verify resp as avviso24
           return res.status(200).send(paVerify24);
         } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           return res.status(200).send(paVerifyPagamentoDuplicato);
@@ -321,7 +327,6 @@ export async function newExpressApp(
           avviso24.test(noticenumber) ||
           avviso25.test(noticenumber) ||
           avviso26.test(noticenumber) ||
-          avviso27.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
@@ -553,12 +558,7 @@ export async function newExpressApp(
             creditorReferenceId,
           });
           return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
-        } else if (avviso27.test(noticenumber)) {
-          const activateResponse = paActivate26({
-            creditorReferenceId,
-          });
-          return res.status(activateResponse[0]).send(activateResponse[1]);
-        }  else if (avvisoPagamentoDuplicato.test(noticenumber)) {
+        } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           const paActivateDuplicatoRes = paActivatePagamentoDuplicato();
           return res.status(paActivateDuplicatoRes[0]).send(paActivateDuplicatoRes[1]);
         }
@@ -599,7 +599,6 @@ export async function newExpressApp(
           avviso24.test(noticenumber) ||
           avviso25.test(noticenumber) ||
           avviso26.test(noticenumber) ||
-          avviso27.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
@@ -976,10 +975,27 @@ export async function newExpressApp(
         return res.status(+paaAttivaRPTRisposta[0]).send(paaAttivaRPTRisposta[1]);
       }
 
+      // 7. paGetPaymentV2Request
+      if (soapRequest[activateSoapRequestV2]) {
+        const paGetPaymentV2Request = soapRequest[activateSoapRequestV2][0];
+        // const fiscalcode = paGetPaymentV2Request.qrcode[0].fiscalcode;
+        const noticenumber: string = paGetPaymentV2Request.qrcode[0].noticenumber;
+        const creditorReferenceId = noticenumber[0].substring(1);
+
+        if (avviso27.test(noticenumber)) {
+          const activateResponse = paActivate26({
+            creditorReferenceId,
+          });
+          return res.status(activateResponse[0]).send(activateResponse[1]);          
+        }
+
+      }
+
       if (
         !(
           soapRequest[sentReceipt] ||
           soapRequest[activateSoapRequest] ||
+          soapRequest[activateSoapRequestV2] ||
           soapRequest[verifySoapRequest] ||
           soapRequest[paaVerificaRPTreq] ||
           soapRequest[paaAttivaRPTreq]
