@@ -78,43 +78,43 @@ const pspnotifypaymentreq = 'pspfn:pspnotifypaymentreq';
 const paaVerificaRPTreq = 'ppt:paaverificarpt';
 const paaAttivaRPTreq = 'ppt:paaattivarpt';
 
-const avviso1 = new RegExp('^30200.*'); // CCPost + CCPost
-const avviso2 = new RegExp('^30201.*'); // CCPost + CCBank
-const avviso3 = new RegExp('^30202.*'); // CCBank + CCPost
-const avviso4 = new RegExp('^30203.*'); // CCBank + CCBank
-const avviso5 = new RegExp('^30204.*'); // CCPost - Monobeneficiario + 777
-const avviso6 = new RegExp('^30205.*'); // CCBank - Monobeneficiario + 777
-const avviso5smart = new RegExp('^30204777.*'); // CCPost - Monobeneficiario + 777
-const avviso7 = new RegExp('^30206.*'); // CCPost + CCPost
-const avviso8 = new RegExp('^30207.*'); // CCPost + CCBank
-const avviso9 = new RegExp('^30208.*'); // CCBank + CCPost
-const avviso10 = new RegExp('^30209.*'); // CCBank + CCBank
-const avviso11 = new RegExp('^30210.*'); // CCPost - Monobeneficiario
-const avviso12 = new RegExp('^30211.*'); // CCBank - Monobeneficiario
-const avviso13 = new RegExp('^30212.*'); // come avviso2 - amount1 4000 - amount2 2000
-const avviso14 = new RegExp('^30213.*'); // come avviso2 - amount1 0.10 - amount2 0.20
-const avviso15 = new RegExp('^30214.*'); // CCPost + CCBank + CBank
-const avviso16 = new RegExp('^30215.*'); // CCPost + CCBank + CBank + CCBank + CCBank
-const avviso17 = new RegExp('^30216.*'); // CCPost + CCBank + CBank + CCBank + CCBank
-const avviso18 = new RegExp('^30217.*'); // fix response
-const avviso19 = new RegExp('^30218.*'); // fix response
-const avviso20 = new RegExp('^30219.*'); // fix response
-const avviso21 = new RegExp('^30220.*'); // fix response
-const avviso22 = new RegExp('^30221.*'); // fix response
-const avviso23 = new RegExp('^30222.*'); // fix response
-const avviso24 = new RegExp('^30223.*'); // fix response
-const avviso25 = new RegExp('^30224.*'); // fix response
-const avviso26 = new RegExp('^30225.*'); // fix response
-const avviso27 = new RegExp('^30226.*'); // fix response for paGetPaymentV2
-const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random su 2 transfers
-const avvisoUnder1 = new RegExp('^30288.*'); // random under 1 euro + + random su 2 transfers
+const avviso1 = new RegExp('^3\\d\\d00.*'); // CCPost + CCPost
+const avviso2 = new RegExp('^3\\d\\d01.*'); // CCPost + CCBank
+const avviso3 = new RegExp('^3\\d\\d02.*'); // CCBank + CCPost
+const avviso4 = new RegExp('^3\\d\\d03.*'); // CCBank + CCBank
+const avviso5 = new RegExp('^3\\d\\d04.*'); // CCPost - Monobeneficiario + 777
+const avviso6 = new RegExp('^3\\d\\d05.*'); // CCBank - Monobeneficiario + 777
+const avviso5smart = new RegExp('^3\\d\\d04777.*'); // CCPost - Monobeneficiario + 777
+const avviso7 = new RegExp('^3\\d\\d06.*'); // CCPost + CCPost
+const avviso8 = new RegExp('^3\\d\\d07.*'); // CCPost + CCBank
+const avviso9 = new RegExp('^3\\d\\d08.*'); // CCBank + CCPost
+const avviso10 = new RegExp('^3\\d\\d09.*'); // CCBank + CCBank
+const avviso11 = new RegExp('^3\\d\\d10.*'); // CCPost - Monobeneficiario
+const avviso12 = new RegExp('^3\\d\\d11.*'); // CCBank - Monobeneficiario
+const avviso13 = new RegExp('^3\\d\\d12.*'); // come avviso2 - amount1 4000 - amount2 2000
+const avviso14 = new RegExp('^3\\d\\d13.*'); // come avviso2 - amount1 0.10 - amount2 0.20
+const avviso15 = new RegExp('^3\\d\\d14.*'); // CCPost + CCBank + CBank
+const avviso16 = new RegExp('^3\\d\\d15.*'); // CCPost + CCBank + CBank + CCBank + CCBank
+const avviso17 = new RegExp('^3\\d\\d16.*'); // CCPost + CCBank + CBank + CCBank + CCBank
+const avviso18 = new RegExp('^3\\d\\d17.*'); // fix response
+const avviso19 = new RegExp('^3\\d\\d18.*'); // fix response
+const avviso20 = new RegExp('^3\\d\\d19.*'); // fix response
+const avviso21 = new RegExp('^3\\d\\d20.*'); // fix response
+const avviso22 = new RegExp('^3\\d\\d21.*'); // fix response
+const avviso23 = new RegExp('^3\\d\\d22.*'); // fix response
+const avviso24 = new RegExp('^3\\d\\d23.*'); // fix response
+const avviso25 = new RegExp('^3\\d\\d24.*'); // fix response
+const avviso26 = new RegExp('^3\\d\\d25.*'); // fix response
+const avviso27 = new RegExp('^3\\d\\d26.*'); // fix response for paGetPaymentV2
+const avvisoOver5000 = new RegExp('^3\\d\\d77.*'); // random over 5000 euro + random su 2 transfers
+const avvisoUnder1 = new RegExp('^3\\d\\d88.*'); // random under 1 euro + + random su 2 transfers
 
 // Special error cases
-const avvisoPagamentoDuplicato = new RegExp('^30295.*'); // PAA_PAGAMENTO_DUPLICATO
-const avvisoErroreXSD = new RegExp('^30296.*'); // PAA_SINTASSI_XSD
-const avvisoErrore = new RegExp('^30297.*'); // paErrorVerify
-const avvisoTimeout = new RegExp('^30298.*'); // timeout
-const avvisoScaduto = new RegExp('^30299.*'); // PAA_PAGAMENTO_SCADUTO
+const avvisoPagamentoDuplicato = new RegExp('^3\\d\\d95.*'); // PAA_PAGAMENTO_DUPLICATO
+const avvisoErroreXSD = new RegExp('^3\\d\\d96.*'); // PAA_SINTASSI_XSD
+const avvisoErrore = new RegExp('^3\\d\\d97.*'); // paErrorVerify
+const avvisoTimeout = new RegExp('^3\\d\\d98.*'); // timeout
+const avvisoScaduto = new RegExp('^3\\d\\d99.*'); // PAA_PAGAMENTO_SCADUTO
 
 const amount1 = 100.0;
 const amount1bis = 70.0;
@@ -417,7 +417,7 @@ export async function newExpressApp(
           const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
             fault: {
               description:
-                'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
+                'numero avviso deve iniziare con 3\\d\\d[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
@@ -698,7 +698,7 @@ export async function newExpressApp(
           const paGetPaymentResponse = paGetPaymentRes({
             fault: {
               description:
-                'numero avviso deve iniziare con 302[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
+                'numero avviso deve iniziare con 3\\d\\d[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
               faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
               faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
               id: faultId,
