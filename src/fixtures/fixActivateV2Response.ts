@@ -47,7 +47,7 @@ export const paActivate26 = (params: IActivateRequestV2): MockResponse => [
                       <transferAmount>20.00</transferAmount>
                       <fiscalCodePA>77777777777</fiscalCodePA>
                       <richiestaMarcaDaBollo>
-                        <hashDocumento>hashDocumento</hashDocumento>
+                        <hashDocumento>QUJDRA==</hashDocumento>
                         <tipoBollo>01</tipoBollo>
                         <provinciaResidenza>RM</provinciaResidenza>
                       </richiestaMarcaDaBollo>
