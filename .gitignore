@@ -14,3 +14,4 @@ cert/*.key
 cert/*.csr
 .idea
 cert_local
+__TMP__
