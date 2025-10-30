@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node dist/index.js",
+    "start:local": "dotenv -e .env.local -- node dist/index.js",
     "build": "npm-run-all -s clean generate build:*",
     "build:tsc": "tsc",
     "build:tsc-noemit": "tsc --noemit",
@@ -27,8 +28,8 @@
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.24",
-    "@types/express": "^4.17.6",
     "@types/escape-html": "^1.0.4",
+    "@types/express": "^4.17.6",
     "@types/express-xml-bodyparser": "^0.3.1",
     "@types/jest": "^24.0.13",
     "@types/morgan": "^1.9.0",
@@ -40,6 +41,7 @@
     "apiconnect-wsdl": "^1.6.3",
     "danger": "^10.5.3",
     "danger-plugin-digitalcitizenship": "^1.0.0",
+    "dotenv-cli": "^10.0.0",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-functional": "^3.1.0",
@@ -61,7 +63,7 @@
     "wait-for-expect": "^3.0.2"
   },
   "dependencies": {
-    "dotenv": "^9.0.2",
+    "dotenv": "^17.2.3",
     "express": "^4.17.1",
     "express-xml-bodyparser": "^0.3.0",
     "fp-ts": "1.12.0",
