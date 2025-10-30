@@ -1,4 +1,4 @@
-basemock: &basemock
+microservice-chart: &microservice-chart
   namespace: "nodo"
   nameOverride: ""
   fullnameOverride: ""
@@ -85,7 +85,7 @@ basemock: &basemock
                   - "true"
 
 mock-primary:
-  !!merge <<: *basemock
+  !!merge <<: *microservice-chart
   ingress:
     create: true
     host: "weudev.nodo.internal.dev.platform.pagopa.it"
@@ -98,7 +98,7 @@ mock-primary:
     rewriteTarget: /$2
 
 mock-secondary:
-  !!merge <<: *basemock
+  !!merge <<: *microservice-chart
   ingress:
     create: true
     host: "weudev.nodo.internal.dev.platform.pagopa.it"
