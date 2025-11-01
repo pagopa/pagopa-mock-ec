@@ -1,8 +1,8 @@
 export type MockResponse = readonly [number, string];
 
 export const paaVerificaRPTRisposta: MockResponse = [
-   200,
-   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/"   xmlns:pag="http://www.digitpa.gov.it/schemas/2011/Pagamenti/">
+  200,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.pagamenti.telematici.gov/"   xmlns:pag="http://www.digitpa.gov.it/schemas/2011/Pagamenti/">
   <soapenv:Header/>
   <soapenv:Body>
      <ws:paaVerificaRPTRisposta>
@@ -38,8 +38,8 @@ export const paaVerificaRPTRisposta: MockResponse = [
 
 
 export const paaAttivaRPTRisposta: MockResponse = [
-   200,
-   `<soapenv:Envelope
+  200,
+  `<soapenv:Envelope
    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
    xmlns:ws="http://ws.pagamenti.telematici.gov/"
    xmlns:pag="http://www.digitpa.gov.it/schemas/2011/Pagamenti/">

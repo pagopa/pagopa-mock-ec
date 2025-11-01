@@ -28,6 +28,7 @@
   "devDependencies": {
     "@types/bluebird": "^3.5.24",
     "@types/express": "^4.17.6",
+    "@types/escape-html": "^1.0.4",
     "@types/express-xml-bodyparser": "^0.3.1",
     "@types/jest": "^24.0.13",
     "@types/morgan": "^1.9.0",
@@ -67,11 +68,11 @@
     "io-ts": "1.8.5",
     "italia-ts-commons": "^5.1.0",
     "morgan": "^1.10.0",
-    "node-forge": "^0.9.1",
+    "node-forge": "^1.0.0",
     "queue-fifo": "^0.2.6",
     "soap": "^0.27.1",
     "winston": "^3.2.1",
-    "xml2js": "^0.4.23"
+    "xml2js": "^0.5.0"
   },
   "jest": {
     "testEnvironment": "node",
