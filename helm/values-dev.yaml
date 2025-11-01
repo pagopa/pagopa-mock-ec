@@ -3,11 +3,7 @@ microservice-chart: &microservice-chart
   nameOverride: ""
   fullnameOverride: ""
   terminationGracePeriodSeconds: 140
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
+
   image:
     repository: pagopadcommonacr.azurecr.io/pagopamockec
     tag: "0.0.1"
@@ -25,7 +21,17 @@ microservice-chart: &microservice-chart
     initialDelaySeconds: 30
     periodSeconds: 20
   deployment:
-    create: true
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+#  serviceMonitor:
+#    create: true
+#    endpoints:
+#      - interval: 5s
+#        targetPort: 8080
+#        path: /q/metrics
   service:
     create: true
     type: ClusterIP
@@ -33,6 +39,9 @@ microservice-chart: &microservice-chart
       - 8080
   serviceAccount:
     create: false
+#    name: "mockec-workload-identity"
+  azure:
+    workloadIdentityClientId: <workload-identity-client-id-set-automatically-by-gha>
   securityContext:
     readOnlyRootFilesystem: true
     allowPrivilegeEscalation: false
@@ -47,20 +56,20 @@ microservice-chart: &microservice-chart
       memory: "2Gi"
       cpu: "400m"
   autoscaling:
-    enable: true
-    minReplica: 1
-    maxReplica: 1
-    pollingInterval: 10 # seconds
-    cooldownPeriod: 50 # seconds
-    triggers:
-      - type: cpu
-        metadata:
-          type: Utilization
-          value: "75"
-      - type: memory
-        metadata:
-          type: Utilization
-          value: "75"
+    enable: false
+#    minReplica: 1
+#    maxReplica: 1
+#    pollingInterval: 10 # seconds
+#    cooldownPeriod: 50 # seconds
+#    triggers:
+#      - type: cpu
+#        metadata:
+#          type: Utilization
+#          value: "75"
+#      - type: memory
+#        metadata:
+#          type: Utilization
+#          value: "75"
   envConfig:
     TIMEOUT_DELAY: "5000"
     PPT_NODO: "/mock"
@@ -69,6 +78,9 @@ microservice-chart: &microservice-chart
     CC_BANK_SECONDARY_EC: "IT04O0100003245350008332100"
     TEST_DEBUG: "Y"
     AUX_DIGIT: "3"
+  keyvault:
+    name: "pagopa-d-mock-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   tolerations:
     - key: dedicated
       operator: Equal
