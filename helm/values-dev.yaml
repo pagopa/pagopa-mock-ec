@@ -102,7 +102,7 @@ mock-primary:
     create: true
     host: "weudev.nodo.internal.dev.platform.pagopa.it"
     path: /mock-ec(/|$)(.*)
-    pathType: Prefix
+    pathType: ImplementationSpecific
     servicePort: 8080
     annotations:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
@@ -115,7 +115,7 @@ mock-secondary:
     create: true
     host: "weudev.nodo.internal.dev.platform.pagopa.it"
     path: /mock-ec-secondary(/|$)(.*)
-    pathType: Prefix
+    pathType: ImplementationSpecific
     servicePort: 8080
     annotations:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
