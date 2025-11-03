@@ -330,6 +330,7 @@ export async function newExpressApp(
           avviso25.test(noticenumber) ||
           avviso26.test(noticenumber) ||
           avviso27.test(noticenumber) ||
+          avviso28.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
@@ -608,6 +609,7 @@ export async function newExpressApp(
           avviso25.test(noticenumber) ||
           avviso26.test(noticenumber) ||
           avviso27.test(noticenumber) ||
+          avviso28.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
