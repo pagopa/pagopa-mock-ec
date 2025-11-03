@@ -47,6 +47,7 @@ variables:
     WEB_APP_RESOURCE_GROUP_NAME: $(DEV_WEB_APP_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(DEV_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_VNET: $(DEV_HEALTHCHECK_CONTAINER_VNET)
+    WORKLOAD_IDENTITY_CLIENT_ID: $(WORKLOAD_IDENTITY_CLIENT_ID)
     poolImage: 'pagopa-dev-linux'
     kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
     appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
@@ -60,6 +61,7 @@ variables:
     WEB_APP_RESOURCE_GROUP_NAME: $(DEV_WEB_APP_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(DEV_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_VNET: $(DEV_HEALTHCHECK_CONTAINER_VNET)
+    WORKLOAD_IDENTITY_CLIENT_ID: $(WORKLOAD_IDENTITY_CLIENT_ID)
     poolImage: 'pagopa-dev-linux'
     kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
     appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
@@ -73,6 +75,7 @@ variables:
     WEB_APP_RESOURCE_GROUP_NAME: $(UAT_WEB_APP_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(UAT_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_VNET: $(UAT_HEALTHCHECK_CONTAINER_VNET)
+    WORKLOAD_IDENTITY_CLIENT_ID: $(WORKLOAD_IDENTITY_CLIENT_ID)
     poolImage: 'pagopa-uat-linux'
     kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
     appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
@@ -229,3 +232,6 @@ stages:
                       --set mock-primary.image.tag="$(next_version)$(current_version)"
                       --set mock-secondary.image.tag="$(next_version)$(current_version)"
                       --set mock-ec-replica.image.tag="$(next_version)$(current_version)"
+                      --set mock-primary.azure.workloadIdentityClientId="$(WORKLOAD_IDENTITY_CLIENT_ID)"
+                      --set mock-secondary.azure.workloadIdentityClientId="$(WORKLOAD_IDENTITY_CLIENT_ID)"
+                      --set mock-ec-replica.azure.workloadIdentityClientId="$(WORKLOAD_IDENTITY_CLIENT_ID)"

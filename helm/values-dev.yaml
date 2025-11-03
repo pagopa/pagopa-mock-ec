@@ -38,8 +38,7 @@ microservice-chart: &microservice-chart
     ports:
       - 8080
   serviceAccount:
-    create: false
-#    name: "mockec-workload-identity"
+    name: "nodo-workload-identity"
   azure:
     workloadIdentityClientId: <workload-identity-client-id-set-automatically-by-gha>
   securityContext:
@@ -78,6 +77,11 @@ microservice-chart: &microservice-chart
     CC_BANK_SECONDARY_EC: "IT04O0100003245350008332100"
     TEST_DEBUG: "Y"
     AUX_DIGIT: "3"
+  envFieldRef:
+    APP_NAME: "metadata.labels['app.kubernetes.io/instance']"
+    APP_VERSION: "metadata.labels['app.kubernetes.io/version']"
+  envSecret:
+    OTEL_EXPORTER_OTLP_HEADERS: "elastic-apm-secret-token"
   keyvault:
     name: "pagopa-d-nodo-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
@@ -115,6 +119,19 @@ mock-secondary:
     create: true
     host: "weudev.nodo.internal.dev.platform.pagopa.it"
     path: /mock-ec-secondary(/|$)(.*)
+    pathType: ImplementationSpecific
+    servicePort: 8080
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
+    proxyBodySize: 100m
+    rewriteTarget: /$2
+
+mock-ec-replica:
+  !!merge <<: *microservice-chart
+  ingress:
+    create: true
+    host: "weudev.nodo.internal.dev.platform.pagopa.it"
+    path: /mock-ec-rep(/|$)(.*)
     pathType: ImplementationSpecific
     servicePort: 8080
     annotations:
