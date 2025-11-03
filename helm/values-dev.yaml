@@ -79,7 +79,7 @@ microservice-chart: &microservice-chart
     TEST_DEBUG: "Y"
     AUX_DIGIT: "3"
   keyvault:
-    name: "pagopa-d-mock-kv"
+    name: "pagopa-d-nodo-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   tolerations:
     - key: dedicated
