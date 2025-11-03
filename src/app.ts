@@ -40,6 +40,7 @@ import {
   paVerify23,
   paVerify24,
   paVerify25,
+  paVerify26,
   paVerifyPagamentoDuplicato,
 } from './fixtures/fixVerifyResponse';
 import {
@@ -52,14 +53,11 @@ import {
   paActivate23,
   paActivate24,
   paActivate25,
+  paActivate26,
   paActivatePagamentoDuplicato,
 } from './fixtures/fixActivateResponse';
 
-import {
-  paActivate26,
-} from './fixtures/fixActivateV2Response';
-
-
+import { paActivate27 } from './fixtures/fixActivateV2Response';
 
 const paVerifyPaymentNoticeQueue = new Array<string>();
 const paGetPaymentQueue = new Array<string>();
@@ -105,7 +103,8 @@ const avviso23 = new RegExp('^3\\d\\d22.*'); // fix response
 const avviso24 = new RegExp('^3\\d\\d23.*'); // fix response
 const avviso25 = new RegExp('^3\\d\\d24.*'); // fix response
 const avviso26 = new RegExp('^3\\d\\d25.*'); // fix response
-const avviso27 = new RegExp('^3\\d\\d26.*'); // fix response for paGetPaymentV2
+const avviso27 = new RegExp('^3\\d\\d26.*'); // fix response
+const avviso28 = new RegExp('^3\\d\\d27.*'); // fix response for paGetPaymentV2
 const avvisoOver5000 = new RegExp('^3\\d\\d77.*'); // random over 5000 euro + random su 2 transfers
 const avvisoUnder1 = new RegExp('^3\\d\\d88.*'); // random under 1 euro + + random su 2 transfers
 
@@ -292,7 +291,10 @@ export async function newExpressApp(
           return res.status(200).send(paVerify24);
         } else if (avviso26.test(noticenumber)) {
           return res.status(200).send(paVerify25);
-        } else if (avviso27.test(noticenumber)) { // same verify resp as avviso24
+        } else if (avviso27.test(noticenumber)) {
+          return res.status(200).send(paVerify26);
+        } else if (avviso28.test(noticenumber)) {
+          // same verify resp as avviso24
           return res.status(200).send(paVerify24);
         } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           return res.status(200).send(paVerifyPagamentoDuplicato);
@@ -989,13 +991,12 @@ export async function newExpressApp(
         const noticenumber: string = paGetPaymentV2Request.qrcode[0].noticenumber;
         const creditorReferenceId = noticenumber[0].substring(1);
 
-        if (avviso27.test(noticenumber)) {
-          const activateResponse = paActivate26({
+        if (avviso28.test(noticenumber)) {
+          const activateResponse = paActivate27({
             creditorReferenceId,
           });
-          return res.status(activateResponse[0]).send(activateResponse[1]);          
+          return res.status(activateResponse[0]).send(activateResponse[1]);
         }
-
       }
 
       if (

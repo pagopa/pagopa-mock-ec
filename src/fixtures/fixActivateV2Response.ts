@@ -4,7 +4,7 @@ interface IActivateRequestV2 {
   creditorReferenceId?: string;
 }
 
-export const paActivate26 = (params: IActivateRequestV2): MockResponse => [
+export const paActivate27 = (params: IActivateRequestV2): MockResponse => [
   200,
   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
   xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
