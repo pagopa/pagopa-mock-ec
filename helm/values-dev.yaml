@@ -1,13 +1,9 @@
-basemock: &basemock
+microservice-chart: &microservice-chart
   namespace: "nodo"
   nameOverride: ""
   fullnameOverride: ""
   terminationGracePeriodSeconds: 140
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
+
   image:
     repository: pagopadcommonacr.azurecr.io/pagopamockec
     tag: "0.0.1"
@@ -25,14 +21,26 @@ basemock: &basemock
     initialDelaySeconds: 30
     periodSeconds: 20
   deployment:
-    create: true
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+#  serviceMonitor:
+#    create: true
+#    endpoints:
+#      - interval: 5s
+#        targetPort: 8080
+#        path: /q/metrics
   service:
     create: true
     type: ClusterIP
     ports:
       - 8080
   serviceAccount:
-    create: false
+    name: "nodo-workload-identity"
+  azure:
+    workloadIdentityClientId: <workload-identity-client-id-set-automatically-by-gha>
   securityContext:
     readOnlyRootFilesystem: true
     allowPrivilegeEscalation: false
@@ -47,20 +55,20 @@ basemock: &basemock
       memory: "2Gi"
       cpu: "400m"
   autoscaling:
-    enable: true
-    minReplica: 1
-    maxReplica: 1
-    pollingInterval: 10 # seconds
-    cooldownPeriod: 50 # seconds
-    triggers:
-      - type: cpu
-        metadata:
-          type: Utilization
-          value: "75"
-      - type: memory
-        metadata:
-          type: Utilization
-          value: "75"
+    enable: false
+#    minReplica: 1
+#    maxReplica: 1
+#    pollingInterval: 10 # seconds
+#    cooldownPeriod: 50 # seconds
+#    triggers:
+#      - type: cpu
+#        metadata:
+#          type: Utilization
+#          value: "75"
+#      - type: memory
+#        metadata:
+#          type: Utilization
+#          value: "75"
   envConfig:
     TIMEOUT_DELAY: "5000"
     PPT_NODO: "/mock"
@@ -69,6 +77,14 @@ basemock: &basemock
     CC_BANK_SECONDARY_EC: "IT04O0100003245350008332100"
     TEST_DEBUG: "Y"
     AUX_DIGIT: "3"
+  envFieldRef:
+    APP_NAME: "metadata.labels['app.kubernetes.io/instance']"
+    APP_VERSION: "metadata.labels['app.kubernetes.io/version']"
+  envSecret:
+    OTEL_EXPORTER_OTLP_HEADERS: "elastic-apm-secret-token"
+  keyvault:
+    name: "pagopa-d-nodo-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -85,12 +101,12 @@ basemock: &basemock
                   - "true"
 
 mock-primary:
-  !!merge <<: *basemock
+  !!merge <<: *microservice-chart
   ingress:
     create: true
     host: "weudev.nodo.internal.dev.platform.pagopa.it"
     path: /mock-ec(/|$)(.*)
-    pathType: Prefix
+    pathType: ImplementationSpecific
     servicePort: 8080
     annotations:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
@@ -98,12 +114,25 @@ mock-primary:
     rewriteTarget: /$2
 
 mock-secondary:
-  !!merge <<: *basemock
+  !!merge <<: *microservice-chart
   ingress:
     create: true
     host: "weudev.nodo.internal.dev.platform.pagopa.it"
     path: /mock-ec-secondary(/|$)(.*)
-    pathType: Prefix
+    pathType: ImplementationSpecific
+    servicePort: 8080
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
+    proxyBodySize: 100m
+    rewriteTarget: /$2
+
+mock-ec-replica:
+  !!merge <<: *microservice-chart
+  ingress:
+    create: true
+    host: "weudev.nodo.internal.dev.platform.pagopa.it"
+    path: /mock-ec-rep(/|$)(.*)
+    pathType: ImplementationSpecific
     servicePort: 8080
     annotations:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
