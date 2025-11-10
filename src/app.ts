@@ -46,6 +46,8 @@ import {
   paVerify22,
   paVerify23,
   paVerify24,
+  paVerify25,
+  paVerify26,
   paVerifyPagamentoDuplicato,
 } from './fixtures/fixVerifyResponse';
 import {
@@ -57,8 +59,12 @@ import {
   paActivate22,
   paActivate23,
   paActivate24,
+  paActivate25,
+  paActivate26,
   paActivatePagamentoDuplicato,
 } from './fixtures/fixActivateResponse';
+
+//import { paActivate27 } from './fixtures/fixActivateV2Response';
 
 const paVerifyPaymentNoticeQueue = new Array<string>();
 const paGetPaymentQueue = new Array<string>();
@@ -78,6 +84,7 @@ const faultId = '77777777777';
 
 const verifySoapRequest = 'pafn:paverifypaymentnoticereq';
 const activateSoapRequest = 'pafn:pagetpaymentreq';
+// const activateSoapRequestV2 = 'pafn:pagetpaymentv2request';
 const sentReceipt = 'pafn:pasendrtreq';
 const pspnotifypaymentreq = 'pspfn:pspnotifypaymentreq';
 const paaVerificaRPTreq = 'ppt:paaverificarpt';
@@ -114,6 +121,9 @@ const avviso22 = new RegExp('^30221.*'); // fix response
 const avviso23 = new RegExp('^30222.*'); // fix response
 const avviso24 = new RegExp('^30223.*'); // fix response
 const avviso25 = new RegExp('^30224.*'); // fix response
+const avviso26 = new RegExp('^3\\d\\d25.*'); // fix response
+const avviso27 = new RegExp('^3\\d\\d26.*'); // fix response
+const avviso28 = new RegExp('^3\\d\\d27.*'); // fix response for paGetPaymentV2
 const avvisoOver5000 = new RegExp('^30277.*'); // random over 5000 euro + random su 2 transfers
 const avvisoUnder1 = new RegExp('^30288.*'); // random under 1 euro + + random su 2 transfers
 
@@ -382,6 +392,13 @@ export async function newExpressApp(
           return res.status(200).send(paVerify23);
         } else if (avviso25.test(noticenumber)) {
           return res.status(200).send(paVerify24);
+        } else if (avviso26.test(noticenumber)) {
+          return res.status(200).send(paVerify25);
+        } else if (avviso27.test(noticenumber)) {
+          return res.status(200).send(paVerify26);
+        } else if (avviso28.test(noticenumber)) {
+          // same verify resp as avviso24
+          return res.status(200).send(paVerify24);
         } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           return res.status(200).send(paVerifyPagamentoDuplicato);
         }
@@ -414,6 +431,9 @@ export async function newExpressApp(
           avviso17.test(noticenumber) ||
           avviso24.test(noticenumber) ||
           avviso25.test(noticenumber) ||
+          avviso26.test(noticenumber) ||
+          avviso27.test(noticenumber) ||
+          avviso28.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 
@@ -663,12 +683,22 @@ export async function newExpressApp(
           const paActivate23res = paActivate23({
             creditorReferenceId,
           });
-          return res.status(paActivate23res[0]).send(escapeHtml(paActivate23res[1]));
+          return res.status(paActivate23res[0]).send(paActivate23res[1]);
         } else if (avviso25.test(noticenumber)) {
           const paActivate24res = paActivate24({
             creditorReferenceId,
           });
-          return res.status(paActivate24res[0]).send(escapeHtml(paActivate24res[1]));
+          return res.status(paActivate24res[0]).send(paActivate24res[1]);
+        } else if (avviso26.test(noticenumber)) {
+          const paActivate25res = paActivate25({
+            creditorReferenceId,
+          });
+          return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
+        } else if (avviso27.test(noticenumber)) {
+          const paActivate27res = paActivate26({
+            creditorReferenceId,
+          });
+          return res.status(paActivate27res[0]).send(paActivate27res[1]);
         } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
           const paActivateDuplicatoRes = paActivatePagamentoDuplicato();
           return res.status(paActivateDuplicatoRes[0]).send(paActivateDuplicatoRes[1]);
@@ -709,6 +739,9 @@ export async function newExpressApp(
           avviso17.test(noticenumber) ||
           avviso24.test(noticenumber) ||
           avviso25.test(noticenumber) ||
+          avviso26.test(noticenumber) ||
+          avviso27.test(noticenumber) ||
+          avviso28.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
 

@@ -36,7 +36,6 @@ export const paaVerificaRPTRisposta: MockResponse = [
 </soapenv:Envelope>`,
 ];
 
-
 export const paaAttivaRPTRisposta: MockResponse = [
   200,
   `<soapenv:Envelope

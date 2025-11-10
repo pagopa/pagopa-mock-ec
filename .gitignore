@@ -18,3 +18,4 @@ cert_local
 venv/
 /helm/Chart.lock
 /helm/charts/
+__TMP__
