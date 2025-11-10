@@ -7,7 +7,7 @@ COPY dist dist
 COPY node_modules node_modules
 
 WORKDIR /src
-COPY ["package.json", "package-lock.json*", "./"]
+COPY ["package.json", "yarn.lock", "./"]
 COPY . .
 EXPOSE 8089
 RUN ls -lrt
