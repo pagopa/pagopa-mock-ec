@@ -1,9 +1,7 @@
 pr: none
 trigger: none
-
 pool:
   vmImage: 'ubuntu-latest'
-
 parameters:
   - name: env
     displayName: Environment to deploy
@@ -11,11 +9,13 @@ parameters:
     values:
       - dev
       - sit
-
 variables:
-  repository: 'mock-ec'
+  repository_primary: 'mock-ec-primary' 
+  repository_secondary: 'mock-ec-secondary' 
   dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
   kustomizeFolderApp: '$(Build.SourcesDirectory)/kustomize-mock-ec'
+  mock_ec_primary_var: 'mock-ec-primary'
+  mock_ec_secondary_var: 'mock-ec-secondary'
 
 stages:
   - stage: retrieve_info
@@ -27,103 +27,209 @@ stages:
           - checkout: self
             clean: true
             persistCredentials: true
-
           - script: |
               APP_VERSION=$(jq -r .version package.json)
               echo "##vso[task.setvariable variable=APP_VERSION;isOutput=true]$APP_VERSION"
             displayName: Set version
             name: getVar
-
-  - stage: build
-    displayName: "Build (${{ parameters.env }})"
+            
+  - stage: build_mock_ec_primary
+    displayName: "Build MOCK_EC_PRIMARY (${{ parameters.env }})"
     condition: succeeded()
     dependsOn:
       - retrieve_info
     variables:
-      - group: nodo-${{ parameters.env }}
+      - group: nodo-integration-test-${{ parameters.env }}
       - name: appVersion
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
-      - job: build
-        displayName: "Build (${{ parameters.env }})"
+      - job: build_npm_mock_ec_primary
+        displayName: 'build stage for MOCK_EC_PRIMARY'
         steps:
-          - checkout: self
-            clean: true
-            persistCredentials: true
-
-          - script: cp .nexi.env .env
-            displayName: 'Copy env'
-
-          - task: Docker@2
-            displayName: 'Build and push image'
-            inputs:
+        - task: NodeTool@0
+          inputs:
+            versionSpec: '16.x'
+          displayName: 'Install Node.js - MOCK_EC_PRIMARY'
+        - script: |
+            npm install --legacy-peer-deps
+          displayName: 'npm install - MOCK_EC_PRIMARY'
+        - script: |
+            npm run generate build
+            pwd
+            ls -lrt
+          displayName: 'npm build - MOCK_EC_PRIMARY'
+        - script: |
+            cp .nexi.env .env
+          displayName: 'Copy env - MOCK_EC_PRIMARY'
+        - task: Docker@2
+          displayName: 'Build and push image - MOCK_EC_PRIMARY'
+          inputs:
               containerRegistry: $(container-registry-service-connection-${{ parameters.env }})
-              repository: $(repository)
+              repository: $(repository_primary)
+              command: 'buildAndPush'
+              Dockerfile: $(dockerfile)
+              tags: $(appVersion)
+              
+              
+  - stage: build_mock_ec_secondary
+    displayName: "Build MOCK_EC_SECONDARY (${{ parameters.env }})"
+    condition: succeeded()
+    dependsOn:
+      - retrieve_info
+    variables:
+      - group: nodo-integration-test-${{ parameters.env }}
+      - name: appVersion
+        value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
+    jobs:
+      - job: build_npm_mock_ec_secondary
+        displayName: 'build stage for MOCK_EC_SECONDARY'
+        steps:
+        - task: NodeTool@0
+          inputs:
+            versionSpec: '16.x'
+          displayName: 'Install Node.js - MOCK_EC_SECONDARY'
+        - script: |
+            npm install --legacy-peer-deps
+          displayName: 'npm install - MOCK_EC_SECONDARY'
+        - script: |
+            npm run generate build
+            pwd
+            ls -lrt
+          displayName: 'npm build - MOCK_EC_SECONDARY'
+        - script: |
+            cp .nexi_sec.env .env
+          displayName: 'Copy env - MOCK_EC_SECONDARY'
+        - task: Docker@2
+          displayName: 'Build and push image - MOCK_EC_SECONDARY'
+          inputs:
+              containerRegistry: $(container-registry-service-connection-${{ parameters.env }})
+              repository: $(repository_secondary)
               command: 'buildAndPush'
               Dockerfile: $(dockerfile)
               tags: $(appVersion)
 
-  - stage: push_manifest
-    displayName: "Push manifest (${{ parameters.env }})"
+
+  - stage: push_manifest_mock_ec_primary
+    displayName: "Push manifest MOCK_EC_PRIMARY - (${{ parameters.env }})"
     condition: succeeded()
     dependsOn:
       - retrieve_info
+      - build_mock_ec_primary
     variables:
-      - group: nodo-${{ parameters.env }}
-      - name: appVersion
+      - group: nodo-integration-test-${{ parameters.env }}
+      - name: appVersion  
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     jobs:
-      - job: push_manifest
-        displayName: "Push manifest ${{ parameters.env }}"
+      - job: push_manifest_mock_ec_primary
+        displayName: "Push manifest MOCK_EC_PRIMARY - ${{ parameters.env }}"
         steps:
           - checkout: self
             clean: true
             persistCredentials: true
-
           - task: KubernetesManifest@0
             name: "bakeApp"
             inputs:
               action: "bake"
               renderType: 'kustomize'
-              kustomizationPath: $(kustomizeFolderApp)/${{ parameters.env }}
-              containers: $(repository-docker-${{ parameters.env }})/$(repository):$(appVersion)
-            displayName: "Create manifest app (${{ parameters.env }})"
-
+              kustomizationPath: $(kustomizeFolderApp)/$(mock_ec_primary_var)/${{ parameters.env }}
+              containers: $(repository-docker-${{ parameters.env }})/$(repository_primary):$(appVersion)
+            displayName: "Create manifest MOCK_EC_PRIMARY app (${{ parameters.env }})"
           - publish: $(bakeApp.manifestsBundle)
-            displayName: "Publish manifest app (${{ parameters.env }})"
-            artifact: $(appVersion)-${{ parameters.env }}-manifest-app
+            displayName: "Publish manifest MOCK_EC_PRIMARY app (${{ parameters.env }})"
+            artifact: $(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)
 
-  - stage: deploy
-    displayName: "Deploy (${{ parameters.env }})"
+            
+  - stage: deploy_mock_ec_primary
+    displayName: "Deploy MOCK_EC_PRIMARY - (${{ parameters.env }})"
     dependsOn:
       - retrieve_info
-      - build
-      - push_manifest
+      - build_mock_ec_primary
+      - push_manifest_mock_ec_primary
     variables:
-      - group: nodo-${{ parameters.env }}
+      - group: nodo-integration-test-${{ parameters.env }}
       - name: appVersion
         value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
     condition: succeeded()
     jobs:
-      - job: deploy
-        displayName: "Deploy ${{ parameters.env }}"
+      - job: deploy_mock_ec_primary
+        displayName: "Deploy MOCK_EC_PRIMARY - ${{ parameters.env }}"
         pool: $(deploy-pool-${{ parameters.env }})
         steps:
           - checkout: none
-
           - script: |
-              ls -la $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-manifest-app
-              rm -rf $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-manifest-app
-            displayName: "Clean old cached files $(appVersion)-${{ parameters.env }}-manifest-app"
-
+              ls -la $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)
+              rm -rf $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)
+            displayName: "Clean old cached files $(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)"
           - download: current
-            artifact: $(appVersion)-${{ parameters.env }}-manifest-app
-            displayName: "Download manifest app $(appVersion)-${{ parameters.env }}-manifest-app"
-
+            artifact: $(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)
+            displayName: "Download manifest $(repository_primary) app $(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)"
           - task: KubernetesManifest@0
-            displayName: "Deploy manifest for app"
+            displayName: "Deploy manifest for $(repository_primary) app"
             inputs:
               action: 'deploy'
-              kubernetesServiceConnection:  $(kubernetes-service-connection-${{ parameters.env }})
-              namespace: mock-ec-${{ parameters.env }}
-              manifests: $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-manifest-app/*.yaml
+              kubernetesServiceConnection:  $(kubernetes-service-connection-mock-ec-${{ parameters.env }})
+              namespace: $(mock-ec-kubernetes-namespace-${{ parameters.env }})
+              manifests: $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository_primary)-manifest-app-$(mock_ec_primary_var)/*.yaml
+
+
+  - stage: push_manifest_mock_ec_secondary
+    displayName: "Push manifest MOCK_EC_SECONDARY - (${{ parameters.env }})"
+    condition: succeeded()
+    dependsOn:
+      - retrieve_info
+      - build_mock_ec_secondary
+    variables:
+      - group: nodo-integration-test-${{ parameters.env }}
+      - name: appVersion  
+        value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
+    jobs:
+      - job: push_manifest_mock_ec_secondary
+        displayName: "Push manifest MOCK_EC_SECONDARY - ${{ parameters.env }}"
+        steps:
+          - checkout: self
+            clean: true
+            persistCredentials: true
+          - task: KubernetesManifest@0
+            name: "bakeApp"
+            inputs:
+              action: "bake"
+              renderType: 'kustomize'
+              kustomizationPath: $(kustomizeFolderApp)/$(mock_ec_secondary_var)/${{ parameters.env }}
+              containers: $(repository-docker-${{ parameters.env }})/$(repository_secondary):$(appVersion)
+            displayName: "Create manifest MOCK_EC_SECONDARY) app (${{ parameters.env }})"
+          - publish: $(bakeApp.manifestsBundle)
+            displayName: "Publish manifest MOCK_EC_SECONDARY app (${{ parameters.env }})"
+            artifact: $(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)
+
+            
+  - stage: deploy_mock_ec_secondary
+    displayName: "Deploy MOCK_EC_SECONDARY - (${{ parameters.env }})"
+    dependsOn:
+      - retrieve_info
+      - build_mock_ec_secondary
+      - push_manifest_mock_ec_secondary
+    variables:
+      - group: nodo-integration-test-${{ parameters.env }}
+      - name: appVersion
+        value: $[ stageDependencies.retrieve_info.retrieve_info.outputs['getVar.APP_VERSION'] ]
+    condition: succeeded()
+    jobs:
+      - job: deploy_mock_ec_secondary
+        displayName: "Deploy MOCK_EC_SECONDARY - ${{ parameters.env }}"
+        pool: $(deploy-pool-${{ parameters.env }})
+        steps:
+          - checkout: none
+          - script: |
+              ls -la $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)
+              rm -rf $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)
+            displayName: "Clean old cached files $(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)"
+          - download: current
+            artifact: $(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)
+            displayName: "Download manifest $(repository_secondary) app $(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)"
+          - task: KubernetesManifest@0
+            displayName: "Deploy manifest for $(repository_secondary) app"
+            inputs:
+              action: 'deploy'
+              kubernetesServiceConnection:  $(kubernetes-service-connection-mock-ec-${{ parameters.env }})
+              namespace: $(mock-ec-kubernetes-namespace-${{ parameters.env }})
+              manifests: $(Pipeline.Workspace)/$(appVersion)-${{ parameters.env }}-$(repository_secondary)-manifest-app-$(mock_ec_secondary_var)/*.yaml

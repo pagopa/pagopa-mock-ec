@@ -1,12 +1,13 @@
 {
   "name": "io-pagopa-node-mock",
-  "version": "1.6.1",
+  "version": "1.6.13",
   "description": "TODO",
   "repository": "https://github.com/pagopa/io-pagopa-node-mock.git",
   "author": "https://pagopa.it",
   "license": "MIT",
   "scripts": {
     "start": "node dist/index.js",
+    "start:local": "dotenv -e .env.local -- node dist/index.js",
     "build": "npm-run-all -s clean generate build:*",
     "build:tsc": "tsc",
     "build:tsc-noemit": "tsc --noemit",

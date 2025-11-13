@@ -1,7 +1,12 @@
-# Azure DevOps pipeline to release a new version and deploy to production.
+# Only manual activations are intended
+trigger: none
+pr: none
+
+pool:
+  vmImage: 'ubuntu-latest'
 
 parameters:
-  - name: 'RELEASE_SEMVER'
+  - name: 'SEMVER'
     displayName: 'When packing a release, define the version bump to apply'
     type: string
     values:
@@ -9,52 +14,96 @@ parameters:
       - minor
       - patch
     default: minor
-  - name: environment
+  - name: ENV
     displayName: Target Environment
     type: string
     default: dev
     values:
       - dev
+      - it
       - uat
-  - name: DEPLOY_TYPE
-    displayName: Deployment type
-    type: string
+      - prf
+  - name: "FORCE_REPLACE_DOCKER_IMAGE"
+    displayName: "Force the existing docker image to be replaced"
+    type: boolean
+    default: False
     values:
-      - staging_slot_and_swap
-      - production_slot
-
-# Only manual activations are intended
-trigger: none
-pr: none
+      - False
+      - True
 
 # variables setted on azdevops to avoid circular dependency warning
 # $(DEFAULT_BRANCH)
 # $(HEALTHCHECK_CONTAINER_SUBNET)
 # $(HEALTHCHECK_ENDPOINT)
 variables:
-  ${{ if eq(parameters['environment'], 'dev') }}:
+  imageRepository: '$(IMAGE_REPOSITORY_NAME)'
+  nameSpace: '$(K8S_NAMESPACE)'
+
+  ${{ if eq(parameters['ENV'], 'dev') }}:
+    dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
+    dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
     AZURE_SUBSCRIPTION: $(DEV_AZURE_SUBSCRIPTION)
     WEB_APP_NAME: $(DEV_WEB_APP_NAME)
     WEB_APP_RESOURCE_GROUP_NAME: $(DEV_WEB_APP_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(DEV_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_VNET: $(DEV_HEALTHCHECK_CONTAINER_VNET)
-  ${{ if eq(parameters['environment'], 'uat') }}:
+    WORKLOAD_IDENTITY_CLIENT_ID: $(DEV_WORKLOAD_IDENTITY_CLIENT_ID)
+    poolImage: 'pagopa-dev-linux'
+    kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
+    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
+    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
+    appName: $(imageRepository)
+  ${{ if eq(parameters['ENV'], 'it') }}:
+    dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
+    dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
+    AZURE_SUBSCRIPTION: $(DEV_AZURE_SUBSCRIPTION)
+    WEB_APP_NAME: $(DEV_WEB_APP_NAME)
+    WEB_APP_RESOURCE_GROUP_NAME: $(DEV_WEB_APP_RESOURCE_GROUP_NAME)
+    HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(DEV_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
+    HEALTHCHECK_CONTAINER_VNET: $(DEV_HEALTHCHECK_CONTAINER_VNET)
+    WORKLOAD_IDENTITY_CLIENT_ID: $(DEV_WORKLOAD_IDENTITY_CLIENT_ID)
+    poolImage: 'pagopa-dev-linux'
+    kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
+    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
+    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
+    appName: '$(imageRepository)-replica'
+  ${{ if eq(parameters['ENV'], 'uat') }}:
+    dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
+    dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
     AZURE_SUBSCRIPTION: $(UAT_AZURE_SUBSCRIPTION)
     WEB_APP_NAME: $(UAT_WEB_APP_NAME)
     WEB_APP_RESOURCE_GROUP_NAME: $(UAT_WEB_APP_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(UAT_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_VNET: $(UAT_HEALTHCHECK_CONTAINER_VNET)
-
-pool:
-  vmImage: 'ubuntu-latest'
+    WORKLOAD_IDENTITY_CLIENT_ID: $(UAT_WORKLOAD_IDENTITY_CLIENT_ID)
+    poolImage: 'pagopa-uat-linux'
+    kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
+    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
+    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
+    appName: $(imageRepository)
+  ${{ if eq(parameters['ENV'], 'prf') }}:
+    dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
+    dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
+    AZURE_SUBSCRIPTION: $(UAT_AZURE_SUBSCRIPTION)
+    WEB_APP_NAME: $(UAT_WEB_APP_NAME)
+    WEB_APP_RESOURCE_GROUP_NAME: $(UAT_WEB_APP_RESOURCE_GROUP_NAME)
+    HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(UAT_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
+    HEALTHCHECK_CONTAINER_VNET: $(UAT_HEALTHCHECK_CONTAINER_VNET)
+    WORKLOAD_IDENTITY_CLIENT_ID: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
+    poolImage: 'pagopa-uat-linux'
+    kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
+    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
+    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
+    appName: $(imageRepository)
 
 resources:
   repositories:
     - repository: pagopaCommons
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v15
+      ref: refs/tags/v3.6.0
       endpoint: 'io-azure-devops-github-ro'
+
 
 stages:
   - stage: EchoDbg
@@ -94,7 +143,7 @@ stages:
           - template: templates/node-github-release/template.yaml@pagopaCommons
             parameters:
               release_branch: '$(DEFAULT_BRANCH)'
-              semver: '${{ parameters.RELEASE_SEMVER }}'
+              semver: '${{ parameters.SEMVER }}'
               gitEmail: '$(GIT_EMAIL)'
               gitUsername: '$(GIT_USERNAME)'
               gitHubConnection: '$(GITHUB_CONNECTION)'
@@ -103,6 +152,12 @@ stages:
         condition: ne(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
         steps:
           - script: |
+              APP_VERSION=$(jq -r .version package.json)
+              echo "current version is $APP_VERSION"
+              echo "##vso[task.setvariable variable=value;isOutput=true]$APP_VERSION"
+            displayName: Set version
+            name: current_version
+          - script: |
               echo "We assume this reference to be a valid release: $(Build.SourceBranch). Therefore, there is no need to bundle a new release."
             displayName: 'Skip release bundle'
 
@@ -110,6 +165,9 @@ stages:
   - stage: Prepare_artifact
     dependsOn:
       - Release
+    variables:
+      next_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
+      current_version: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
     jobs:
       - job: 'prepare_artifact'
         steps:
@@ -126,97 +184,55 @@ stages:
               yarn build
             displayName: 'Build'
 
-          # Copy application to
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: '$(System.DefaultWorkingDirectory)'
-              TargetFolder: '$(System.DefaultWorkingDirectory)/bundle'
-              Contents: |
-                **/*
-                web.config
-                !.git/**/*
-                !**/*.js.map
-                !**/*.ts
-                !.vscode/**/*
-                !.devops/**/*
-                !.prettierrc
-                !.gitignore
-                !README.md
-                !jest.integration.js
-                !test
-                !tsconfig.json
-                !tslint.json
-                !yarn.lock
-                !Dangerfile.js
-                !CODEOWNERS
-                !Dockerfile
-                !preview.hbs
-                !.auto-changelog.json
-                !api_pagopa.yaml
-                !__*/**/*
-            displayName: 'Copy deploy files'
+          - template: templates/docker-release/template.yaml@pagopaCommons
+            parameters:
+              CONTAINER_REGISTRY_SERVICE_CONN: $(dockerRegistryServiceConnection)
+              CONTAINER_REGISTRY_FQDN: $(dockerRegistryFqdn)
+              DOCKER_IMAGE_NAME: $(imageRepository)
+              DOCKER_IMAGE_TAG: "$(next_version)$(current_version)"
+              FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+              DOCKERFILE: Dockerfile
 
-          - publish: $(System.DefaultWorkingDirectory)/bundle
-            artifact: Bundle
-
-  # Deploy
-  - stage: 'Deploy_to_${{ parameters.environment }}'
+  # Deploy on K8s with Helm
+  - stage: Deploy
+    condition: succeeded('Prepare_artifact')
     dependsOn:
+      - Release
       - Prepare_artifact
+    variables:
+      next_version: $[ stageDependencies.Release.make_release.outputs['next_version.value'] ]
+      current_version: $[ stageDependencies.Release.skip_release.outputs['current_version.value'] ]
     jobs:
-      - job: 'do_deploy_staging_slot_and_swap'
-        condition: eq('${{ parameters.DEPLOY_TYPE }}', 'staging_slot_and_swap')
-        steps:
-          - checkout: none
-          - download: current
-            artifact: Bundle
+      - deployment: "deploy"
+        pool:
+          name: $(poolImage)
+        environment: ${{ parameters['ENV'] }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                  persistCredentials: true
 
-          - task: AzureWebApp@1
-            inputs:
-              azureSubscription: '$(AZURE_SUBSCRIPTION)'
-              resourceGroupName: '$(WEB_APP_RESOURCE_GROUP_NAME)'
-              appType: 'webApp'
-              appName: '$(WEB_APP_NAME)'
-              package: '$(Pipeline.Workspace)/Bundle'
-              deploymentMethod: 'auto'
-              deployToSlotOrASE: true
-              slotName: 'staging'
-            displayName: 'Deploy to staging slot'
+                - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
+                  parameters:
+                    DEPLOY_VERSION: $(next_version)$(current_version)
 
-          # - template: templates/rest-healthcheck/template.yaml@pagopaCommons
-          #   parameters:
-          #     azureSubscription: "$(AZURE_SUBSCRIPTION)"
-          #     appName: "$(WEB_APP_NAME)"
-          #     endpoint: "$(HEALTHCHECK_ENDPOINT)"
-          #     endpointType: "public"
-          #     containerInstanceResourceGroup: ""
-          #     containerInstanceVNet: ""
-          #     containerInstanceSubnet: ""
-
-          - task: AzureAppServiceManage@0
-            inputs:
-              azureSubscription: '$(AZURE_SUBSCRIPTION)'
-              resourceGroupName: '$(WEB_APP_RESOURCE_GROUP_NAME)'
-              appName: '$(WEB_APP_NAME)'
-              sourceSlot: 'staging'
-              swapWithProduction: true
-            displayName: 'Swap with production slot'
-
-      - job: 'do_deploy_production_slot'
-        condition: eq('${{ parameters.DEPLOY_TYPE }}', 'production_slot')
-        steps:
-          - checkout: none
-          - download: current
-            artifact: Bundle
-
-          - task: AzureWebApp@1
-            inputs:
-              azureSubscription: '$(AZURE_SUBSCRIPTION)'
-              resourceGroupName: '$(WEB_APP_RESOURCE_GROUP_NAME)'
-              appType: 'webApp'
-              appName: '$(WEB_APP_NAME)'
-              package: '$(Pipeline.Workspace)/Bundle'
-              deploymentMethod: 'auto'
-              deployToSlotOrASE: true
-              slotName: 'production'
-            displayName: 'Deploy to production slot'
+                - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                  parameters:
+                    DO_DEPLOY: true
+                    ENV: ${{ parameters['ENV'] }}
+                    KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
+                    NAMESPACE: $(nameSpace)
+                    APP_NAME: $(appName)
+                    VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
+                    DEPLOY_VERSION: $(next_version)$(current_version)
+                    APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
+                    APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
+                    ARGUMENTS: >-
+                      --set mock-primary.image.tag="$(next_version)$(current_version)"
+                      --set mock-secondary.image.tag="$(next_version)$(current_version)"
+                      --set mock-ec-replica.image.tag="$(next_version)$(current_version)"
+                      --set mock-primary.azure.workloadIdentityClientId="$(WORKLOAD_IDENTITY_CLIENT_ID)"
+                      --set mock-secondary.azure.workloadIdentityClientId="$(WORKLOAD_IDENTITY_CLIENT_ID)"
+                      --set mock-ec-replica.azure.workloadIdentityClientId="$(WORKLOAD_IDENTITY_CLIENT_ID)"
