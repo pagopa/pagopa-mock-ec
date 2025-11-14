@@ -1,30 +1,30 @@
-import { ctFaultBean_type_pafn } from '../generated/paForNode_Service/ctFaultBean_type_pafn';
-import { stAmount_type_pafn } from '../generated/paForNode_Service/stAmount_type_pafn';
-import { stFiscalCodePA_type_pafn } from '../generated/paForNode_Service/stFiscalCodePA_type_pafn';
+import { ctFaultBean_type_common } from '../generated/paForNode_Service/ctFaultBean_type_common';
+import { stAmount_type_common } from '../generated/paForNode_Service/stAmount_type_common';
+import { stFiscalCodePA_type_common } from '../generated/paForNode_Service/stFiscalCodePA_type_common';
 import { stTransferType_type_pafn } from '../generated/paForNode_Service/stTransferType_type_pafn';
 
 export type MockResponse = readonly [number, string];
 
 interface IVerifyRequest {
   outcome: 'OK' | 'KO';
-  fiscalCodePA?: stFiscalCodePA_type_pafn;
+  fiscalCodePA?: stFiscalCodePA_type_common;
   transferType?: stTransferType_type_pafn;
-  fault?: ctFaultBean_type_pafn;
-  amount?: stAmount_type_pafn | string;
+  fault?: ctFaultBean_type_common;
+  amount?: stAmount_type_common | string;
 }
 
 interface IActivateRequest {
   outcome: 'OK' | 'KO';
   creditorReferenceId?: string;
-  fiscalCodePA?: stFiscalCodePA_type_pafn;
+  fiscalCodePA?: stFiscalCodePA_type_common;
   transferType?: stTransferType_type_pafn;
-  fault?: ctFaultBean_type_pafn;
-  amount?: stAmount_type_pafn | string;
-  amountPrimary?: stAmount_type_pafn | string;
-  amountSecondary?: stAmount_type_pafn | string;
-  amount3?: stAmount_type_pafn | string;
-  amount4?: stAmount_type_pafn | string;
-  amount5?: stAmount_type_pafn | string;
+  fault?: ctFaultBean_type_common;
+  amount?: stAmount_type_common | string;
+  amountPrimary?: stAmount_type_common | string;
+  amountSecondary?: stAmount_type_common | string;
+  amount3?: stAmount_type_common | string;
+  amount4?: stAmount_type_common | string;
+  amount5?: stAmount_type_common | string;
   description?: string;
   iban_1?: string;
   iban_2?: string;

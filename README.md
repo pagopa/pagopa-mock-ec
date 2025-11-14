@@ -21,6 +21,8 @@ A mock implementation of PA pagoPA service
 
 ## Usage
 
+👀 [SANP](https://developer.pagopa.it/pago-pa/guides/sanp/appendici/primitive) + [Census mocks ec/psp pagoPA](https://pagopa.atlassian.net/wiki/spaces/PPA/pages/550012487/Censimento+mock+test+NODO+PM#Lista-mock(s)-%F0%9F%90%B5)
+
 ## Prerequisites
 
 To be able to use as PSP the following `pagopa-mock-ec` remebers to configure in your requests :
