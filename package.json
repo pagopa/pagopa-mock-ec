@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node dist/index.js",
+    "start:local": "dotenv -e .env.local -- node dist/index.js",
     "build": "npm-run-all -s clean generate build:*",
     "build:tsc": "tsc",
     "build:tsc-noemit": "tsc --noemit",

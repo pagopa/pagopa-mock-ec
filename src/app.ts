@@ -1399,7 +1399,7 @@ export async function newExpressApp(
 		if (avviso28.test(noticenumber)) {
 		  const activateResponse = paActivate27({ creditorReferenceId });
 		  res.type('text/xml');
-		  return res.status(activateResponse[0]).send(escapeHtml(activateResponse[1]));
+		  return res.status(activateResponse[0]).send(activateResponse[1]);
 		}
 		
         log_event_tx(paGetPaymentV2Response);

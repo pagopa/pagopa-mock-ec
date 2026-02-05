@@ -1,19 +1,23 @@
 import { MockResponse } from './nodoNewMod3Responses';
+import escapeHtml = require('escape-html');
 
 interface IActivateRequestV2 {
   creditorReferenceId?: string;
 }
 
-export const paActivate27 = (params: IActivateRequestV2): MockResponse => [
-  200,
-  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+export const paActivate27 = (params: IActivateRequestV2): MockResponse => {
+  const creditorReferenceId = escapeHtml(params.creditorReferenceId ?? '');
+
+  return [
+    200,
+    `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
   xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
   <soapenv:Header />
   <soapenv:Body>
       <paf:paGetPaymentV2Response>
           <outcome>OK</outcome>
           <data>
-              <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
+              <creditorReferenceId>${creditorReferenceId}</creditorReferenceId>
               <paymentAmount>120.00</paymentAmount>
               <dueDate>2021-07-31+02:00</dueDate>
               <description>pagamentoTest</description>
@@ -59,4 +63,5 @@ export const paActivate27 = (params: IActivateRequestV2): MockResponse => [
       </paf:paGetPaymentV2Response>
   </soapenv:Body>
   </soapenv:Envelope>`,
-];
+  ];
+};
