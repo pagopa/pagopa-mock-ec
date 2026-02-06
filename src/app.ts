@@ -25,6 +25,7 @@ import {
   paaChiediNumeroAvvisoRisposta,
 } from './fixtures/nodoNewMod3Responses_oldEc';
 
+// @ts-ignore
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
 import { requireClientCertificateFingerprint } from './middlewares/requireClientCertificateFingerprint';
@@ -208,6 +209,7 @@ export async function newExpressApp(
   });
 
   // save custom response
+  // eslint-disable-next-line complexity
   app.post(`${config.PA_MOCK.ROUTES.PPT_NODO}/response/:primitive`, async (req, res) => {
     if (req.params.primitive === 'paVerifyPaymentNotice') {
       if (String(req.query.override).toLowerCase() === 'true') {
@@ -643,7 +645,7 @@ export async function newExpressApp(
         const fiscalcode = paGetPayment.qrcode[0].fiscalcode;
         const noticenumber: string = paGetPayment.qrcode[0].noticenumber;
         const creditorReferenceId = noticenumber[0].substring(1);
-		
+
         if (avviso18.test(noticenumber)) {
           const paActivate17res = paActivate17({
             creditorReferenceId,
@@ -889,7 +891,7 @@ export async function newExpressApp(
                     ? PAA_PAGAMENTO_IN_CORSO.value
                     : b === POSITIONS_STATUS.CLOSE
                     ? PAA_PAGAMENTO_DUPLICATO.value
-                    : '_UNDEFINE_',
+                    : '_UNDEFINED_',
                 faultString: `Errore ${noticenumber}`,
                 id: faultId,
               },
@@ -1391,17 +1393,15 @@ export async function newExpressApp(
             }
           }
         }
-		
-		const paGetPaymentV2Request = soapRequest[paGetPaymentV2req][0];
-		const noticenumber: string = paGetPaymentV2Request.qrcode[0].noticenumber;
-		const creditorReferenceId = noticenumber[0].substring(1);
+        const paGetPaymentV2Request = soapRequest[paGetPaymentV2req][0];
+        const noticenumber: string = paGetPaymentV2Request.qrcode[0].noticenumber;
+        const creditorReferenceId = noticenumber[0].substring(1);
+        if (avviso28.test(noticenumber)) {
+          const activateResponse = paActivate27({ creditorReferenceId });
+          res.type('text/xml');
+          return res.status(activateResponse[0]).send(activateResponse[1]);
+        }
 
-		if (avviso28.test(noticenumber)) {
-		  const activateResponse = paActivate27({ creditorReferenceId });
-		  res.type('text/xml');
-		  return res.status(activateResponse[0]).send(activateResponse[1]);
-		}
-		
         log_event_tx(paGetPaymentV2Response);
         return res.status(+paGetPaymentV2Response[0]).send(paGetPaymentV2Response[1]);
       }
