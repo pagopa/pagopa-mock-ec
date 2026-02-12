@@ -8,6 +8,56 @@ import bodyParser = require('body-parser');
 
 import escapeHtml = require('escape-html');
 import { Configuration } from './config';
+
+import {
+  avviso1,
+  avviso2,
+  avviso3,
+  avviso4,
+  avviso5,
+  avviso6,
+  avviso5smart,
+  avviso7,
+  avviso8,
+  avviso9,
+  avviso10,
+  avviso11,
+  avviso12,
+  avviso13,
+  avviso14,
+  avviso15,
+  avviso16,
+  avviso17,
+  avviso18,
+  avviso19,
+  avviso20,
+  avviso21,
+  avviso22,
+  avviso23,
+  avviso24,
+  avviso25,
+  avviso26,
+  avviso27,
+  avviso28,
+  avvisoOver5000,
+  avvisoUnder1,
+  avvisoPagamentoDuplicato,
+  avvisoErroreXSD,
+  avvisoErrore,
+  avvisoTimeout,
+  avvisoScaduto,
+  amount1,
+  amount1bis,
+  amount2,
+  amount2bis,
+  amount1Over,
+  amount2Over,
+  amount1Under,
+  amount2Under,
+  descriptionAll,
+  descriptionMono,
+  onBollettino,
+} from './utils/configuration';
 import {
   paErrorVerify,
   paGetPaymentRes,
@@ -25,11 +75,14 @@ import {
   paaChiediNumeroAvvisoRisposta,
 } from './fixtures/nodoNewMod3Responses_oldEc';
 
-// @ts-ignore
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
 import { requireClientCertificateFingerprint } from './middlewares/requireClientCertificateFingerprint';
 import {
+  getAmount,
+  getAmountPrimaryRes,
+  getAmountSecondaryRes,
+  getIbanAvviso,
   getRandomArbitrary,
   PAA_PAGAMENTO_DUPLICATO,
   PAA_PAGAMENTO_IN_CORSO,
@@ -37,6 +90,7 @@ import {
   PAA_PAGAMENTO_SCONOSCIUTO,
   PAA_SINTASSI_XSD,
   POSITIONS_STATUS,
+  validNotice,
 } from './utils/helper';
 import { logger, log_event_tx } from './utils/logger';
 import {
@@ -66,7 +120,20 @@ import {
   paActivatePagamentoDuplicato,
 } from './fixtures/fixActivateResponse';
 
-import { paActivate27 } from './fixtures/fixActivateV2Response';
+import {
+  paActivate17V2,
+  paActivate18V2,
+  paActivate19V2,
+  paActivate20V2,
+  paActivate21V2,
+  paActivate22V2,
+  paActivate23V2,
+  paActivate24V2,
+  paActivate25V2,
+  paActivate26V2,
+  paActivate27,
+  paActivatePagamentoDuplicatoV2,
+} from './fixtures/fixActivateV2Response';
 
 const paVerifyPaymentNoticeQueue = new Array<string>();
 const paGetPaymentQueue = new Array<string>();
@@ -93,59 +160,6 @@ const paDemandPaymentNoticereq = 'pafn:pademandpaymentnoticerequest';
 const paaChiediNumeroAvvisoreq = 'ppt:paachiedinumeroavviso';
 const paGetPaymentV2req = 'pafn:pagetpaymentv2request';
 const paSendRTV2req = 'pafn:pasendrtv2request';
-
-const avviso1 = new RegExp('^3\\d\\d00.*'); // CCPost + CCPost
-const avviso2 = new RegExp('^3\\d\\d01.*'); // CCPost + CCBank
-const avviso3 = new RegExp('^3\\d\\d02.*'); // CCBank + CCPost
-const avviso4 = new RegExp('^3\\d\\d03.*'); // CCBank + CCBank
-const avviso5 = new RegExp('^3\\d\\d04.*'); // CCPost - Monobeneficiario + 777
-const avviso6 = new RegExp('^3\\d\\d05.*'); // CCBank - Monobeneficiario + 777
-const avviso5smart = new RegExp('^3\\d\\d04777.*'); // CCPost - Monobeneficiario + 777
-const avviso7 = new RegExp('^3\\d\\d06.*'); // CCPost + CCPost
-const avviso8 = new RegExp('^3\\d\\d07.*'); // CCPost + CCBank
-const avviso9 = new RegExp('^3\\d\\d08.*'); // CCBank + CCPost
-const avviso10 = new RegExp('^3\\d\\d09.*'); // CCBank + CCBank
-const avviso11 = new RegExp('^3\\d\\d10.*'); // CCPost - Monobeneficiario
-const avviso12 = new RegExp('^3\\d\\d11.*'); // CCBank - Monobeneficiario
-const avviso13 = new RegExp('^3\\d\\d12.*'); // come avviso2 - amount1 4000 - amount2 2000
-const avviso14 = new RegExp('^3\\d\\d13.*'); // come avviso2 - amount1 0.10 - amount2 0.20
-const avviso15 = new RegExp('^3\\d\\d14.*'); // CCPost + CCBank + CBank
-const avviso16 = new RegExp('^3\\d\\d15.*'); // CCPost + CCBank + CBank + CCBank + CCBank
-const avviso17 = new RegExp('^3\\d\\d16.*'); // CCPost + CCBank + CBank + CCBank + CCBank
-const avviso18 = new RegExp('^3\\d\\d17.*'); // fix response
-const avviso19 = new RegExp('^3\\d\\d18.*'); // fix response
-const avviso20 = new RegExp('^3\\d\\d19.*'); // fix response
-const avviso21 = new RegExp('^3\\d\\d20.*'); // fix response
-const avviso22 = new RegExp('^3\\d\\d21.*'); // fix response
-const avviso23 = new RegExp('^3\\d\\d22.*'); // fix response
-const avviso24 = new RegExp('^3\\d\\d23.*'); // fix response
-const avviso25 = new RegExp('^3\\d\\d24.*'); // fix response
-const avviso26 = new RegExp('^3\\d\\d25.*'); // fix response
-const avviso27 = new RegExp('^3\\d\\d26.*'); // fix response
-const avviso28 = new RegExp('^3\\d\\d27.*'); // fix response for paGetPaymentV2
-const avvisoOver5000 = new RegExp('^3\\d\\d77.*'); // random over 5000 euro + random su 2 transfers
-const avvisoUnder1 = new RegExp('^3\\d\\d88.*'); // random under 1 euro + + random su 2 transfers
-
-// Special error cases
-const avvisoPagamentoDuplicato = new RegExp('^3\\d\\d95.*'); // PAA_PAGAMENTO_DUPLICATO
-const avvisoErroreXSD = new RegExp('^3\\d\\d96.*'); // PAA_SINTASSI_XSD
-const avvisoErrore = new RegExp('^3\\d\\d97.*'); // paErrorVerify
-const avvisoTimeout = new RegExp('^3\\d\\d98.*'); // timeout
-const avvisoScaduto = new RegExp('^3\\d\\d99.*'); // PAA_PAGAMENTO_SCADUTO
-
-const amount1 = 100.0;
-const amount1bis = 70.0;
-const amount2 = 20.0;
-const amount2bis = 30.0;
-const amount1Over = 4000.0;
-const amount2Over = 2000.0;
-const amount1Under = 0.1;
-const amount2Under = 0.2;
-
-const descriptionAll = 'TARI/TEFA 2021';
-const descriptionMono = 'TARI 2021';
-
-const onBollettino = ' su bollettino';
 
 // tslint:disable-next-line: no-big-function
 export async function newExpressApp(
@@ -179,6 +193,12 @@ export async function newExpressApp(
   // Verify client certificate fingerprint if required
   if (clientCertificateFingerprint !== undefined) {
     app.use(requireClientCertificateFingerprint(clientCertificateFingerprint));
+  }
+
+  function ritorno(res: any, customResponse: string | undefined) {
+    return res
+      .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
+      .send(customResponse);
   }
 
   /* tslint:disable:immutable-data */
@@ -314,12 +334,6 @@ export async function newExpressApp(
       res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
     }
   });
-
-  function ritorno(res: any, customResponse: string | undefined) {
-    return res
-      .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
-      .send(customResponse);
-  }
 
   // SOAP Server mock entrypoint
   // eslint-disable-next-line complexity
@@ -608,9 +622,6 @@ export async function newExpressApp(
         if (paGetPaymentQueue.length > 0) {
           const customResponse = paGetPaymentQueue.shift();
           logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
-          // return res
-          //   .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
-          //   .send(customResponse);
           if (customResponse !== undefined) {
             const convert = await xml2js.parseStringPromise(customResponse);
             if (convert['soapenv:Envelope']['soapenv:Body']) {
@@ -643,9 +654,8 @@ export async function newExpressApp(
         }
         const paGetPayment = soapRequest[activateSoapRequest][0];
         const fiscalcode = paGetPayment.qrcode[0].fiscalcode;
-        const noticenumber: string = paGetPayment.qrcode[0].noticenumber;
-        const creditorReferenceId = noticenumber[0].substring(1);
-
+        const noticenumber: string = paGetPayment.qrcode[0].noticenumber[0];
+        const creditorReferenceId = noticenumber.substring(1);
         if (avviso18.test(noticenumber)) {
           const paActivate17res = paActivate17({
             creditorReferenceId,
@@ -708,116 +718,21 @@ export async function newExpressApp(
           noticenumberRequests.set(`${noticenumber}_paGetPayment`, req.body);
         }
 
-        const isNoticeWith120 =
-          avviso1.test(noticenumber) ||
-          avviso2.test(noticenumber) ||
-          avviso3.test(noticenumber) ||
-          avviso4.test(noticenumber) ||
-          avviso5.test(noticenumber) ||
-          avviso6.test(noticenumber);
-
-        const isValidNotice =
-          avviso1.test(noticenumber) ||
-          avviso2.test(noticenumber) ||
-          avviso3.test(noticenumber) ||
-          avviso4.test(noticenumber) ||
-          avviso5.test(noticenumber) ||
-          avviso6.test(noticenumber) ||
-          avviso7.test(noticenumber) ||
-          avviso8.test(noticenumber) ||
-          avviso9.test(noticenumber) ||
-          avviso10.test(noticenumber) ||
-          avviso11.test(noticenumber) ||
-          avviso12.test(noticenumber) ||
-          avviso13.test(noticenumber) ||
-          avviso14.test(noticenumber) ||
-          avviso15.test(noticenumber) ||
-          avviso16.test(noticenumber) ||
-          avviso17.test(noticenumber) ||
-          avviso24.test(noticenumber) ||
-          avviso25.test(noticenumber) ||
-          avviso26.test(noticenumber) ||
-          avviso27.test(noticenumber) ||
-          avviso28.test(noticenumber) ||
-          avvisoOver5000.test(noticenumber) ||
-          avvisoUnder1.test(noticenumber);
+        const isValidNotice = validNotice(noticenumber);
 
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
         const isOver5000 = avvisoOver5000.test(noticenumber);
         const isUnder1 = avvisoUnder1.test(noticenumber);
-        const isFixOver = avviso13.test(noticenumber);
-        const isFixUnder = avviso14.test(noticenumber);
-
-        const isAmount1 = avviso5.test(noticenumber) || avviso6.test(noticenumber);
-        const isAmount1bis = avviso11.test(noticenumber) || avviso12.test(noticenumber);
-
-        const isSmartAmount = avviso5smart.test(noticenumber);
-
-        const isAmountComplete1 =
-          avviso1.test(noticenumber) ||
-          avviso2.test(noticenumber) ||
-          avviso3.test(noticenumber) ||
-          avviso4.test(noticenumber) ||
-          avviso15.test(noticenumber) ||
-          avviso16.test(noticenumber) ||
-          avviso17.test(noticenumber);
-
-        const isAmountComplete1bis =
-          avviso7.test(noticenumber) ||
-          avviso8.test(noticenumber) ||
-          avviso9.test(noticenumber) ||
-          avviso10.test(noticenumber);
 
         // eslint-disable-next-line functional/no-let
-        let amountRes = isAmount1
-          ? amount1.toFixed(2)
-          : isAmount1bis
-          ? amount1bis.toFixed(2)
-          : isAmountComplete1
-          ? (amount1 + amount2).toFixed(2)
-          : isAmountComplete1bis
-          ? (amount1bis + amount2bis).toFixed(2)
-          : isFixOver
-          ? (amount1Over + amount2Over).toFixed(2)
-          : isFixUnder
-          ? (amount1Under + amount2Under).toFixed(2)
-          : isOver5000 || isUnder1
-          ? dbAmounts.has(noticenumber[0])
-            ? dbAmounts.get(noticenumber[0])
-            : 0
-          : 0;
+        const amountRes = getAmount(noticenumber, dbAmounts);
 
         const amountSession = dbAmounts.has(noticenumber[0]) ? dbAmounts.get(noticenumber[0]) : 0;
         const amountSession1 = amountSession ? amountSession / 2 : 0;
         const amountSession2 = amountSession ? amountSession - amountSession1 : 0;
 
-        // eslint-disable-next-line functional/no-let
-        let amountPrimaryRes = isFixOver
-          ? amount1Over.toFixed(2)
-          : isFixUnder
-          ? amount1Under.toFixed(2)
-          : isOver5000 || isUnder1
-          ? amountSession1.toFixed(2)
-          : isNoticeWith120
-          ? amount1.toFixed(2)
-          : amount1bis.toFixed(2);
-
-        const amountSecondaryRes = isFixOver
-          ? amount2Over.toFixed(2)
-          : isFixUnder
-          ? amount2Under.toFixed(2)
-          : isOver5000 || isUnder1
-          ? amountSession2.toFixed(2)
-          : isNoticeWith120
-          ? amount2.toFixed(2)
-          : amount2bis.toFixed(2);
-
-        const customAmount = noticenumber[0].substring(14, 18); // xx.xx
-        /* eslint-disable */
-        amountPrimaryRes = isSmartAmount
-          ? +customAmount.substring(0, 2) + '.' + customAmount.substring(2, 4)
-          : amountPrimaryRes;
-        amountRes = isSmartAmount ? +customAmount.substring(0, 2) + '.' + customAmount.substring(2, 4) : amountRes;
+        const amountPrimaryRes = getAmountPrimaryRes(noticenumber, amountSession1);
+        const amountSecondaryRes = getAmountSecondaryRes(noticenumber, amountSession2);
         /* eslint-enable */
 
         if (isFixedError) {
@@ -879,17 +794,17 @@ export async function newExpressApp(
             return res.status(paGetPaymentResponse[0]).send(paGetPaymentResponse[1]);
           }, +TIMEOUT_SEC);
         } else {
-          const b = db.get(noticenumber[0]); // get status
-          if (b) {
+          const auxDigit = db.get(noticenumber[0]); // get status
+          if (auxDigit) {
             // già esiste
             // error case PAA_PAGAMENTO_IN_CORSO
             const paGetPaymentResponse = paGetPaymentRes({
               outcome: 'KO',
               fault: {
                 faultCode:
-                  b === POSITIONS_STATUS.IN_PROGRESS
+                  auxDigit === POSITIONS_STATUS.IN_PROGRESS
                     ? PAA_PAGAMENTO_IN_CORSO.value
-                    : b === POSITIONS_STATUS.CLOSE
+                    : auxDigit === POSITIONS_STATUS.CLOSE
                     ? PAA_PAGAMENTO_DUPLICATO.value
                     : '_UNDEFINED_',
                 faultString: `Errore ${noticenumber}`,
@@ -902,13 +817,9 @@ export async function newExpressApp(
           } else {
             // happy case
 
-            // retrive 0,1,2,3 from noticenumber
-            const idIbanAvviso: number =
-              isOver5000 || isUnder1
-                ? 1 // Math.round(getRandomArbitrary(0, 11))
-                : isFixOver || isFixUnder
-                ? 1 // Fix Over and Under come avviso2
-                : +noticenumber[0].substring(3, 5);
+            // retrieve 0,1,2,3 from noticenumber
+            const idIbanAvviso: number = getIbanAvviso(noticenumber);
+
             // eslint-disable-next-line functional/no-let
             let iban1;
             // eslint-disable-next-line functional/no-let
@@ -983,8 +894,7 @@ export async function newExpressApp(
 
             const paGetPaymentResponse = paGetPaymentRes({
               amount: amountRes,
-              amountPrimary:
-                iban2 !== null ? amountPrimaryRes : isOver5000 || isUnder1 ? amountSession1 : amountPrimaryRes,
+              amountPrimary: iban2 === null && (isOver5000 || isUnder1) ? amountSession1 : amountPrimaryRes,
               amountSecondary: amountSecondaryRes,
               amount3: (iban5 ? 10 : iban4 ? 10 : 20).toFixed(2),
               amount4: (iban5 ? 5 : 10).toFixed(2),
@@ -1396,10 +1306,64 @@ export async function newExpressApp(
         const paGetPaymentV2Request = soapRequest[paGetPaymentV2req][0];
         const noticenumber: string = paGetPaymentV2Request.qrcode[0].noticenumber;
         const creditorReferenceId = noticenumber[0].substring(1);
-        if (avviso28.test(noticenumber)) {
+
+        if (avviso18.test(noticenumber)) {
+          const paActivate17res = paActivate17V2({
+            creditorReferenceId,
+          });
+          return res.status(paActivate17res[0]).send(paActivate17res[1]);
+        } else if (avviso19.test(noticenumber)) {
+          const paActivate18res = paActivate18V2({
+            creditorReferenceId,
+          });
+          return res.status(paActivate18res[0]).send(paActivate18res[1]);
+        } else if (avviso20.test(noticenumber)) {
+          const paActivate19res = paActivate19V2({
+            creditorReferenceId,
+          });
+          return res.status(paActivate19res[0]).send(paActivate19res[1]);
+        } else if (avviso21.test(noticenumber)) {
+          const paActivate20res = paActivate20V2({
+            creditorReferenceId,
+          });
+          return res.status(paActivate20res[0]).send(paActivate20res[1]);
+        } else if (avviso22.test(noticenumber)) {
+          const paActivate21res = paActivate21V2({
+            creditorReferenceId,
+          });
+          return res.status(paActivate21res[0]).send(paActivate21res[1]);
+        } else if (avviso23.test(noticenumber)) {
+          const paActivate22res = paActivate22V2({
+            creditorReferenceId,
+          });
+          return res.status(paActivate22res[0]).send(paActivate22res[1]);
+        } else if (avviso24.test(noticenumber)) {
+          const paActivate23res = paActivate23V2({
+            creditorReferenceId,
+          });
+          return res.status(paActivate23res[0]).send(paActivate23res[1]);
+        } else if (avviso25.test(noticenumber)) {
+          const paActivate24res = paActivate24V2({
+            creditorReferenceId,
+          });
+          return res.status(paActivate24res[0]).send(paActivate24res[1]);
+        } else if (avviso26.test(noticenumber)) {
+          const paActivate25res = paActivate25V2({
+            creditorReferenceId,
+          });
+          return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
+        } else if (avviso27.test(noticenumber)) {
+          const paActivate27res = paActivate26V2({
+            creditorReferenceId,
+          });
+          return res.status(paActivate27res[0]).send(paActivate27res[1]);
+        } else if (avviso28.test(noticenumber)) {
           const activateResponse = paActivate27({ creditorReferenceId });
           res.type('text/xml');
           return res.status(activateResponse[0]).send(activateResponse[1]);
+        } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
+          const paActivateDuplicatoRes = paActivatePagamentoDuplicatoV2();
+          return res.status(paActivateDuplicatoRes[0]).send(paActivateDuplicatoRes[1]);
         }
 
         log_event_tx(paGetPaymentV2Response);
@@ -1466,7 +1430,7 @@ export async function newExpressApp(
       // tslint:disable-next-line: prettier
     } catch (error) {
       // The SOAP Request isnt' correct
-      logger.info(`The SOAP Request isnt' correct`);
+      logger.error(`The SOAP Request isnt' correct`, error);
       res.status(500).send('Internal Server Error :( ');
     }
     // tslint:disable-next-line: no-empty

@@ -1,5 +1,5 @@
-import { MockResponse } from './nodoNewMod3Responses';
 import escapeHtml = require('escape-html');
+import { MockResponse } from './nodoNewMod3Responses';
 
 interface IActivateRequest {
   creditorReferenceId?: string;

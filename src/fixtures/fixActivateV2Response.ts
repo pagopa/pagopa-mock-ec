@@ -1,9 +1,35 @@
-import { MockResponse } from './nodoNewMod3Responses';
 import escapeHtml = require('escape-html');
+import { MockResponse } from './nodoNewMod3Responses';
+import { paActivate17, paActivate18, paActivatePagamentoDuplicato } from './fixActivateResponse';
 
 interface IActivateRequestV2 {
   creditorReferenceId?: string;
 }
+
+const createActivateV2Response = (paActivateV1Fn: (params: { creditorReferenceId: string }) => MockResponse) => {
+  return (params: IActivateRequestV2): MockResponse => {
+    const creditorReferenceId = escapeHtml(params.creditorReferenceId ?? '');
+    const paActivateV1res = paActivateV1Fn({ creditorReferenceId });
+    return [paActivateV1res[0], paActivateV1res[1].replace('paGetPaymentRes', 'paGetPaymentV2Response')];
+  };
+};
+
+const createActivateNoInputV2Response = (paActivateV1Fn: () => MockResponse) => (): MockResponse => {
+    const paActivateV1res = paActivateV1Fn();
+    return [paActivateV1res[0], paActivateV1res[1].replace('paGetPaymentRes', 'paGetPaymentV2Response')];
+  };
+
+export const paActivate17V2 = createActivateV2Response(paActivate17);
+export const paActivate18V2 = createActivateV2Response(paActivate18);
+export const paActivate19V2 = createActivateV2Response(paActivate18);
+export const paActivate20V2 = createActivateV2Response(paActivate18);
+export const paActivate21V2 = createActivateV2Response(paActivate18);
+export const paActivate22V2 = createActivateV2Response(paActivate18);
+export const paActivate23V2 = createActivateV2Response(paActivate18);
+export const paActivate24V2 = createActivateV2Response(paActivate18);
+export const paActivate25V2 = createActivateV2Response(paActivate18);
+export const paActivate26V2 = createActivateV2Response(paActivate18);
+export const paActivatePagamentoDuplicatoV2 = createActivateNoInputV2Response(paActivatePagamentoDuplicato);
 
 export const paActivate27 = (params: IActivateRequestV2): MockResponse => {
   const creditorReferenceId = escapeHtml(params.creditorReferenceId ?? '');

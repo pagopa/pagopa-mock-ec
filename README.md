@@ -37,7 +37,9 @@ The following functionalites are available (EC Side)
 
 - _paVerifyPaymentNotice_
 - _paGetPayment_
+- _paGetPaymentV2_
 - _paSendRT_
+- _paSendRTV2_
 
 These mock functionalities allows the PSP to invoke all the payment steps
 
