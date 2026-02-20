@@ -75,6 +75,7 @@ import {
   paaChiediNumeroAvvisoRisposta,
 } from './fixtures/nodoNewMod3Responses_oldEc';
 
+// @ts-ignore
 import { StTransferType_type_pafnEnum } from './generated/paForNode_Service/stTransferType_type_pafn';
 import { paSendRTHandler } from './handlers/handlers';
 import { requireClientCertificateFingerprint } from './middlewares/requireClientCertificateFingerprint';
@@ -334,6 +335,12 @@ export async function newExpressApp(
       res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
     }
   });
+
+  function ritorno(res: any, customResponse: string | undefined) {
+    return res
+      .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
+      .send(customResponse);
+  }
 
   // SOAP Server mock entrypoint
   // eslint-disable-next-line complexity
@@ -1306,7 +1313,6 @@ export async function newExpressApp(
         const paGetPaymentV2Request = soapRequest[paGetPaymentV2req][0];
         const noticenumber: string = paGetPaymentV2Request.qrcode[0].noticenumber;
         const creditorReferenceId = noticenumber[0].substring(1);
-
         if (avviso18.test(noticenumber)) {
           const paActivate17res = paActivate17V2({
             creditorReferenceId,

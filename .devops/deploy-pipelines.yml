@@ -27,7 +27,7 @@ parameters:
 trigger: none
 pr: none
 
-# variables setted on azdevops to avoid circular dependency warning
+# variables set on azdevops to avoid circular dependency warning
 # $(DEFAULT_BRANCH)
 # $(HEALTHCHECK_CONTAINER_SUBNET)
 # $(HEALTHCHECK_ENDPOINT)
