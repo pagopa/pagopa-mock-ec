@@ -1,8 +1,11 @@
 import { MockResponse } from './nodoNewMod3Responses';
+import escapeHtml = require('escape-html');
 
 interface IActivateRequest {
   creditorReferenceId?: string;
 }
+
+const escape = (v?: string) => escapeHtml(v ?? '');
 
 export const paActivate17 = (params: IActivateRequest): MockResponse => [
   200,
@@ -13,7 +16,7 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
     <paf:paGetPaymentRes>
         <outcome>OK</outcome>
         <data>
-            <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
+            <creditorReferenceId>${escape(params.creditorReferenceId)}</creditorReferenceId>
             <paymentAmount>120.00</paymentAmount>
             <dueDate>2021-07-31</dueDate>
             <description>pagamentoTest</description>
@@ -66,7 +69,7 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
     <paf:paGetPaymentRes>
         <outcome>OK</outcome>
         <data>
-            <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
+            <creditorReferenceId>${escape(params.creditorReferenceId)}</creditorReferenceId>
             <paymentAmount>120.00</paymentAmount>
             <dueDate>2021-07-31</dueDate>
             <description>pagamentoTest</description>
@@ -119,7 +122,7 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
     <paf:paGetPaymentRes>
         <outcome>OK</outcome>
         <data>
-            <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
+            <creditorReferenceId>${escape(params.creditorReferenceId)}</creditorReferenceId>
             <paymentAmount>120.00</paymentAmount>
             <dueDate>2021-07-31</dueDate>
             <description>pagamentoTest</description>
@@ -180,7 +183,7 @@ export const paActivate20 = (params: IActivateRequest): MockResponse => [
       <paf:paGetPaymentRes>
           <outcome>OK</outcome>
           <data>
-            <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
+            <creditorReferenceId>${escape(params.creditorReferenceId)}</creditorReferenceId>
             <paymentAmount>120.00</paymentAmount>
             <dueDate>2021-07-31</dueDate>
             <description>pagamentoTest</description>
@@ -233,7 +236,7 @@ export const paActivate21 = (params: IActivateRequest): MockResponse => [
       <paf:paGetPaymentRes>
           <outcome>OK</outcome>
           <data>
-            <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
+            <creditorReferenceId>${escape(params.creditorReferenceId)}</creditorReferenceId>
             <paymentAmount>120.00</paymentAmount>
             <dueDate>2021-07-31</dueDate>
             <description>pagamentoTest</description>
@@ -286,7 +289,7 @@ export const paActivate22 = (params: IActivateRequest): MockResponse => [
       <paf:paGetPaymentRes>
           <outcome>OK</outcome>
           <data>
-            <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
+            <creditorReferenceId>${escape(params.creditorReferenceId)}</creditorReferenceId>
             <paymentAmount>120.00</paymentAmount>
             <dueDate>2021-07-31</dueDate>
             <description>pagamentoTest</description>
@@ -347,7 +350,7 @@ export const paActivate23 = (params: IActivateRequest): MockResponse => [
         <paf:paGetPaymentRes>
             <outcome>OK</outcome>
             <data>
-              <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
+              <creditorReferenceId>${escape(params.creditorReferenceId)}</creditorReferenceId>
               <paymentAmount>120.00</paymentAmount>
               <dueDate>2021-07-31</dueDate>
               <description>pagamentoTest</description>
@@ -408,7 +411,7 @@ export const paActivate24 = (params: IActivateRequest): MockResponse => [
       <paf:paGetPaymentRes>
           <outcome>OK</outcome>
           <data>
-              <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
+              <creditorReferenceId>${escape(params.creditorReferenceId)}</creditorReferenceId>
               <paymentAmount>120.00</paymentAmount>
               <dueDate>2021-07-31+02:00</dueDate>
               <description>pagamentoTest</description>
@@ -451,6 +454,7 @@ export const paActivate24 = (params: IActivateRequest): MockResponse => [
   </soapenv:Body>
   </soapenv:Envelope>`,
 ];
+
 export const paActivate25 = (params: IActivateRequest): MockResponse => [
   200,
   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
@@ -460,7 +464,7 @@ export const paActivate25 = (params: IActivateRequest): MockResponse => [
       <paf:paGetPaymentRes>
           <outcome>OK</outcome>
           <data>
-              <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
+              <creditorReferenceId>${escape(params.creditorReferenceId)}</creditorReferenceId>
               <paymentAmount>999000000.99</paymentAmount>
               <dueDate>2021-07-31+02:00</dueDate>
               <description>pagamentoTest</description>
@@ -505,7 +509,7 @@ export const paActivate26 = (params: IActivateRequest): MockResponse => [
       <paf:paGetPaymentRes>
           <outcome>OK</outcome>
           <data>
-              <creditorReferenceId>${params.creditorReferenceId}</creditorReferenceId>
+              <creditorReferenceId>${escape(params.creditorReferenceId)}</creditorReferenceId>
               <paymentAmount>3010.00</paymentAmount>
               <dueDate>2021-07-31+02:00</dueDate>
               <description>pagamentoTest</description>
