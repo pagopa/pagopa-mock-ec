@@ -94,7 +94,7 @@ stages:
           - template: templates/node-github-release/template.yaml@pagopaCommons
             parameters:
 #              release_branch: '$(DEFAULT_BRANCH)'
-              release_branch: '${{ variables[\'Build.SourceBranch\'] }}'
+              release_branch: variables['Build.SourceBranch']
               semver: '${{ parameters.RELEASE_SEMVER }}'
               gitEmail: '$(GIT_EMAIL)'
               gitUsername: '$(GIT_USERNAME)'
