@@ -86,7 +86,7 @@ stages:
       vmImage: 'ubuntu-latest'
     jobs:
       - job: make_release
-#        condition: eq(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
+        condition: eq(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
