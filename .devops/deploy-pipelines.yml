@@ -70,7 +70,7 @@ stages:
               echo $(DEFAULT_BRANCH)
             displayName: 'Print info'
 
-  # Create a relase
+  # Create a release
   # Activated when ONE OF these are met:
   # - is on branch $(DEFAULT_BRANCH)
   # - is a tag in the form v{version}-RELEASE
@@ -86,14 +86,15 @@ stages:
       vmImage: 'ubuntu-latest'
     jobs:
       - job: make_release
-        condition: eq(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
+#        condition: eq(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
               persistCredentials: true
           - template: templates/node-github-release/template.yaml@pagopaCommons
             parameters:
-              release_branch: '$(DEFAULT_BRANCH)'
+#              release_branch: '$(DEFAULT_BRANCH)'
+              release_branch: '${{ variables[\'Build.SourceBranch\'] }}'
               semver: '${{ parameters.RELEASE_SEMVER }}'
               gitEmail: '$(GIT_EMAIL)'
               gitUsername: '$(GIT_USERNAME)'
