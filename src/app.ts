@@ -711,35 +711,22 @@ export async function newExpressApp(
           return res.status(paActivateDuplicatoRes[0]).send(paActivateDuplicatoRes[1]);
         }
 
-        const isFixedError = avvisoErrore.test(noticenumber);
-        const isTimeout = avvisoTimeout.test(noticenumber);
-
         if (testDebug.toUpperCase() === 'Y') {
           noticenumberRequests.set(`${noticenumber}_paGetPayment`, req.body);
         }
 
-        const isValidNotice = validNotice(noticenumber);
-
-        const isExpiredNotice = avvisoScaduto.test(noticenumber);
-        const isOver5000 = avvisoOver5000.test(noticenumber);
-        const isUnder1 = avvisoUnder1.test(noticenumber);
-
-        // eslint-disable-next-line functional/no-let
-        const amountRes = getAmount(noticenumber, dbAmounts);
-
-        const amountSession = dbAmounts.has(noticenumber[0]) ? dbAmounts.get(noticenumber[0]) : 0;
-        const amountSession1 = amountSession ? amountSession / 2 : 0;
-        const amountSession2 = amountSession ? amountSession - amountSession1 : 0;
-
-        const amountPrimaryRes = getAmountPrimaryRes(noticenumber, amountSession1);
-        const amountSecondaryRes = getAmountSecondaryRes(noticenumber, amountSession2);
-        /* eslint-enable */
-
+        const isFixedError = avvisoErrore.test(noticenumber);
         if (isFixedError) {
           const paErrorGetResponse = paErrorVerify({ typeR: 'paGetPaymentRes' });
           log_event_tx(paErrorGetResponse);
           return res.status(paErrorGetResponse[0]).send(paErrorGetResponse[1]);
         }
+
+        const isValidNotice = validNotice(noticenumber);
+        const isExpiredNotice = avvisoScaduto.test(noticenumber);
+        const isTimeout = avvisoTimeout.test(noticenumber);
+
+        /* eslint-enable */
 
         if (!isValidNotice && !isExpiredNotice && !isTimeout) {
           // error case
@@ -892,45 +879,58 @@ export async function newExpressApp(
                 res.status(404).send('Not found iban');
             }
 
+            const isOver5000 = avvisoOver5000.test(noticenumber);
+            const isUnder1 = avvisoUnder1.test(noticenumber);
+
+            // eslint-disable-next-line functional/no-let
+            const amountRes = getAmount(noticenumber, dbAmounts);
+
+            const amountSession = dbAmounts.has(noticenumber[0]) ? dbAmounts.get(noticenumber[0]) : 0;
+            const amountSession1 = amountSession ? amountSession / 2 : 0;
+            const amountSession2 = amountSession ? amountSession - amountSession1 : 0;
+
+            const amountPrimaryRes = getAmountPrimaryRes(noticenumber, amountSession1);
+            const amountSecondaryRes = getAmountSecondaryRes(noticenumber, amountSession2);
+
             const paGetPaymentResponse = paGetPaymentRes({
-              amount: amountRes,
-              amountPrimary: iban2 === null && (isOver5000 || isUnder1) ? amountSession1 : amountPrimaryRes,
-              amountSecondary: amountSecondaryRes,
-              amount3: (iban5 ? 10 : iban4 ? 10 : 20).toFixed(2),
-              amount4: (iban5 ? 5 : 10).toFixed(2),
-              amount5: '5.00',
-              creditorReferenceId,
-              description:
-                avviso5.test(noticenumber) ||
-                avviso6.test(noticenumber) ||
-                avviso11.test(noticenumber) ||
-                avviso12.test(noticenumber)
-                  ? descriptionMono
-                  : descriptionAll,
-              fiscalCodePA: fiscalcode,
-              iban_1: iban1,
-              iban_2: iban2,
-              iban_3: iban3,
-              iban_4: iban4,
-              iban_5: iban5,
-              outcome: 'OK',
-              remittanceInformation1Bollettino,
-              remittanceInformation2Bollettino,
-              fullName,
-              email,
-              CF,
+             amount: amountRes,
+             amountPrimary: iban2 === null && (isOver5000 || isUnder1) ? amountSession1 : amountPrimaryRes,
+             amountSecondary: amountSecondaryRes,
+             amount3: (iban5 ? 10 : iban4 ? 10 : 20).toFixed(2),
+             amount4: (iban5 ? 5 : 10).toFixed(2),
+             amount5: '5.00',
+             creditorReferenceId,
+             description:
+               avviso5.test(noticenumber) ||
+               avviso6.test(noticenumber) ||
+               avviso11.test(noticenumber) ||
+               avviso12.test(noticenumber)
+                 ? descriptionMono
+                 : descriptionAll,
+             fiscalCodePA: fiscalcode,
+             iban_1: iban1,
+             iban_2: iban2,
+             iban_3: iban3,
+             iban_4: iban4,
+             iban_5: iban5,
+             outcome: 'OK',
+             remittanceInformation1Bollettino,
+             remittanceInformation2Bollettino,
+             fullName,
+             email,
+             CF,
             });
 
             log_event_tx(paGetPaymentResponse);
             if (testDebug.toUpperCase() === 'Y') {
-              xml2js.parseString(paGetPaymentResponse[1], (err, result) => {
-                if (err) {
-                  throw err;
-                }
+             xml2js.parseString(paGetPaymentResponse[1], (err, result) => {
+               if (err) {
+                 throw err;
+               }
 
-                // const json = JSON.stringify(result);
-                noticenumberResponses.set(`${noticenumber}_paGetPayment`, result);
-              });
+               // const json = JSON.stringify(result);
+               noticenumberResponses.set(`${noticenumber}_paGetPayment`, result);
+             });
             }
             return res.status(paGetPaymentResponse[0]).send(paGetPaymentResponse[1]);
           }
