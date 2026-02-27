@@ -74,13 +74,13 @@ stages:
             displayName: 'Print info'
 
   # Create a release
-  # Activated when RELEASE_SEMVER is not 'skip'
-  - ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
-    stage: Release
+  # Always executed
+  - stage: Release
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
       - job: make_release
+        condition: ne('${{ parameters.RELEASE_SEMVER }}', 'skip')
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
@@ -94,64 +94,66 @@ stages:
               gitHubConnection: '$(GITHUB_CONNECTION)'
 
   # Prepare Artifact
-  - stage: Prepare_artifact
-    ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
+  # Only executed when RELEASE_SEMVER is not 'skip'
+  - ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
+    - stage: Prepare_artifact
       dependsOn:
         - Release
-    condition: always()
-    jobs:
-      - job: 'prepare_artifact'
-        steps:
-          # Build application
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
-            parameters:
-              # On the assumption that this stage is executed only when Release stage is,
-              #  with this parameter we set the reference the deployment script must pull changes from.
-              # The branch/tag name is calculated from the source branch
-              #  ex: Build.SourceBranch=refs/heads/master --> master
-              #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
-              gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
-          - script: |
-              yarn build
-            displayName: 'Build'
+      jobs:
+        - job: 'prepare_artifact'
+          steps:
+            # Build application
+            - template: templates/node-job-setup/template.yaml@pagopaCommons
+              parameters:
+                # On the assumption that this stage is executed only when Release stage is,
+                #  with this parameter we set the reference the deployment script must pull changes from.
+                # The branch/tag name is calculated from the source branch
+                #  ex: Build.SourceBranch=refs/heads/master --> master
+                #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
+                gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
+            - script: |
+                yarn build
+              displayName: 'Build'
 
-          # Copy application to
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: '$(System.DefaultWorkingDirectory)'
-              TargetFolder: '$(System.DefaultWorkingDirectory)/bundle'
-              Contents: |
-                **/*
-                web.config
-                !.git/**/*
-                !**/*.js.map
-                !**/*.ts
-                !.vscode/**/*
-                !.devops/**/*
-                !.prettierrc
-                !.gitignore
-                !README.md
-                !jest.integration.js
-                !test
-                !tsconfig.json
-                !tslint.json
-                !yarn.lock
-                !Dangerfile.js
-                !CODEOWNERS
-                !Dockerfile
-                !preview.hbs
-                !.auto-changelog.json
-                !api_pagopa.yaml
-                !__*/**/*
-            displayName: 'Copy deploy files'
+            # Copy application to
+            - task: CopyFiles@2
+              inputs:
+                SourceFolder: '$(System.DefaultWorkingDirectory)'
+                TargetFolder: '$(System.DefaultWorkingDirectory)/bundle'
+                Contents: |
+                  **/*
+                  web.config
+                  !.git/**/*
+                  !**/*.js.map
+                  !**/*.ts
+                  !.vscode/**/*
+                  !.devops/**/*
+                  !.prettierrc
+                  !.gitignore
+                  !README.md
+                  !jest.integration.js
+                  !test
+                  !tsconfig.json
+                  !tslint.json
+                  !yarn.lock
+                  !Dangerfile.js
+                  !CODEOWNERS
+                  !Dockerfile
+                  !preview.hbs
+                  !.auto-changelog.json
+                  !api_pagopa.yaml
+                  !__*/**/*
+              displayName: 'Copy deploy files'
 
-          - publish: $(System.DefaultWorkingDirectory)/bundle
-            artifact: Bundle
+            - publish: $(System.DefaultWorkingDirectory)/bundle
+              artifact: Bundle
 
   # Deploy
+  # Always executed
   - stage: 'Deploy_to_${{ parameters.environment }}'
-    dependsOn:
-      - Prepare_artifact
+    ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
+      dependsOn:
+        - Prepare_artifact
     jobs:
       - job: 'do_deploy_staging_slot_and_swap'
         condition: eq('${{ parameters.DEPLOY_TYPE }}', 'staging_slot_and_swap')
