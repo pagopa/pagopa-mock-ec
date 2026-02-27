@@ -8,7 +8,8 @@ parameters:
       - major
       - minor
       - patch
-    default: minor
+      - skip
+    default: skip
   - name: environment
     displayName: Target Environment
     type: string
@@ -65,6 +66,7 @@ stages:
         steps:
           - script: |
               echo "Debug..."
+              echo ${{ parameters.RELEASE_SEMVER }}
               echo ${{ variables['Build.SourceBranch'] }}
               echo ${{ variables.DEFAULT_BRANCH }} 
               echo $(DEFAULT_BRANCH)
@@ -86,26 +88,19 @@ stages:
       vmImage: 'ubuntu-latest'
     jobs:
       - job: make_release
-        condition: eq(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
+#        condition: eq(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
+        condition: ne(parameters.RELEASE_SEMVER, 'skip')
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
               persistCredentials: true
           - template: templates/node-github-release/template.yaml@pagopaCommons
             parameters:
-#              release_branch: '$(DEFAULT_BRANCH)'
               release_branch: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
               semver: '${{ parameters.RELEASE_SEMVER }}'
               gitEmail: '$(GIT_EMAIL)'
               gitUsername: '$(GIT_USERNAME)'
               gitHubConnection: '$(GITHUB_CONNECTION)'
-
-      - job: skip_release
-        condition: ne(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
-        steps:
-          - script: |
-              echo "We assume this reference to be a valid release: $(Build.SourceBranch). Therefore, there is no need to bundle a new release."
-            displayName: 'Skip release bundle'
 
   # Prepare Artifact
   - stage: Prepare_artifact
