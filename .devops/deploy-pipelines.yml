@@ -75,23 +75,23 @@ stages:
 
   # Create a release
   # Activated when RELEASE_SEMVER is not 'skip'
-  ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
-    - stage: Release
-      pool:
-        vmImage: 'ubuntu-latest'
-      jobs:
-        - job: make_release
-          steps:
-            - template: templates/node-job-setup/template.yaml@pagopaCommons
-              parameters:
-                persistCredentials: true
-            - template: templates/node-github-release/template.yaml@pagopaCommons
-              parameters:
-                release_branch: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
-                semver: '${{ parameters.RELEASE_SEMVER }}'
-                gitEmail: '$(GIT_EMAIL)'
-                gitUsername: '$(GIT_USERNAME)'
-                gitHubConnection: '$(GITHUB_CONNECTION)'
+  - ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
+    stage: Release
+    pool:
+      vmImage: 'ubuntu-latest'
+    jobs:
+      - job: make_release
+        steps:
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
+            parameters:
+              persistCredentials: true
+          - template: templates/node-github-release/template.yaml@pagopaCommons
+            parameters:
+              release_branch: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
+              semver: '${{ parameters.RELEASE_SEMVER }}'
+              gitEmail: '$(GIT_EMAIL)'
+              gitUsername: '$(GIT_USERNAME)'
+              gitHubConnection: '$(GITHUB_CONNECTION)'
 
   # Prepare Artifact
   - stage: Prepare_artifact
