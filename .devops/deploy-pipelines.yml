@@ -20,8 +20,9 @@ parameters:
   - name: DEPLOY_TYPE
     displayName: Deployment type
     type: string
+    default: production_slot
     values:
-      - staging_slot_and_swap
+#      - staging_slot_and_swap
       - production_slot
 
 # Only manual activations are intended
