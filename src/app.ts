@@ -976,6 +976,9 @@ export async function newExpressApp(
               case 11: // CCBank - Monobeneficiario
                 iban1 = CCBankPrimaryEC;
                 break;
+              case 27:
+                iban1 = CCBankPrimaryEC
+                break;
               default:
                 // The SOAP Request not implemented
                 res.status(404).send('Not found iban');
