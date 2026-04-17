@@ -1,16 +1,3 @@
-data "azurerm_storage_account" "tf_storage_account" {
-  name                = "pagopainfraterraform${var.env}"
-  resource_group_name = "io-infra-rg"
-}
-
-data "azurerm_resource_group" "dashboards" {
-  name = "dashboards"
-}
-
-data "azurerm_resource_group" "apim_resource_group" {
-  name = "${local.product}-api-rg"
-}
-
 data "azurerm_kubernetes_cluster" "aks" {
   name                = local.aks_cluster.name
   resource_group_name = local.aks_cluster.resource_group_name

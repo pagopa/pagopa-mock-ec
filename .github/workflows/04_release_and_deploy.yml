@@ -93,14 +93,14 @@ jobs:
         run: echo "semver=${{env.SEMVER}}" >> $GITHUB_OUTPUT
 
       # Set Environment
-      - run: echo "ENVIRNOMENT=${{ inputs.environment}}" >> $GITHUB_ENV
+      - run: echo "ENVIRONMENT=${{ inputs.environment}}" >> $GITHUB_ENV
 
       - if: ${{ inputs.environment == null }}
-        run: echo "ENVIRNOMENT=dev" >> $GITHUB_ENV
+        run: echo "ENVIRONMENT=dev" >> $GITHUB_ENV
 
       - id: get_env
         name: Set Output
-        run: echo "environment=${{env.ENVIRNOMENT}}" >> $GITHUB_OUTPUT
+        run: echo "environment=${{env.ENVIRONMENT}}" >> $GITHUB_OUTPUT
 
   release:
     name: Create a New Release
@@ -144,21 +144,21 @@ jobs:
       environment: ${{ needs.setup.outputs.environment }}
     secrets: inherit
 
-  notify:
-    needs: [ setup, release, deploy_aks ]
-    runs-on: ubuntu-latest
-    name: Notify
-    if: always()
-    steps:
-      - name: Report Status
-        if: ${{ needs.setup.outputs.environment == 'prod' }}
-        uses: ravsamhq/notify-slack-action@be814b201e233b2dc673608aa46e5447c8ab13f2 # v2
-        with:
-          status: ${{ needs.deploy_aks.result }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          notification_title: 'New Release on Production ${{ needs.release.outputs.version }} has {status_message}'
-          message_format: '{emoji} <{run_url}|{workflow}> {status_message} in <{repo_url}|{repo}>'
-          footer: 'Linked to <{workflow_url}| workflow file>'
-          icon_success: ':white_check_mark:'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_DEPLOY }}
+#  notify:
+#    needs: [ setup, release, deploy_aks ]
+#    runs-on: ubuntu-latest
+#    name: Notify
+#    if: always()
+#    steps:
+#      - name: Report Status
+#        if: ${{ needs.setup.outputs.environment == 'prod' }}
+#        uses: ravsamhq/notify-slack-action@be814b201e233b2dc673608aa46e5447c8ab13f2 # v2
+#        with:
+#          status: ${{ needs.deploy_aks.result }}
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          notification_title: 'New Release on Production ${{ needs.release.outputs.version }} has {status_message}'
+#          message_format: '{emoji} <{run_url}|{workflow}> {status_message} in <{repo_url}|{repo}>'
+#          footer: 'Linked to <{workflow_url}| workflow file>'
+#          icon_success: ':white_check_mark:'
+#        env:
+#          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_DEPLOY }}
