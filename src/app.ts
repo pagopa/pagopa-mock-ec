@@ -110,6 +110,23 @@ import {
 } from './fixtures/fixActivateResponse';
 
 import {
+  paActivate00V2,
+  paActivate01V2,
+  paActivate02V2,
+  paActivate03V2,
+  paActivate04V2,
+  paActivate05V2,
+  paActivate06V2,
+  paActivate07V2,
+  paActivate08V2,
+  paActivate09V2,
+  paActivate10V2,
+  paActivate11V2,
+  paActivate12V2,
+  paActivate13V2,
+  paActivate14V2,
+  paActivate15V2,
+  paActivate16V2,
   paActivate17V2,
   paActivate18V2,
   paActivate19V2,
@@ -485,8 +502,7 @@ export async function newExpressApp(
         const match = avvisoMappings.find(([pattern]) => pattern.test(noticenumber));
         if (match) {
           return res.status(200).send(match[1].xml);
-           const amountRes = match![1].options.amount
-     
+           const amountRes = match![1].options.amount     
            dbAmounts.set(noticenumber, +amountRes);
         }      
 
@@ -1257,67 +1273,197 @@ export async function newExpressApp(
         const paGetPaymentV2Request = soapRequest[paGetPaymentV2req][0];
         const noticenumber: string = paGetPaymentV2Request.qrcode[0].noticenumber;
         const creditorReferenceId = noticenumber[0].substring(1);
-        if (avviso18.test(noticenumber)) {
+        if (avviso00.test(noticenumber)) {
+          console.log("AVVISO 00");
+          const paActivate00res = paActivate00V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate00res[0]).send(paActivate00res[1]);
+        } else if (avviso01.test(noticenumber)) {
+          console.log("AVVISO 01");
+          const paActivate01res = paActivate01V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate01res[0]).send(paActivate01res[1]);
+        } else if (avviso02.test(noticenumber)) {
+          console.log("AVVISO 02");
+          const paActivate02res = paActivate02V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate02res[0]).send(paActivate02res[1]);
+        } else if (avviso03.test(noticenumber)) {
+          console.log("AVVISO 03");
+          const paActivate03res = paActivate03V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate03res[0]).send(paActivate03res[1]);
+        } else  if (avviso04.test(noticenumber)) {
+          console.log("AVVISO 04");
+          const paActivate04res = paActivate04V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate04res[0]).send(paActivate04res[1]);
+        } else if (avviso05.test(noticenumber)) {
+          console.log("AVVISO 05");
+          const paActivate05res = paActivate05V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate05res[0]).send(paActivate05res[1]);
+        } else if (avviso06.test(noticenumber)) {
+          console.log("AVVISO 06");
+          const paActivate06res = paActivate06V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate06res[0]).send(paActivate06res[1]);
+        } else if (avviso07.test(noticenumber)) {
+          console.log("AVVISO 07");
+          const paActivate07res = paActivate07V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate07res[0]).send(paActivate07res[1]);
+        } else if (avviso08.test(noticenumber)) {
+          console.log("AVVISO 08");
+          const paActivate08res = paActivate08V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate08res[0]).send(paActivate08res[1]);
+        } else if (avviso09.test(noticenumber)) {
+          console.log("AVVISO 09");
+          const paActivat09res = paActivate09V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivat09res[0]).send(paActivat09res[1]);
+        } else if (avviso10.test(noticenumber)) {
+          console.log("AVVISO 10");
+          const paActivate100res = paActivate10V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate100res[0]).send(paActivate100res[1]);
+        } else if (avviso11.test(noticenumber)) {
+          console.log("AVVISO 11");
+          const paActivate11res = paActivate11V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate11res[0]).send(paActivate11res[1]);
+        } else if (avviso12.test(noticenumber)) {
+          console.log("AVVISO 12");
+          const paActivate12res = paActivate12V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate12res[0]).send(paActivate12res[1]);
+        } else if (avviso13.test(noticenumber)) {
+          console.log("AVVISO 13");
+          const paActivate13res = paActivate13V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate13res[0]).send(paActivate13res[1]);
+        } else if (avviso14.test(noticenumber)) {
+          console.log("AVVISO 14");
+          const paActivate14res = paActivate14V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate14res[0]).send(paActivate14res[1]);
+        } else if (avviso15.test(noticenumber)) {
+          console.log("AVVISO 15");
+          const paActivate15res = paActivate15V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate15res[0]).send(paActivate15res[1]);
+        } else if (avviso16.test(noticenumber)) {
+          console.log("AVVISO 16");
+          const paActivate16res = paActivate16V2({
+            creditorReferenceId,
+            ec
+          });
+          return res.status(paActivate16res[0]).send(paActivate16res[1]);
+        } else  if (avviso17.test(noticenumber)) {
+          console.log("AVVISO 17");
           const paActivate17res = paActivate17V2({
             creditorReferenceId,
             ec
           });
           return res.status(paActivate17res[0]).send(paActivate17res[1]);
-        } else if (avviso19.test(noticenumber)) {
+        } else if (avviso18.test(noticenumber)) {
+           console.log("AVVISO 18");
           const paActivate18res = paActivate18V2({
             creditorReferenceId,
             ec
           });
           return res.status(paActivate18res[0]).send(paActivate18res[1]);
-        } else if (avviso20.test(noticenumber)) {
+        } else if (avviso19.test(noticenumber)) {
+           console.log("AVVISO 19");
           const paActivate19res = paActivate19V2({
             creditorReferenceId,
             ec
           });
           return res.status(paActivate19res[0]).send(paActivate19res[1]);
-        } else if (avviso21.test(noticenumber)) {
+        } else if (avviso20.test(noticenumber)) {
+           console.log("AVVISO 20");
           const paActivate20res = paActivate20V2({
             creditorReferenceId,
             ec
           });
           return res.status(paActivate20res[0]).send(paActivate20res[1]);
-        } else if (avviso22.test(noticenumber)) {
+        } else if (avviso21.test(noticenumber)) {
+           console.log("AVVISO 21");
           const paActivate21res = paActivate21V2({
             creditorReferenceId,
             ec
           });
           return res.status(paActivate21res[0]).send(paActivate21res[1]);
-        } else if (avviso23.test(noticenumber)) {
+        } else if (avviso22.test(noticenumber)) {
+           console.log("AVVISO 22");
           const paActivate22res = paActivate22V2({
             creditorReferenceId,
             ec
           });
           return res.status(paActivate22res[0]).send(paActivate22res[1]);
-        } else if (avviso24.test(noticenumber)) {
+        } else if (avviso23.test(noticenumber)) {
+           console.log("AVVISO 23");
           const paActivate23res = paActivate23V2({
             creditorReferenceId,
             ec
           });
           return res.status(paActivate23res[0]).send(paActivate23res[1]);
-        } else if (avviso25.test(noticenumber)) {
+        } else if (avviso24.test(noticenumber)) {
+           console.log("AVVISO 24");
           const paActivate24res = paActivate24V2({
             creditorReferenceId,
             ec
           });
           return res.status(paActivate24res[0]).send(paActivate24res[1]);
-        } else if (avviso26.test(noticenumber)) {
+        } else if (avviso25.test(noticenumber)) {
+           console.log("AVVISO 25");
           const paActivate25res = paActivate25V2({
             creditorReferenceId,
             ec
           });
           return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
-        } else if (avviso27.test(noticenumber)) {
-          const paActivate27res = paActivate26V2({
+        } else if (avviso26.test(noticenumber)) {
+           console.log("AVVISO 26");
+          const paActivate26res = paActivate26V2({
             creditorReferenceId,
             ec
           });
-          return res.status(paActivate27res[0]).send(paActivate27res[1]);
+          return res.status(paActivate26res[0]).send(paActivate26res[1]);
         } else if (avviso27.test(noticenumber)) {
+           console.log("AVVISO 27");
           const activateResponse = paActivate27({ creditorReferenceId , ec});
           res.type('text/xml');
           return res.status(activateResponse[0]).send(activateResponse[1]);
