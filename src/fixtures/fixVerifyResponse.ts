@@ -1,3 +1,65 @@
+export const paVerifyOK = ({  
+  outcome = "OK",
+  amount = "120.00",
+  options = "EQ",
+  dueDate = "2030-07-31",
+  detailDescription ="pagamentoTest",
+  companyName = "companyName",
+  allCCP = true,
+  paymentDescription = "Pagamento di Test",
+  fiscalCodePA ="77777777777",
+  officeName ="officeName"
+}: {
+  outcome?:string
+  allCCP?: boolean;
+  amount?: string;
+  options?: string;
+  dueDate?: string;
+  detailDescription?: string;
+  companyName?: string;
+  paymentDescription?:string;
+  fiscalCodePA?:string;
+  officeName?:string;
+} = {}): string => `
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
+    <soapenv:Header />
+    <soapenv:Body>
+        <paf:paVerifyPaymentNoticeRes>
+            <outcome>${outcome}</outcome>
+            <paymentList>
+                <paymentOptionDescription>
+                    <amount>${amount}</amount>
+                    <options>${options}</options>
+                    <dueDate>${dueDate}</dueDate>
+                    <detailDescription>${detailDescription}</detailDescription>
+                    <allCCP>${allCCP}</allCCP>
+                </paymentOptionDescription>
+            </paymentList>
+            <paymentDescription>${paymentDescription}</paymentDescription>
+            <fiscalCodePA>${fiscalCodePA}</fiscalCodePA>
+            <companyName>${companyName}</companyName>
+            <officeName>${officeName}</officeName>
+        </paf:paVerifyPaymentNoticeRes>
+    </soapenv:Body>
+</soapenv:Envelope>`;
+
+export const paVerifyPagamentoDuplicato = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
+    <soapenv:Header />
+    <soapenv:Body>
+        <paf:paVerifyPaymentNoticeRes>
+            <outcome>KO</outcome>
+            <fault>
+                <faultCode>PAA_PAGAMENTO_DUPLICATO</faultCode>
+                <faultString>Errore mockato - caso PAA_PAGAMENTO_DUPLICATO</faultString>
+                <id>77777777777</id>
+            </fault>
+        </paf:paVerifyPaymentNoticeRes>
+    </soapenv:Body>
+</soapenv:Envelope>`;
+
+/*
 export const paVerify17 = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
     <soapenv:Header />
@@ -242,3 +304,5 @@ export const paVerifyPagamentoDuplicato = `<soapenv:Envelope xmlns:soapenv="http
         </paf:paVerifyPaymentNoticeRes>
     </soapenv:Body>
 </soapenv:Envelope>`;
+
+*/

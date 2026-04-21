@@ -1,9 +1,17 @@
 import escapeHtml = require('escape-html');
 import { MockResponse } from './nodoNewMod3Responses';
-import escapeHtml = require('escape-html');
 
 interface IActivateRequest {
   creditorReferenceId?: string;
+  CCPost1?: string;
+  CCPost2?: string;
+  CCBank1?: string;
+  CCBank2?: string;
+  transferCategory1?: string;
+  transferCategory2?: string;
+  faultCode?:string;
+  faultString?:string;
+
 }
 
 const escape = (v?: string) => escapeHtml(v ?? '');
@@ -42,17 +50,17 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
                     <idTransfer>1</idTransfer>
                     <transferAmount>100.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT57N0760114800000011050036</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
-                    <transferCategory>0101101IM</transferCategory>
+                    <IBAN>${escape(params.CCPost1)}</IBAN>
+                    <remittanceInformation>CC EC_TE - CCPost</remittanceInformation>
+                    <transferCategory>${escape(params.transferCategory1)}</transferCategory>
                 </transfer>
                 <transfer>
                     <idTransfer>2</idTransfer>
                     <transferAmount>20.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT86H0760101000000000001015</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
-                    <transferCategory>0101101IM</transferCategory>
+                    <IBAN>${escape(params.CCPost2)}</IBAN>
+                    <remittanceInformation>CC EC_TE - CCPost</remittanceInformation>
+                    <transferCategory>${escape(params.transferCategory2)}</transferCategory>
                 </transfer>
             </transferList>
         </data>
@@ -95,16 +103,16 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
                     <idTransfer>1</idTransfer>
                     <transferAmount>100.00</transferAmount>
                     <fiscalCodePA>01199250158</fiscalCodePA>
-                    <IBAN>IT21Q0760101600000000546200</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
+                    <IBAN>${escape(params.CCPost1)}</IBAN>
+                    <remittanceInformation> Oneri SUAP 1 CC Comune di Milano - CCPost</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
                 <transfer>
                     <idTransfer>2</idTransfer>
                     <transferAmount>20.00</transferAmount>
                     <fiscalCodePA>00939820726</fiscalCodePA>
-                    <IBAN>IT80E0306904013100000046039</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
+                    <IBAN>${escape(params.CCBank1)}</IBAN>
+                    <remittanceInformation> Oneri SUAP 2 CC Comune di Bitetto - CCBank</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
             </transferList>
@@ -148,24 +156,24 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
                     <idTransfer>1</idTransfer>
                     <transferAmount>70.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT30N0103076271000001823603</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
+                    <IBAN>${escape(params.CCBank1)}</IBAN>
+                    <remittanceInformation>CC EC_TE - CCBank</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
                 <transfer>
                     <idTransfer>2</idTransfer>
                     <transferAmount>30.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT30N0103076271000001823603</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
+                    <IBAN>${escape(params.CCBank2)}</IBAN>
+                    <remittanceInformation>CC EC_TE CCBanK</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
                 <transfer>
                     <idTransfer>3</idTransfer>
                     <transferAmount>20.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT57N0760114800000011050036</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
+                    <IBAN>${escape(params.CCPost1)}</IBAN>
+                    <remittanceInformation>CC EC_TE - CCPost</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
             </transferList>
@@ -209,16 +217,16 @@ export const paActivate20 = (params: IActivateRequest): MockResponse => [
                     <idTransfer>1</idTransfer>
                     <transferAmount>100.00</transferAmount>
                     <fiscalCodePA>01199250158</fiscalCodePA>
-                    <IBAN>IT21Q0760101600000000546200</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
+                    <IBAN>${escape(params.CCPost1)}</IBAN>
+                    <remittanceInformation>Oneri SUAP 1 CC Comune di Milano - CCPost</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
                 <transfer>
                     <idTransfer>2</idTransfer>
                     <transferAmount>20.00</transferAmount>
                     <fiscalCodePA>01199250158</fiscalCodePA>
-                    <IBAN>IT15V0306901783100000300001</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
+                    <IBAN>${escape(params.CCBank1)}</IBAN>
+                    <remittanceInformation>Oneri SUAP 2 CC Comune di Milano - CCBank</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
             </transferList>
@@ -262,17 +270,17 @@ export const paActivate21 = (params: IActivateRequest): MockResponse => [
                     <idTransfer>1</idTransfer>
                     <transferAmount>100.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT57N0760114800000011050036</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
-                    <transferCategory>0101101IM</transferCategory>
+                    <IBAN>${escape(params.CCPost1)}</IBAN>
+                    <remittanceInformation>CC EC_TE - CCPost </remittanceInformation>
+                    <transferCategory>${escape(params.transferCategory1)}</transferCategory>
                 </transfer>
                 <transfer>
                     <idTransfer>2</idTransfer>
                     <transferAmount>20.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT30N0103076271000001823603</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
-                    <transferCategory>0101101IM</transferCategory>
+                    <IBAN>${escape(params.CCBank1)}</IBAN>
+                    <remittanceInformation>CC EC_TE - CCBanck</remittanceInformation>
+                    <transferCategory>${escape(params.transferCategory2)}</transferCategory>
                 </transfer>
             </transferList>
         </data>
@@ -315,24 +323,24 @@ export const paActivate22 = (params: IActivateRequest): MockResponse => [
                     <idTransfer>1</idTransfer>
                     <transferAmount>70.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT57N0760114800000011050036</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
+                    <IBAN>${escape(params.CCPost1)}</IBAN>
+                    <remittanceInformation>CC EC_TE - CCPost</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
                 <transfer>
                     <idTransfer>2</idTransfer>
                     <transferAmount>30.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT86H0760101000000000001015</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
+                    <IBAN>${escape(params.CCPost2)}</IBAN>
+                    <remittanceInformation>CC EC_TE - CCPost</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
                 <transfer>
                     <idTransfer>3</idTransfer>
                     <transferAmount>20.00</transferAmount>
                     <fiscalCodePA>77777777777</fiscalCodePA>
-                    <IBAN>IT30N0103076271000001823603</IBAN>
-                    <remittanceInformation>remittance information</remittanceInformation>
+                    <IBAN>${escape(params.CCBank1)}</IBAN>
+                    <remittanceInformation>CC EC_TE - CCBank</remittanceInformation>
                     <transferCategory>0101101IM</transferCategory>
                 </transfer>
             </transferList>
@@ -376,24 +384,24 @@ export const paActivate23 = (params: IActivateRequest): MockResponse => [
                       <idTransfer>1</idTransfer>
                       <transferAmount>70.00</transferAmount>
                       <fiscalCodePA>77777777777</fiscalCodePA>
-                      <IBAN>IT57N0760114800000011050036</IBAN>
-                      <remittanceInformation>remittance information</remittanceInformation>
+                      <IBAN>${escape(params.CCBank1)}</IBAN>
+                      <remittanceInformation>CC EC_TE - CCBank</remittanceInformation>
                       <transferCategory>0101101IM</transferCategory>
                   </transfer>
                   <transfer>
                       <idTransfer>2</idTransfer>
                       <transferAmount>30.00</transferAmount>
                       <fiscalCodePA>77777777777</fiscalCodePA>
-                      <IBAN>IT86H0760101000000000001015</IBAN>
-                      <remittanceInformation>remittance information</remittanceInformation>
+                      <IBAN>${escape(params.CCBank2)}</IBAN>
+                      <remittanceInformation>CC EC_TE - CCBank</remittanceInformation>
                       <transferCategory>0101101IM</transferCategory>
                   </transfer>
                   <transfer>
                       <idTransfer>3</idTransfer>
                       <transferAmount>20.00</transferAmount>
                       <fiscalCodePA>77777777777</fiscalCodePA>
-                      <IBAN>IT30N0103076271000001823603</IBAN>
-                      <remittanceInformation>remittance information</remittanceInformation>
+                      <IBAN>${escape(params.CCPost1)}</IBAN>
+                      <remittanceInformation>CC EC_TE - CCPost</remittanceInformation>
                       <transferCategory>0101101IM</transferCategory>
                   </transfer>
               </transferList>
@@ -437,17 +445,17 @@ export const paActivate24 = (params: IActivateRequest): MockResponse => [
                       <idTransfer>1</idTransfer>
                       <transferAmount>100.00</transferAmount>
                       <fiscalCodePA>77777777777</fiscalCodePA>
-                      <IBAN>IT57N0760114800000011050036</IBAN>
-                      <remittanceInformation>remittance information</remittanceInformation>
-                      <transferCategory>0101101IM</transferCategory>
+                      <IBAN>${escape(params.CCPost1)}</IBAN>
+                      <remittanceInformation>CC Comune di Milano - CCPost</remittanceInformation>
+                      <transferCategory>${escape(params.transferCategory1)}</transferCategory>
                   </transfer>
                   <transfer>
                       <idTransfer>2</idTransfer>
                       <transferAmount>20.00</transferAmount>
                       <fiscalCodePA>77777777777</fiscalCodePA>
-                      <IBAN>IT86H0760101000000000001015</IBAN>
-                      <remittanceInformation>remittance information</remittanceInformation>
-                      <transferCategory>0101101IM</transferCategory>
+                      <IBAN>${escape(params.CCBank1)}</IBAN>
+                      <remittanceInformation>CC Comune di Milano - CCBank</remittanceInformation>
+                      <transferCategory>${escape(params.transferCategory2)}</transferCategory>
                   </transfer>
               </transferList>
           </data>
@@ -488,10 +496,10 @@ export const paActivate25 = (params: IActivateRequest): MockResponse => [
               <transferList>
                   <transfer>
                       <idTransfer>1</idTransfer>
-                      <transferAmount>999000000.99</transferAmount>
+                      <transferAmount>999999999.99</transferAmount>
                       <fiscalCodePA>77777777777</fiscalCodePA>
-                      <IBAN>IT57N0760114800000011050036</IBAN>
-                      <remittanceInformation>remittance information</remittanceInformation>
+                      <IBAN>${escape(params.CCBank1)}</IBAN>
+                      <remittanceInformation>CC Comune di Milano - CCBank</remittanceInformation>
                       <transferCategory>0101101IM</transferCategory>
                   </transfer>
               </transferList>
@@ -557,6 +565,25 @@ export const paActivatePagamentoDuplicato = (): MockResponse => [
             <fault>
                 <faultCode>PAA_PAGAMENTO_DUPLICATO</faultCode>
                 <faultString>Errore mockato - caso PAA_PAGAMENTO_DUPLICATO</faultString>
+                <id>77777777777</id>
+            </fault>
+        </paf:paGetPaymentRes>
+    </soapenv:Body>
+    </soapenv:Envelope>`,
+];
+
+
+export const paEdgeCase = (params: IActivateRequest): MockResponse => [
+  200,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
+    <soapenv:Header />
+    <soapenv:Body>
+        <paf:paGetPaymentRes>
+            <outcome>KO</outcome>
+            <fault>
+                <faultCode>${escape(params.faultCode)}</faultCode>
+                <faultString>${escape(params.faultCode)}</faultString>
                 <id>77777777777</id>
             </fault>
         </paf:paGetPaymentRes>

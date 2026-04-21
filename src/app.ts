@@ -85,6 +85,7 @@ import {
   getAmountSecondaryRes,
   getIbanAvviso,
   getRandomArbitrary,
+  getTypeIban,
   PAA_PAGAMENTO_DUPLICATO,
   PAA_PAGAMENTO_IN_CORSO,
   PAA_PAGAMENTO_SCADUTO,
@@ -95,16 +96,7 @@ import {
 } from './utils/helper';
 import { logger, log_event_tx } from './utils/logger';
 import {
-  paVerify17,
-  paVerify18,
-  paVerify19,
-  paVerify20,
-  paVerify21,
-  paVerify22,
-  paVerify23,
-  paVerify24,
-  paVerify25,
-  paVerify26,
+  paVerifyOK,
   paVerifyPagamentoDuplicato,
 } from './fixtures/fixVerifyResponse';
 import {
@@ -117,8 +109,8 @@ import {
   paActivate23,
   paActivate24,
   paActivate25,
-  paActivate26,
-  paActivatePagamentoDuplicato,
+  //paActivate26,
+  paEdgeCase,
 } from './fixtures/fixActivateResponse';
 
 import {
@@ -171,18 +163,20 @@ export async function newExpressApp(
   noticenumberResponses: Map<string, JSON>,
 ): Promise<Express.Application> {
   // config params...
-  const TIMEOUT_SEC = config.PA_MOCK.NM3_DATA.TIMETOUT_SEC;
+  const TIMEOUT_SEC = config.PA_MOCK.NM3_DATA.TIMETOUT_SEC
 
   const email = config.PA_MOCK.NM3_DATA.USER_EMAL;
   const fullName = config.PA_MOCK.NM3_DATA.USER_FULL_NAME;
   const CF = config.PA_MOCK.NM3_DATA.USER_CF;
 
-  const CCPostPrimaryEC = config.PA_MOCK.NM3_DATA.CC_POST_PRIMARY_EC;
+  const CCPostPrimaryEC : string = config.PA_MOCK.NM3_DATA.CC_POST_PRIMARY_EC;
   const CCBankPrimaryEC = config.PA_MOCK.NM3_DATA.CC_BANK_PRIMARY_EC;
   const CCPostSecondaryEC = config.PA_MOCK.NM3_DATA.CC_POST_SECONDARY_EC;
   const CCBankSecondaryEC = config.PA_MOCK.NM3_DATA.CC_BANK_SECONDARY_EC;
   const CCBankThirdEC = config.PA_MOCK.NM3_DATA.CC_BANK_THIRD_EC;
   const testDebug = config.PA_MOCK.TEST_DEBUG;
+  const transferCategory1 = "0101101IM";
+  const transferCategory2 = "0201102IM";
 
   // app
   const app = express();
@@ -195,6 +189,7 @@ export async function newExpressApp(
   if (clientCertificateFingerprint !== undefined) {
     app.use(requireClientCertificateFingerprint(clientCertificateFingerprint));
   }
+  
 
   function ritorno(res: any, customResponse: string | undefined) {
     return res
@@ -336,12 +331,6 @@ export async function newExpressApp(
     }
   });
 
-  function ritorno(res: any, customResponse: string | undefined) {
-    return res
-      .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
-      .send(customResponse);
-  }
-
   // SOAP Server mock entrypoint
   // eslint-disable-next-line complexity
   // eslint-disable-next-line sonarjs/cognitive-complexity, complexity
@@ -394,6 +383,52 @@ export async function newExpressApp(
         const fiscalcode = paVerifyPaymentNotice.qrcode[0].fiscalcode;
         const noticenumber = paVerifyPaymentNotice.qrcode[0].noticenumber;
 
+        /* paVerifyOK is  with default value {
+                                                outcome = "OK",
+                                                amount = "120.00",
+                                                options = "EQ",
+                                                dueDate = "2030-07-31",
+                                                detailDescription ="pagamentoTest",
+                                                companyName = "companyName",
+                                                allCCP = true,
+                                                paymentDescription = "Pagamento di Test",
+                                                fiscalCodePA ="77777777777",
+                                                officeName ="officeName"
+                                              } 
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+          xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
+          <soapenv:Header />
+          <soapenv:Body>
+              <paf:paVerifyPaymentNoticeRes>
+                  <outcome>OK</outcome>
+                  <paymentList>
+                      <paymentOptionDescription>
+                          <amount>${amount}</amount>
+                          <options>EQ</options>
+                          <dueDate>${dueDate}</dueDate>
+                          <detailDescription>pagamentoTest</detailDescription>
+                          <allCCP>${allCCP}</allCCP>
+                      </paymentOptionDescription>
+                  </paymentList>
+                  <paymentDescription>Pagamento di Test</paymentDescription>
+                  <fiscalCodePA>77777777777</fiscalCodePA>
+                  <companyName>${companyName}</companyName>
+                  <officeName>officeName</officeName>
+              </paf:paVerifyPaymentNoticeRes>
+          </soapenv:Body>
+        </soapenv:Envelope>`;
+        */
+        const paVerify17 = paVerifyOK({ allCCP: true });
+        const paVerify18 = paVerifyOK({ allCCP: false });
+        const paVerify19 = paVerifyOK({ allCCP: false });
+        const paVerify20 = paVerifyOK({ allCCP: false });
+        const paVerify21 = paVerifyOK({ allCCP: false });
+        const paVerify22 = paVerifyOK({ allCCP: true });
+        const paVerify23 = paVerifyOK({ allCCP: true, companyName: "Veeery long company PA name which fills all available 140 characters, (are you still reading? You should not stare at a screen for too long)" });
+        const paVerify24 = paVerifyOK({ allCCP: true, dueDate: "2030-07-31+02:00" });
+        const paVerify25 = paVerifyOK({ amount: "999999999.99", dueDate: "2030-07-31+02:00" });
+        const paVerify26 = paVerifyOK({ amount: "3000.00", dueDate: "2030-07-31+02:00" });
+
         if (avviso18.test(noticenumber)) {
           return res.status(200).send(paVerify17);
         } else if (avviso19.test(noticenumber)) {
@@ -404,7 +439,7 @@ export async function newExpressApp(
           return res.status(200).send(paVerify20);
         } else if (avviso22.test(noticenumber)) {
           return res.status(200).send(paVerify21);
-        } else if (avviso23.test(noticenumber)) {
+        } else if (avviso23.test(noticenumber)) {     
           return res.status(200).send(paVerify22);
         } else if (avviso24.test(noticenumber)) {
           return res.status(200).send(paVerify23);
@@ -428,8 +463,12 @@ export async function newExpressApp(
         const isFixedError = avvisoErrore.test(noticenumber);
         const isTimeout = avvisoTimeout.test(noticenumber);
         const isErrorXsd = avvisoErroreXSD.test(noticenumber);
+        const noticeRegexList = [avviso1, avviso2, avviso3, avviso4, avviso5,avviso6, avviso7, avviso8, avviso9, avviso10,
+                                 avviso11, avviso12, avviso13,   avviso14, avviso15,avviso16, avviso17, avviso24, avviso25, 
+                                 avviso26,avviso27, avviso28, avvisoOver5000, avvisoUnder1 ];  
 
-        const isValidNotice =
+
+       /* const isValidNotice =
           avviso1.test(noticenumber) ||
           avviso2.test(noticenumber) ||
           avviso3.test(noticenumber) ||
@@ -454,6 +493,9 @@ export async function newExpressApp(
           avviso28.test(noticenumber) ||
           avvisoOver5000.test(noticenumber) ||
           avvisoUnder1.test(noticenumber);
+          */
+
+        const isValidNotice = noticeRegexList.some(regex => regex.test(noticenumber));  
 
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
         const isOver5000 = avvisoOver5000.test(noticenumber);
@@ -514,6 +556,8 @@ export async function newExpressApp(
 
         dbAmounts.set(noticenumber[0], +amountRes);
 
+        console.log("dbAmounts",dbAmounts);
+
         if (isErrorXsd) {
           // error case PAA_SINTASSI_XSD
           const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
@@ -531,7 +575,7 @@ export async function newExpressApp(
         }
 
         if (isFixedError) {
-          const paErrorVerifyResponse = paErrorVerify({ typeR: 'paVerifyPaymentNoticeRes' });
+          const paErrorVerifyResponse = paErrorVerify({ typeR: 'paVerifyPaymentNoticeRes', faultCode: "EC Station not reacheable", description:"EC Station not reacheable" });
           log_event_tx(paErrorVerifyResponse);
           return res.status(paErrorVerifyResponse[0]).send(paErrorVerifyResponse[1]);
         }
@@ -665,32 +709,50 @@ export async function newExpressApp(
         const creditorReferenceId = noticenumber.substring(1);
         if (avviso18.test(noticenumber)) {
           const paActivate17res = paActivate17({
-            creditorReferenceId,
+            creditorReferenceId: creditorReferenceId,
+            CCPost1: CCPostPrimaryEC,
+            CCPost2: CCPostSecondaryEC,
+            transferCategory1: transferCategory1,
+            transferCategory2: transferCategory2
           });
           return res.status(paActivate17res[0]).send(paActivate17res[1]);
         } else if (avviso19.test(noticenumber)) {
           const paActivate18res = paActivate18({
             creditorReferenceId,
+            CCPost1:CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
           });
           return res.status(paActivate18res[0]).send(paActivate18res[1]);
         } else if (avviso20.test(noticenumber)) {
           const paActivate19res = paActivate19({
             creditorReferenceId,
+            CCPost1:CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
+            CCBank2:CCBankSecondaryEC,
           });
           return res.status(paActivate19res[0]).send(paActivate19res[1]);
         } else if (avviso21.test(noticenumber)) {
           const paActivate20res = paActivate20({
             creditorReferenceId,
+            CCPost1:CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
           });
           return res.status(paActivate20res[0]).send(paActivate20res[1]);
         } else if (avviso22.test(noticenumber)) {
           const paActivate21res = paActivate21({
             creditorReferenceId,
+            CCPost1: CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
+            transferCategory1: transferCategory1,
+            transferCategory2: transferCategory2
           });
           return res.status(paActivate21res[0]).send(paActivate21res[1]);
         } else if (avviso23.test(noticenumber)) {
           const paActivate22res = paActivate22({
             creditorReferenceId,
+            CCPost1:CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
+            CCBank2:CCBankSecondaryEC,
           });
           return res.status(paActivate22res[0]).send(paActivate22res[1]);
         } else if (avviso24.test(noticenumber)) {
@@ -701,22 +763,36 @@ export async function newExpressApp(
         } else if (avviso25.test(noticenumber)) {
           const paActivate24res = paActivate24({
             creditorReferenceId,
+            CCPost1:CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
+            transferCategory1: transferCategory1,
+            transferCategory2: transferCategory2
           });
           return res.status(paActivate24res[0]).send(paActivate24res[1]);
         } else if (avviso26.test(noticenumber)) {
           const paActivate25res = paActivate25({
             creditorReferenceId,
+            CCBank1: CCBankPrimaryEC,
           });
-          return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
-        } else if (avviso27.test(noticenumber)) {
-          const paActivate27res = paActivate26({
+          return res.status(paActivate25res[0]).send(paActivate25res[1]);
+        } else if (avviso28.test(noticenumber)) {
+          const paActivate27res = paActivate27({
             creditorReferenceId,
+            CCPost1:CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
+            transferCategory1: transferCategory1,
+            transferCategory2: transferCategory2
           });
           return res.status(paActivate27res[0]).send(paActivate27res[1]);
         } else if (avvisoPagamentoDuplicato.test(noticenumber)) {
-          const paActivateDuplicatoRes = paActivatePagamentoDuplicato();
+          const paActivateDuplicatoRes = paEdgeCase({
+            faultCode:"PAA_PAGAMENTO_DUPLICATO",
+            faultString:"Errore mockato - caso PAA_PAGAMENTO_DUPLICATO"
+          });
           return res.status(paActivateDuplicatoRes[0]).send(paActivateDuplicatoRes[1]);
         }
+        
+       
 
         if (testDebug.toUpperCase() === 'Y') {
           noticenumberRequests.set(`${noticenumber}_paGetPayment`, req.body);
@@ -732,6 +808,10 @@ export async function newExpressApp(
         const isValidNotice = validNotice(noticenumber);
         const isExpiredNotice = avvisoScaduto.test(noticenumber);
         const isTimeout = avvisoTimeout.test(noticenumber);
+
+        console.log("isValidNotice ",isValidNotice);
+        console.log("isExpiredNotice ", isExpiredNotice);
+        console.log("isTimeout ",isTimeout);
 
         /* eslint-enable */
 
@@ -786,9 +866,10 @@ export async function newExpressApp(
 
             log_event_tx(paGetPaymentResponse);
             return res.status(paGetPaymentResponse[0]).send(paGetPaymentResponse[1]);
-          }, +TIMEOUT_SEC);
+          }, (+TIMEOUT_SEC)*1000);
         } else {
           const auxDigit = db.get(noticenumber[0]); // get status
+           console.log("auxDigit ",auxDigit);
           if (auxDigit) {
             // già esiste
             // error case PAA_PAGAMENTO_IN_CORSO
@@ -813,7 +894,7 @@ export async function newExpressApp(
 
             // retrieve 0,1,2,3 from noticenumber
             const idIbanAvviso: number = getIbanAvviso(noticenumber);
-
+ console.log("idIbanAvviso ",idIbanAvviso,);
             // eslint-disable-next-line functional/no-let
             let iban1;
             // eslint-disable-next-line functional/no-let
@@ -828,31 +909,55 @@ export async function newExpressApp(
             let remittanceInformation1Bollettino = '';
             // eslint-disable-next-line functional/no-let
             let remittanceInformation2Bollettino = '';
+             // eslint-disable-next-line functional/no-let
+            let remittanceInformation3Bollettino = '';
+            // eslint-disable-next-line functional/no-let
+            let remittanceInformation4Bollettino = '';
+             // eslint-disable-next-line functional/no-let
+            let remittanceInformation5Bollettino = '';
+
+            let typeIban1 = getTypeIban(noticenumber,1);
+
+            let typeIban2 = getTypeIban(noticenumber,2);
+
+            let typeIban3 = getTypeIban(noticenumber,3);
+
+            let typeIban4 = getTypeIban(noticenumber,4);
+
+            let typeIban5 = getTypeIban(noticenumber,5);
 
             switch (idIbanAvviso) {
               case 0: // CCPost + CCPost
               case 6: // CCPost + CCPost
                 iban1 = CCPostPrimaryEC;
                 iban2 = CCPostSecondaryEC;
-                remittanceInformation1Bollettino = onBollettino;
-                remittanceInformation2Bollettino = onBollettino;
+                remittanceInformation1Bollettino = onBollettino + typeIban1;
+                remittanceInformation2Bollettino = onBollettino + typeIban2;
                 break;
               case 1: // CCPost + CCBank
               case 7: //  CCPost + CCBank
                 iban1 = CCPostPrimaryEC;
                 iban2 = CCBankSecondaryEC;
-                remittanceInformation1Bollettino = onBollettino;
+                remittanceInformation1Bollettino = onBollettino + typeIban1;
+                remittanceInformation2Bollettino = onBollettino + typeIban2;
                 break;
               case 14: // CCPost + CCBank + CCBank
                 iban1 = CCPostPrimaryEC;
                 iban2 = CCBankSecondaryEC;
                 iban3 = CCBankThirdEC;
+                remittanceInformation1Bollettino = onBollettino + typeIban1;
+                remittanceInformation2Bollettino = onBollettino + typeIban2;
+                remittanceInformation3Bollettino = onBollettino + typeIban3;
                 break;
               case 15: // CCPost + CCBank + CCBank + CCBank
                 iban1 = CCPostPrimaryEC;
                 iban2 = CCBankSecondaryEC;
                 iban3 = CCBankThirdEC;
                 iban4 = CCBankSecondaryEC;
+                remittanceInformation1Bollettino = onBollettino + typeIban1;
+                remittanceInformation2Bollettino = onBollettino + typeIban2;
+                remittanceInformation3Bollettino = onBollettino + typeIban3;
+                remittanceInformation4Bollettino = onBollettino + typeIban4;
                 break;
               case 16: // CCPost + CCBank + CCBank + CCBank + CCBank
                 iban1 = CCPostPrimaryEC;
@@ -860,26 +965,35 @@ export async function newExpressApp(
                 iban3 = CCBankThirdEC;
                 iban4 = CCBankSecondaryEC;
                 iban5 = CCBankSecondaryEC;
+                remittanceInformation1Bollettino = onBollettino + typeIban1;
+                remittanceInformation2Bollettino = onBollettino + typeIban2;
+                remittanceInformation3Bollettino = onBollettino + typeIban3;
+                remittanceInformation4Bollettino = onBollettino + typeIban4;
+                remittanceInformation5Bollettino = onBollettino + typeIban5;
                 break;
               case 2: // CCBank + CCPost
               case 8: // CCBank + CCPost
                 iban1 = CCBankPrimaryEC;
                 iban2 = CCPostSecondaryEC;
-                remittanceInformation2Bollettino = onBollettino;
+                remittanceInformation1Bollettino = onBollettino + typeIban1;
+                remittanceInformation2Bollettino = onBollettino + typeIban2;
                 break;
               case 3: // CCBank + CCBank
               case 9: // CCBank + CCBank
                 iban1 = CCBankPrimaryEC;
                 iban2 = CCBankSecondaryEC;
+                remittanceInformation1Bollettino = onBollettino + typeIban1;
+                remittanceInformation2Bollettino = onBollettino + typeIban2;
                 break;
               case 4: // CCPost - Monobeneficiario
               case 10: // CCPost - Monobeneficiario
                 iban1 = CCPostPrimaryEC;
-                remittanceInformation1Bollettino = onBollettino;
+                remittanceInformation1Bollettino = onBollettino + typeIban1;
                 break;
               case 5: // CCBank - Monobeneficiario
               case 11: // CCBank - Monobeneficiario
-                iban1 = CCBankPrimaryEC;
+                iban1 = CCBankPrimaryEC ;
+                remittanceInformation1Bollettino = onBollettino + typeIban1;
                 break;
               default:
                 // The SOAP Request not implemented
@@ -923,6 +1037,9 @@ export async function newExpressApp(
              outcome: 'OK',
              remittanceInformation1Bollettino,
              remittanceInformation2Bollettino,
+             remittanceInformation3Bollettino,
+             remittanceInformation4Bollettino,
+             remittanceInformation5Bollettino,
              fullName,
              email,
              CF,
@@ -1316,31 +1433,49 @@ export async function newExpressApp(
         if (avviso18.test(noticenumber)) {
           const paActivate17res = paActivate17V2({
             creditorReferenceId,
+            CCPost1: CCPostPrimaryEC,
+            CCPost2: CCPostSecondaryEC,
+            transferCategory1: transferCategory1,
+            transferCategory2: transferCategory2
           });
           return res.status(paActivate17res[0]).send(paActivate17res[1]);
         } else if (avviso19.test(noticenumber)) {
           const paActivate18res = paActivate18V2({
             creditorReferenceId,
+            CCPost1:CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
           });
           return res.status(paActivate18res[0]).send(paActivate18res[1]);
         } else if (avviso20.test(noticenumber)) {
           const paActivate19res = paActivate19V2({
             creditorReferenceId,
+            CCPost1:CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
+            CCBank2:CCBankSecondaryEC,
           });
           return res.status(paActivate19res[0]).send(paActivate19res[1]);
         } else if (avviso21.test(noticenumber)) {
           const paActivate20res = paActivate20V2({
             creditorReferenceId,
+            CCPost1:CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
           });
           return res.status(paActivate20res[0]).send(paActivate20res[1]);
         } else if (avviso22.test(noticenumber)) {
           const paActivate21res = paActivate21V2({
             creditorReferenceId,
+            CCPost1: CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
+            transferCategory1: transferCategory1,
+            transferCategory2: transferCategory2
           });
           return res.status(paActivate21res[0]).send(paActivate21res[1]);
         } else if (avviso23.test(noticenumber)) {
           const paActivate22res = paActivate22V2({
             creditorReferenceId,
+            CCPost1:CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
+            CCBank2:CCBankSecondaryEC,
           });
           return res.status(paActivate22res[0]).send(paActivate22res[1]);
         } else if (avviso24.test(noticenumber)) {
@@ -1351,11 +1486,16 @@ export async function newExpressApp(
         } else if (avviso25.test(noticenumber)) {
           const paActivate24res = paActivate24V2({
             creditorReferenceId,
+            CCPost1:CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
+            transferCategory1: transferCategory1,
+            transferCategory2: transferCategory2
           });
           return res.status(paActivate24res[0]).send(paActivate24res[1]);
         } else if (avviso26.test(noticenumber)) {
           const paActivate25res = paActivate25V2({
             creditorReferenceId,
+            CCBank1: CCBankPrimaryEC,
           });
           return res.status(paActivate25res[0]).send(escapeHtml(paActivate25res[1]));
         } else if (avviso27.test(noticenumber)) {
@@ -1364,7 +1504,13 @@ export async function newExpressApp(
           });
           return res.status(paActivate27res[0]).send(paActivate27res[1]);
         } else if (avviso28.test(noticenumber)) {
-          const activateResponse = paActivate27({ creditorReferenceId });
+          const activateResponse = paActivate27({ 
+            creditorReferenceId,
+            CCPost1:CCPostPrimaryEC,
+            CCBank1: CCBankPrimaryEC,
+            transferCategory1: transferCategory1,
+            transferCategory2: transferCategory2
+          });
           res.type('text/xml');
           return res.status(activateResponse[0]).send(activateResponse[1]);
         } else if (avvisoPagamentoDuplicato.test(noticenumber)) {

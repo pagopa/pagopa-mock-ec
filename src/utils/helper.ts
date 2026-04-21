@@ -17,7 +17,11 @@ import {
   avviso15,
   avviso16,
   avviso17,
+  avviso19,
   avviso2,
+  avviso20,
+  avviso21,
+  avviso23,
   avviso24,
   avviso25,
   avviso26,
@@ -147,8 +151,9 @@ export function getAmount(noticenumber: string, dbAmounts: Map<string, number>) 
   const isOver5000 = avvisoOver5000.test(noticenumber);
   const isFixUnder = avviso14.test(noticenumber);
   const isSmartAmount = avviso5smart.test(noticenumber);
-  const customAmount = noticenumber[0].substring(14, 18); // xx.xx
+  const customAmount = noticenumber.substring(14, 18); // xx.xx
 
+  
   const amountRes = isAmount1
     ? amount1.toFixed(2)
     : isAmount1bis
@@ -162,11 +167,14 @@ export function getAmount(noticenumber: string, dbAmounts: Map<string, number>) 
     : isFixUnder
     ? (amount1Under + amount2Under).toFixed(2)
     : isOver5000 || isUnder1
-    ? dbAmounts.has(noticenumber[0])
-      ? dbAmounts.get(noticenumber[0])
+    ? dbAmounts.has(noticenumber)
+      ? dbAmounts.get(noticenumber)
       : 0
+    : dbAmounts.has(noticenumber)
+    ?dbAmounts.get(noticenumber)
     : 0;
   // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+  console.log("amountRes .", amountRes);
   return isSmartAmount ? +customAmount.substring(0, 2) + '.' + customAmount.substring(2, 4) : amountRes;
 }
 
@@ -222,5 +230,85 @@ export function getIbanAvviso(noticenumber: string): number {
     ? 1 // Math.round(getRandomArbitrary(0, 11))
     : isFixOver || isFixUnder
     ? 1 // Fix Over and Under come avviso2
-    : +noticenumber[0].substring(3, 5);
+    : +noticenumber.substring(3, 5);
+}
+
+
+export function getTypeIban(noticenumber: string, iban : number): string {
+  const noticeRegexListCCpostUno = [avviso1 , avviso2 , avviso5 , avviso7 , avviso8 ,  
+                                    avviso11, avviso13,avviso14, avviso15, avviso16, avviso17];  
+
+  const noticeRegexListCCpostDue = [avviso1, avviso3, avviso7, avviso9];
+
+  const noticeRegexListCCpostTre = [avviso20, avviso24];
+
+  
+
+  const noticeRegexListCCbankUno = [avviso3 , avviso4 , avviso6 , avviso9 ,  
+                                    avviso10, avviso12, avviso20, avviso24];  
+
+  const noticeRegexListCCbankDue = [avviso2 , avviso4 , avviso8 , avviso10, 
+                                     avviso13, avviso14, avviso15, avviso16, 
+                                     avviso17, avviso20, avviso24, avviso19, 
+                                     avviso21, avviso25, avviso26, avviso28]; 
+
+  const noticeRegexListCCbanKTre = [avviso15 , avviso16 , avviso17 , avviso23 ];  
+
+  const noticeRegexListCCbankQuattro = [avviso16, avviso17];
+
+  const noticeRegexListCCbankCinque = [avviso17];
+  if(iban == 1)
+  {
+      if(noticeRegexListCCpostUno.some(regex => regex.test(noticenumber)))
+      {
+        return " CCPost";
+      } 
+      else   if(noticeRegexListCCbankUno.some(regex => regex.test(noticenumber)))
+      {
+        return " CCBank";
+      }; 
+      return "";
+  }
+  else if(iban == 2)
+  {
+    if(noticeRegexListCCpostDue.some(regex => regex.test(noticenumber)))
+    {
+      return " CCPost";
+    }
+    else if(noticeRegexListCCbankDue.some(regex => regex.test(noticenumber)))
+    {
+      return " CCBank";
+    };
+    return "";; 
+  }
+  else if(iban == 3)
+  {
+    if(noticeRegexListCCpostTre.some(regex => regex.test(noticenumber)))
+    {
+      return " CCPost";
+    }
+    else if(noticeRegexListCCbanKTre.some(regex => regex.test(noticenumber)))
+    {
+      return " CCBank";
+    };
+    return "";; 
+  }
+  else if(iban == 4)
+  {
+    if(noticeRegexListCCbankQuattro.some(regex => regex.test(noticenumber)))
+    {
+      return " CCBank";
+    };
+    return "";; 
+  }
+  else if(iban == 5)
+  {
+    
+    if(noticeRegexListCCbankCinque.some(regex => regex.test(noticenumber)))
+    {
+      return " CCBank";
+    };
+    return "";; 
+  }
+  return "";
 }

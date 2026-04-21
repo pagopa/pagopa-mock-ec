@@ -16,6 +16,12 @@ import {
 
 interface IActivateRequestV2 {
   creditorReferenceId?: string;
+  CCPost1?: string;
+  CCPost2?: string;
+  CCBank1?: string;
+  CCBank2?: string;
+  transferCategory1?: string;
+  transferCategory2?: string;
 }
 
 const createActivateV2Response = (paActivateV1Fn: (params: { creditorReferenceId: string }) => MockResponse) => {
@@ -80,21 +86,22 @@ export const paActivate27 = (params: IActivateRequestV2): MockResponse => {
                       <idTransfer>1</idTransfer>
                       <transferAmount>100.00</transferAmount>
                       <fiscalCodePA>77777777777</fiscalCodePA>
-                      <IBAN>IT57N0760114800000011050036</IBAN>
-                      <remittanceInformation>remittance information</remittanceInformation>
-                      <transferCategory>0101101IM</transferCategory>
+                      <IBAN>${escapeHtml(params.CCPost1)}</IBAN>
+                      <remittanceInformation>EC_TE CC Comune di Milano - CCPost</remittanceInformation>
+                      <transferCategory>${escapeHtml(params.transferCategory1)}</transferCategory>
                   </transfer>
                   <transfer>
                       <idTransfer>2</idTransfer>
                       <transferAmount>20.00</transferAmount>
                       <fiscalCodePA>77777777777</fiscalCodePA>
+                      <IBAN>${escapeHtml(params.CCBank1)}</IBAN>
                       <richiestaMarcaDaBollo>
                         <hashDocumento>QUJDRA==</hashDocumento>
                         <tipoBollo>01</tipoBollo>
                         <provinciaResidenza>RM</provinciaResidenza>
                       </richiestaMarcaDaBollo>
-                      <remittanceInformation>remittance information</remittanceInformation>
-                      <transferCategory>0101101IM</transferCategory>
+                      <remittanceInformation>EC_TE CC Comune di Milano -  CCBank</remittanceInformation>
+                      <transferCategory>${escapeHtml(params.transferCategory2)}</transferCategory>
                   </transfer>
               </transferList>
           </data>

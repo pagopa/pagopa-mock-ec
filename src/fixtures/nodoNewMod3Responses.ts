@@ -33,6 +33,9 @@ interface IActivateRequest {
   iban_5?: string;
   remittanceInformation1Bollettino?: string;
   remittanceInformation2Bollettino?: string;
+  remittanceInformation3Bollettino?: string;
+  remittanceInformation4Bollettino?: string;
+  remittanceInformation5Bollettino?: string;
   fullName?: string;
   email?: string;
   CF?: string;
@@ -43,6 +46,8 @@ interface IRTRequest {
 }
 interface IErrorType {
   typeR: 'paVerifyPaymentNoticeRes' | 'paGetPaymentRes';
+  faultCode? : string;
+  description?: string;
 }
 
 export const paErrorVerify = (params: IErrorType): MockResponse => [
@@ -54,10 +59,10 @@ export const paErrorVerify = (params: IErrorType): MockResponse => [
 		<paf:${params.typeR}>
 			<outcome>KO</outcome>
 			<fault>
-				<faultCode>PAA_SEMANTICA</faultCode>
+				<faultCode>${params.faultCode}</faultCode>
 				<faultString>Errore1</faultString>
 				<id>77777777777</id>
-				<description>ErroreDesc</description>
+				<description>${params.description}</description>
 			</fault>
 		</paf:${params.typeR}>
 	</soapenv:Body>
@@ -168,7 +173,7 @@ export const paGetPaymentRes = (params: IActivateRequest): MockResponse => [
                         <transferAmount>${params.amount3}</transferAmount>
                         <fiscalCodePA>00939820726</fiscalCodePA>
                         <IBAN>${params.iban_3}</IBAN>
-                        <remittanceInformation>TEFA Comune Milano${params.remittanceInformation2Bollettino}</remittanceInformation>
+                        <remittanceInformation>TEFA Comune Bitetto${params.remittanceInformation3Bollettino}</remittanceInformation>
                         <transferCategory>0201102IM</transferCategory>
                       </transfer>`
                           : ''
@@ -181,7 +186,7 @@ export const paGetPaymentRes = (params: IActivateRequest): MockResponse => [
                         <transferAmount>${params.amount4}</transferAmount>
                         <fiscalCodePA>01199250158</fiscalCodePA>
                         <IBAN>${params.iban_4}</IBAN>
-                        <remittanceInformation>TEFA Comune Milano${params.remittanceInformation2Bollettino}</remittanceInformation>
+                        <remittanceInformation>TEFA Comune Milano${params.remittanceInformation4Bollettino}</remittanceInformation>
                         <transferCategory>0201102IM</transferCategory>
                       </transfer>`
                           : ''
@@ -194,7 +199,7 @@ export const paGetPaymentRes = (params: IActivateRequest): MockResponse => [
                         <transferAmount>${params.amount5}</transferAmount>
                         <fiscalCodePA>01199250158</fiscalCodePA>
                         <IBAN>${params.iban_5}</IBAN>
-                        <remittanceInformation>TEFA Comune Milano${params.remittanceInformation2Bollettino}</remittanceInformation>
+                        <remittanceInformation>TEFA Comune Milano${params.remittanceInformation5Bollettino}</remittanceInformation>
                         <transferCategory>0201102IM</transferCategory>
                       </transfer>`
                           : ''
