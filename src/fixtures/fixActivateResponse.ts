@@ -113,10 +113,12 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
     { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: ec.CCBankPrimaryEC,   iban: 'IT86H0760101000000000001015' },
   ];
 
+  
+
   return {
     '00': { 
         amount: 120.00,
-        companyName: 
+        companyName: "",
         transfers: defaultTransfers },
     '01': { transfers: defaultTransfers, amount: 120.00 },
     // avviso18: transfer con fiscalCodePA diversi
