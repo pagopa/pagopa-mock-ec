@@ -3,10 +3,10 @@ microservice-chart: &microservice-chart
   nameOverride: ""
   fullnameOverride: ""
   terminationGracePeriodSeconds: 140
-
   image:
-    repository: pagopadcommonacr.azurecr.io/pagopamockec
-    tag: "1.6.13"
+    #    repository: pagopadcommonacr.azurecr.io/pagopamockec
+    repository: ghcr.io/pagopa/pagopa-mock-ec
+    tag: "1.6.15-1-PIDM-1127-refactoring"
     pullPolicy: Always
   readinessProbe:
     handlerType: tcpSocket
@@ -26,12 +26,12 @@ microservice-chart: &microservice-chart
       rollingUpdate:
         maxSurge: 1
         maxUnavailable: 0
-#  serviceMonitor:
-#    create: true
-#    endpoints:
-#      - interval: 5s
-#        targetPort: 8080
-#        path: /q/metrics
+  #  serviceMonitor:
+  #    create: true
+  #    endpoints:
+  #      - interval: 5s
+  #        targetPort: 8080
+  #        path: /q/metrics
 
   ports:
     - 8080
@@ -67,19 +67,19 @@ microservice-chart: &microservice-chart
       cpu: "400m"
   autoscaling:
     enable: false
-#    minReplica: 1
-#    maxReplica: 1
-#    pollingInterval: 10 # seconds
-#    cooldownPeriod: 50 # seconds
-#    triggers:
-#      - type: cpu
-#        metadata:
-#          type: Utilization
-#          value: "75"
-#      - type: memory
-#        metadata:
-#          type: Utilization
-#          value: "75"
+    #    minReplica: 1
+    #    maxReplica: 1
+    #    pollingInterval: 10 # seconds
+    #    cooldownPeriod: 50 # seconds
+    #    triggers:
+    #      - type: cpu
+    #        metadata:
+    #          type: Utilization
+    #          value: "75"
+    #      - type: memory
+    #        metadata:
+    #          type: Utilization
+    #          value: "75"
   envConfig: &envConfig
     TIMEOUT_DELAY: "5000"
     PPT_NODO: "/mock"
@@ -96,23 +96,21 @@ microservice-chart: &microservice-chart
   keyvault:
     name: "pagopa-d-mock-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  tolerations:
-    - key: dedicated
-      operator: Equal
-      value: "nodo"
-      effect: NoSchedule
+  tolerations: []
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: nodo
+              - key: node_type
                 operator: In
                 values:
-                  - "true"
-
+                  - 'user'
+  canaryDelivery:
+    create: false
 mock-ec-primary:
   !!merge <<: *microservice-chart
+  fullnameOverride: "mock-ec-primary"
   ingress:
     !!merge <<: *ingress
     path: /mock-ec-primary(/|$)(.*)
@@ -122,9 +120,9 @@ mock-ec-primary:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
     proxyBodySize: 100m
     rewriteTarget: /$2
-
 mock-ec-secondary:
   !!merge <<: *microservice-chart
+  fullnameOverride: "mock-ec-secondary"
   ingress:
     !!merge <<: *ingress
     path: /mock-ec-secondary(/|$)(.*)
@@ -134,7 +132,6 @@ mock-ec-secondary:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
     proxyBodySize: 100m
     rewriteTarget: /$2
-
 #mock-ec-replica:
 #  !!merge <<: *microservice-chart
 #  ingress:
