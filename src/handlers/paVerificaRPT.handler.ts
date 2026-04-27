@@ -1,4 +1,4 @@
-import { ritorno } from ".";
+import { ritorno } from "./dispatcher";
 import { Configuration } from "../config";
 import { paaVerificaRPTRisposta } from "../fixtures/nodoNewMod3Responses_oldEc";
 import { POSITIONS_STATUS } from "../utils/helper";

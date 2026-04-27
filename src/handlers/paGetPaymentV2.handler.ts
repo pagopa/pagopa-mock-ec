@@ -68,7 +68,7 @@ import {
   paActivatePagamentoDuplicatoV2,
 } from '../fixtures/fixActivateV2Response';
 
-import { ritorno } from ".";
+import { ritorno } from "./dispatcher";
 import { IECConfig } from "../fixtures/fixActivateResponse";
 
 export const handlePaGetPaymentV2 = async (

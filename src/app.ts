@@ -15,7 +15,7 @@ import {
   POSITIONS_STATUS,
 } from './utils/helper';
 
-import { dispatchSoapRequest } from './handlers';
+import { dispatchSoapRequest } from './handlers/dispatcher';
 import { logger } from './utils/logger';
 
 const paVerifyPaymentNoticeQueue = new Array<string>();

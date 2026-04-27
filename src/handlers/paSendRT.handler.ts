@@ -1,4 +1,4 @@
-import { ritorno } from ".";
+import { ritorno } from "./dispatcher";
 import { Configuration } from "../config";
 import { POSITIONS_STATUS } from "../utils/helper";
 import { logger } from "../utils/logger";

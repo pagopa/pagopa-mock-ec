@@ -1,4 +1,4 @@
-import { ritorno } from ".";
+import { ritorno } from "./dispatcher";
 import { Configuration } from "../config";
 import { paSendRTV2Response } from "../fixtures/nodoNewMod3Responses";
 import { POSITIONS_STATUS } from "../utils/helper";

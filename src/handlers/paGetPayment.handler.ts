@@ -1,4 +1,4 @@
-import { ritorno } from ".";
+import { ritorno } from "./dispatcher";
 import { Configuration } from "../config";
 import { log_event_tx, logger } from "../utils/logger";
 import * as xml2js from 'xml2js';

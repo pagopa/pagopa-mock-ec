@@ -68,7 +68,7 @@ import { logger, log_event_tx } from '../utils/logger';
 import * as xml2js from 'xml2js';
 import { StTransferType_type_pafnEnum } from "../generated/paForNode_Service/stTransferType_type_pafn";
 import { Configuration } from "../config";
-import { ritorno } from ".";
+import { ritorno } from "./dispatcher";
 
 const faultId = '77777777777';
 
