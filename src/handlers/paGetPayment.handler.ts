@@ -85,33 +85,33 @@ export const handlePaGetPayment = async (
         const customResponse = paGetPaymentQueue.shift();
         logger.info(`>>> tx customResponse RESPONSE [${customResponse}]: `);
         if (customResponse !== undefined) {
-        const convert = await xml2js.parseStringPromise(customResponse);
-        if (convert['soapenv:Envelope']['soapenv:Body']) {
-            if (convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes']) {
-            const delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'][0].delay;
-            const irraggiungibile =
-                convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'][0].irraggiungibile;
-            if (irraggiungibile) {
-                throw new TypeError('irraggiungibile');
-            }
-            if (delay) {
-                logger.info('>>> start timeout');
-                delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'][0].delay;
-                const builder = new xml2js.Builder();
-                const xml = builder.buildObject(convert);
-                const delay_numb: number = +delay[0];
-                logger.info(delay_numb);
-                await sleep(delay_numb);
-                return ritorno(res, xml);
+            const convert = await xml2js.parseStringPromise(customResponse);
+            if (convert['soapenv:Envelope']['soapenv:Body']) {
+                if (convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes']) {
+                const delay = convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'][0].delay;
+                const irraggiungibile =
+                    convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'][0].irraggiungibile;
+                if (irraggiungibile) {
+                    throw new TypeError('irraggiungibile');
+                }
+                if (delay) {
+                    logger.info('>>> start timeout');
+                    delete convert['soapenv:Envelope']['soapenv:Body'][0]['paf:paGetPaymentRes'][0].delay;
+                    const builder = new xml2js.Builder();
+                    const xml = builder.buildObject(convert);
+                    const delay_numb: number = +delay[0];
+                    logger.info(delay_numb);
+                    await sleep(delay_numb);
+                    return ritorno(res, xml);
+                } else {
+                    return ritorno(res, customResponse);
+                }
+                } else {
+                    return ritorno(res, customResponse);
+                }
             } else {
                 return ritorno(res, customResponse);
             }
-            } else {
-            return ritorno(res, customResponse);
-            }
-        } else {
-            return ritorno(res, customResponse);
-        }
         }
     }
        
@@ -154,7 +154,7 @@ export const handlePaGetPayment = async (
     const match = avvisoMappings.find(([pattern]) => pattern.test(noticenumber));
     if (match) {
         const [, code] = match;
-       return res.status(200).send(getPaActivate(code, ec)(req.body)[1]);
+        return res.status(200).send(getPaActivate(code, ec)(req.body)[1]);
     }
     if (testDebug.toUpperCase() === 'Y') {
         noticenumberRequests.set(`${noticenumber}_paGetPayment`, req.body);

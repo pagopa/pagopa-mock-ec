@@ -87,6 +87,7 @@ export const handlePaVerifyPaymentNotice = async (
   noticenumberResponses: Map<string, JSON>,
 ): Promise<void> => {
   
+  const testDebug = config.PA_MOCK.TEST_DEBUG;
   const TIMEOUT_SEC = config.PA_MOCK.NM3_DATA.TIMETOUT_SEC;
   const amount1 = 100.0;
   const fiscalcode = paVerifyPaymentNotice.qrcode[0].fiscalcode;
@@ -168,6 +169,11 @@ export const handlePaVerifyPaymentNotice = async (
   if (match) {
     const amountRes = match![1].options.amount     
     dbAmounts.set(noticenumber, +amountRes);
+
+    if (testDebug.toUpperCase() === 'Y') {
+        noticenumberRequests.set(`${noticenumber}_paVerifyPaymentNotice`, req.body);
+    }
+
     return res.status(200).send(match[1].xml);           
   }  
 
