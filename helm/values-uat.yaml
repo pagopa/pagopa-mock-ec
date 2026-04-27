@@ -1,5 +1,5 @@
 microservice-chart: &microservice-chart
-  namespace: "nodo"
+  namespace: "mock"
   nameOverride: ""
   fullnameOverride: ""
   terminationGracePeriodSeconds: 140
@@ -85,20 +85,16 @@ microservice-chart: &microservice-chart
   keyvault:
     name: "pagopa-u-nodo-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  tolerations:
-    - key: dedicated
-      operator: Equal
-      value: "nodo"
-      effect: NoSchedule
+  tolerations: []
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: nodo
+              - key: node_type
                 operator: In
                 values:
-                  - "true"
+                  - 'user'
 
 mock-primary:
   !!merge <<: *microservice-chart

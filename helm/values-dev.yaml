@@ -5,7 +5,8 @@ microservice-chart: &microservice-chart
   terminationGracePeriodSeconds: 140
 
   image:
-    repository: pagopadcommonacr.azurecr.io/pagopamockec
+#    repository: pagopadcommonacr.azurecr.io/pagopamockec
+    repository: ghcr.io/pagopa/pagopa-mock-ec
     tag: "1.6.13"
     pullPolicy: Always
   readinessProbe:
@@ -96,23 +97,20 @@ microservice-chart: &microservice-chart
   keyvault:
     name: "pagopa-d-mock-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  tolerations:
-    - key: dedicated
-      operator: Equal
-      value: "nodo"
-      effect: NoSchedule
+  tolerations: []
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: nodo
+              - key: node_type
                 operator: In
                 values:
-                  - "true"
+                  - 'user'
 
 mock-ec-primary:
   !!merge <<: *microservice-chart
+  fullnameOverride: "mock-ec-primary"
   ingress:
     !!merge <<: *ingress
     path: /mock-ec-primary(/|$)(.*)
@@ -125,6 +123,7 @@ mock-ec-primary:
 
 mock-ec-secondary:
   !!merge <<: *microservice-chart
+  fullnameOverride: "mock-ec-secondary"
   ingress:
     !!merge <<: *ingress
     path: /mock-ec-secondary(/|$)(.*)
