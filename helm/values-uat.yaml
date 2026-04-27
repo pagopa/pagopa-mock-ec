@@ -3,10 +3,9 @@ microservice-chart: &microservice-chart
   nameOverride: ""
   fullnameOverride: ""
   terminationGracePeriodSeconds: 140
-
   image:
     repository: pagopaucommonacr.azurecr.io/pagopamockec
-    tag: "0.0.1"
+    tag: "1.6.15-1-PIDM-1127-refactoring"
     pullPolicy: Always
   readinessProbe:
     handlerType: tcpSocket
@@ -95,7 +94,8 @@ microservice-chart: &microservice-chart
                 operator: In
                 values:
                   - 'user'
-
+  canaryDelivery:
+    create: false
 mock-primary:
   !!merge <<: *microservice-chart
   ingress:
@@ -108,7 +108,6 @@ mock-primary:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
     proxyBodySize: 100m
     rewriteTarget: /$2
-
 mock-secondary:
   !!merge <<: *microservice-chart
   ingress:
@@ -121,7 +120,6 @@ mock-secondary:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
     proxyBodySize: 100m
     rewriteTarget: /$2
-
 mock-ec-replica:
   !!merge <<: *microservice-chart
   ingress:
