@@ -2,10 +2,9 @@ import { MockResponse, paSendRtRes } from '../fixtures/nodoNewMod3Responses';
 import { POSITIONS_STATUS } from '../utils/helper';
 import { log_event_tx } from '../utils/logger';
 
-const sentReceipt = 'pafn:pasendrtreq';
+export function paSendRTHandler(paSendRT: any, db: Map<string, POSITIONS_STATUS>): MockResponse {
 
-export function paSendRTHandler(soapRequest: any, db: Map<string, POSITIONS_STATUS>): MockResponse {
-  const paSendRT = soapRequest[sentReceipt][0];
+  console.log("paSendRT ",paSendRT);
   const iuv = paSendRT.receipt[0].creditorreferenceid[0];
 
   // // libero la posizione - cancello

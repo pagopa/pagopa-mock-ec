@@ -11,6 +11,14 @@ interface IActivateRequestV2 {
   ec: IECConfig
 }
 
+export type ActivateEntry = {
+  pattern: RegExp;
+  label: string;
+  handler: () => MockResponse;
+  xml?: boolean;
+  escape?: boolean;
+};
+
 const createActivateV2Response = (
   paActivateV1Fn: (params: { creditorReferenceId: string; ec: IECConfig }) => MockResponse
 ) => {

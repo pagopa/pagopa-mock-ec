@@ -1,42 +1,33 @@
-const avvisoRegex = (suffix: number): RegExp =>
-  new RegExp(`^3\\d\\d${String(suffix).padStart(2, '0')}.*`);
 
-export const [
-  avviso00, avviso01, avviso02, avviso03, avviso04, avviso05,
-  avviso06, avviso07, avviso08, avviso09, avviso10, avviso11,
-  avviso12, avviso13, avviso14, avviso15, avviso16, avviso17,
-  avviso18, avviso19, avviso20, avviso21, avviso22, avviso23,
-  avviso24, avviso25, avviso26, avviso27,
-] = Array.from({ length: 28 }, (_, i) => avvisoRegex(i));
-/*export const avviso1 = new RegExp('^3\\d\\d00.*'); // CCPost + CCPost
-export const avviso2 = new RegExp('^3\\d\\d01.*'); // CCPost + CCBank
-export const avviso3 = new RegExp('^3\\d\\d02.*'); // CCBank + CCPost
-export const avviso4 = new RegExp('^3\\d\\d03.*'); // CCBank + CCBank
-export const avviso5 = new RegExp('^3\\d\\d04.*'); // CCPost - Monobeneficiario + 777
-export const avviso6 = new RegExp('^3\\d\\d05.*'); // CCBank - Monobeneficiario + 777
+export const avviso00 = new RegExp('^3\\d\\d00.*'); // CCPost + CCPost
+export const avviso01 = new RegExp('^3\\d\\d01.*'); // CCPost + CCBank
+export const avviso02 = new RegExp('^3\\d\\d02.*'); // CCBank + CCPost
+export const avviso03 = new RegExp('^3\\d\\d03.*'); // CCBank + CCBank
+export const avviso04 = new RegExp('^3\\d\\d04.*'); // CCPost - Monobeneficiario + 777
+export const avviso05 = new RegExp('^3\\d\\d05.*'); // CCBank - Monobeneficiario + 777
 export const avviso5smart = new RegExp('^3\\d\\d04777.*'); // CCPost - Monobeneficiario + 777
-export const avviso7 = new RegExp('^3\\d\\d06.*'); // CCPost + CCPost
-export const avviso8 = new RegExp('^3\\d\\d07.*'); // CCPost + CCBank
-export const avviso9 = new RegExp('^3\\d\\d08.*'); // CCBank + CCPost
-export const avviso10 = new RegExp('^3\\d\\d09.*'); // CCBank + CCBank
-export const avviso11 = new RegExp('^3\\d\\d10.*'); // CCPost - Monobeneficiario
-export const avviso12 = new RegExp('^3\\d\\d11.*'); // CCBank - Monobeneficiario
-export const avviso13 = new RegExp('^3\\d\\d12.*'); // come avviso2 - amount1 4000 - amount2 2000
-export const avviso14 = new RegExp('^3\\d\\d13.*'); // come avviso2 - amount1 0.10 - amount2 0.20
-export const avviso15 = new RegExp('^3\\d\\d14.*'); // CCPost + CCBank + CBank
-export const avviso16 = new RegExp('^3\\d\\d15.*'); // CCPost + CCBank + CBank + CCBank + CCBank
-export const avviso17 = new RegExp('^3\\d\\d16.*'); // CCPost + CCBank + CBank + CCBank + CCBank
-export const avviso18 = new RegExp('^3\\d\\d17.*'); // fix response
-export const avviso19 = new RegExp('^3\\d\\d18.*'); // fix response
-export const avviso20 = new RegExp('^3\\d\\d19.*'); // fix response
-export const avviso21 = new RegExp('^3\\d\\d20.*'); // fix response
-export const avviso22 = new RegExp('^3\\d\\d21.*'); // fix response
-export const avviso23 = new RegExp('^3\\d\\d22.*'); // fix response
-export const avviso24 = new RegExp('^3\\d\\d23.*'); // fix response
-export const avviso25 = new RegExp('^3\\d\\d24.*'); // fix response
-export const avviso26 = new RegExp('^3\\d\\d25.*'); // fix response
-export const avviso27 = new RegExp('^3\\d\\d26.*'); // fix response
-export const avviso28 = new RegExp('^3\\d\\d27.*'); // fix response for paGetPaymentV2*/
+export const avviso06 = new RegExp('^3\\d\\d06.*'); // CCPost + CCPost
+export const avviso07 = new RegExp('^3\\d\\d07.*'); // CCPost + CCBank
+export const avviso08 = new RegExp('^3\\d\\d08.*'); // CCBank + CCPost
+export const avviso09 = new RegExp('^3\\d\\d09.*'); // CCBank + CCBank
+export const avviso10 = new RegExp('^3\\d\\d10.*'); // CCPost - Monobeneficiario
+export const avviso11 = new RegExp('^3\\d\\d11.*'); // CCBank - Monobeneficiario
+export const avviso12 = new RegExp('^3\\d\\d12.*'); // come avviso2 - amount1 4000 - amount2 2000
+export const avviso13 = new RegExp('^3\\d\\d13.*'); // come avviso2 - amount1 0.10 - amount2 0.20
+export const avviso14 = new RegExp('^3\\d\\d14.*'); // CCPost + CCBank + CBank
+export const avviso15 = new RegExp('^3\\d\\d15.*'); // CCPost + CCBank + CBank + CCBank + CCBank
+export const avviso16 = new RegExp('^3\\d\\d16.*'); // CCPost + CCBank + CBank + CCBank + CCBank
+export const avviso17 = new RegExp('^3\\d\\d17.*'); // fix response
+export const avviso18 = new RegExp('^3\\d\\d18.*'); // fix response
+export const avviso19 = new RegExp('^3\\d\\d19.*'); // fix response
+export const avviso20 = new RegExp('^3\\d\\d20.*'); // fix response
+export const avviso21 = new RegExp('^3\\d\\d21.*'); // fix response
+export const avviso22 = new RegExp('^3\\d\\d22.*'); // fix response
+export const avviso23 = new RegExp('^3\\d\\d23.*'); // fix response
+export const avviso24 = new RegExp('^3\\d\\d24.*'); // fix response
+export const avviso25 = new RegExp('^3\\d\\d25.*'); // fix response
+export const avviso26 = new RegExp('^3\\d\\d26.*'); // fix response
+export const avviso27 = new RegExp('^3\\d\\d27.*'); // fix response for paGetPaymentV2*/
 export const avvisoOver5000 = new RegExp('^3\\d\\d77.*'); // random over 5000 euro + random su 2 transfers
 export const avvisoUnder1 = new RegExp('^3\\d\\d88.*'); // random under 1 euro + + random su 2 transfers
 
