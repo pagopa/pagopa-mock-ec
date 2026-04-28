@@ -3,7 +3,7 @@ FROM node:14-alpine
 WORKDIR /src
 
 COPY ["package.json", "package-lock.json*", "./"]
-RUN npm install
+RUN npm ci
 
 COPY . .
 
