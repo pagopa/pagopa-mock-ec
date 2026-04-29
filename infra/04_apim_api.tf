@@ -1,11 +1,11 @@
-########################
-##  API  Mock EC NDP     ##
-########################
+##########################
+##  API  Mock EC PagoPA ##
+##########################
 locals {
  
   apim_mock_ec_primary_service_api = {
-    display_name          = "Mock EC for PagoPA EC primary"
-    description           = "API Mock EC for PagoPA EC primary"
+    display_name          = "Mock EC - PagoPA - Primary"
+    description           = "API Mock EC Primary used by PagoPA developers for testing purposes"
     path                  = "mock-ec-primary/service"
     subscription_required = false
     service_url           = null
@@ -13,8 +13,8 @@ locals {
   }
 
   apim_mock_ec_secondary_service_api = {
-    display_name          = "Mock EC for PagoPA EC secondary"
-    description           = "API Mock EC for PagoPA EC secondary"
+    display_name          = "Mock EC - PagoPA - Secondary"
+    description           = "API Mock EC Secondary used by PagoPA developers for testing purposes"
     path                  = "mock-ec-secondary/service"
     subscription_required = false
     service_url           = null
@@ -24,7 +24,7 @@ locals {
 
 
 ####################################
-## VERSION SET - PRIMARY
+## PRIMARY
 ####################################
 
 resource "azurerm_api_management_api_version_set" "api_mock_ec_primary" {
@@ -54,7 +54,6 @@ module "apim_api_mock_ec_primary_v1" {
   path         = local.apim_mock_ec_primary_service_api.path
   protocols    = ["https"]
   service_url  = local.apim_mock_ec_primary_service_api.service_url
-  
 
   content_format = "openapi"
 
@@ -67,8 +66,15 @@ module "apim_api_mock_ec_primary_v1" {
   })
 }
 
+resource "terraform_data" "sha256_mock-ec_policy_primary_v1" {
+  input = sha256(templatefile("./api/mock-ec-service/v1/_base_policy.xml.tpl", {
+    hostname = local.apim_mock_ec_primary_service_api.hostname
+  }))
+}
+
+
 ####################################
-## VERSION SET - SECONDARY
+## SECONDARY
 ####################################
 
 resource "azurerm_api_management_api_version_set" "api_mock_ec_secondary" {
@@ -110,16 +116,6 @@ module "apim_api_mock_ec_secondary_v1" {
   })
 }
 
-#######################
-##  Policies SHA     ##
-#######################
-
-
-resource "terraform_data" "sha256_mock-ec_policy_primary_v1" {
-  input = sha256(templatefile("./api/mock-ec-service/v1/_base_policy.xml.tpl", {
-    hostname = local.apim_mock_ec_primary_service_api.hostname
-  }))
-}
 resource "terraform_data" "sha256_mock-ec_policy_secondary_v1" {
   input = sha256(templatefile("./api/mock-ec-service/v1/_base_policy.xml.tpl", {
     hostname = local.apim_mock_ec_secondary_service_api.hostname
