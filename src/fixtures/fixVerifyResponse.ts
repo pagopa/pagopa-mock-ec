@@ -317,7 +317,7 @@ export const paVerify21 = buildPaVerify({ allCCP: false });
 export const paVerify22 = buildPaVerify({ allCCP: true });
 export const paVerify23 = buildPaVerify({ allCCP: true, companyName: LONG_COMPANY_NAME });
 export const paVerify24 = buildPaVerify({ allCCP: true, dueDate: '2030-07-31+02:00' });
-export const paVerify25 = buildPaVerify({ allCCP: true, dueDate: '2030-07-31+02:00', amount: '999000000.99' });
+export const paVerify25 = buildPaVerify({ allCCP: true, dueDate: '2030-07-31+02:00', amount: '999999999.99' });
 export const paVerify26 = buildPaVerify({ allCCP: true, dueDate: '2030-07-31+02:00', amount: '3000.00' });
 
 
