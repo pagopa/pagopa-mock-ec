@@ -5,7 +5,7 @@ microservice-chart: &microservice-chart
   terminationGracePeriodSeconds: 140
   image:
     repository: pagopaucommonacr.azurecr.io/pagopamockec
-    tag: "1.6.15-7-PIDM-1127-refactoring"
+    tag: "1.6.15-8-PIDM-1127-refactoring"
     pullPolicy: Always
   readinessProbe:
     handlerType: tcpSocket
