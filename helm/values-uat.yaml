@@ -95,7 +95,7 @@ microservice-chart: &microservice-chart
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: "elastic-apm-secret-token"
   keyvault:
-    name: "pagopa-u-nodo-kv"
+    name: "pagopa-u-mock-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   tolerations: []
   affinity:
