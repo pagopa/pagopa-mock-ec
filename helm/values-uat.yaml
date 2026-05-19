@@ -3,6 +3,7 @@ microservice-chart: &microservice-chart
   nameOverride: ""
   fullnameOverride: ""
   terminationGracePeriodSeconds: 140
+  critical: false
   image:
     repository: pagopaucommonacr.azurecr.io/pagopamockec
     tag: "1.6.15-8-PIDM-1127-refactoring"

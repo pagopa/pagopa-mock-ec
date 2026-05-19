@@ -3,6 +3,7 @@ microservice-chart: &microservice-chart
   nameOverride: ""
   fullnameOverride: ""
   terminationGracePeriodSeconds: 140
+  critical: false
   image:
     #    repository: pagopadcommonacr.azurecr.io/pagopamockec
     repository: ghcr.io/pagopa/pagopa-mock-ec
