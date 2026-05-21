@@ -1,4 +1,4 @@
-import { paErrorVerify, paVerifyPaymentNoticeRes } from "../fixtures/nodoNewMod3Responses";
+import { paErrorPaymentUnknown,  paErrorReacheable, paVerifyPaymentNoticeRes } from "../fixtures/nodoNewMod3Responses";
 import { avvisoErrore, avvisoErroreXSD, avvisoScaduto, avvisoTimeout } from "../utils/configuration";
 import { PAA_PAGAMENTO_SCADUTO,  PAA_SINTASSI_XSD, POSITIONS_STATUS } from "../utils/helper";
 
@@ -199,7 +199,7 @@ export const handlePaVerifyPaymentNotice = async (
   }
 
   if (isFixedError) {
-    const paErrorVerifyResponse = paErrorVerify({ typeR: 'paVerifyPaymentNoticeRes' });
+    const paErrorVerifyResponse = paErrorReacheable({ typeR: 'paVerifyPaymentNoticeRes' });
     log_event_tx(paErrorVerifyResponse);
     return res.status(paErrorVerifyResponse[0]).send(paErrorVerifyResponse[1]);
   }
@@ -221,6 +221,7 @@ export const handlePaVerifyPaymentNotice = async (
   } 
 
   if (isTimeout) {   
+    console.log("TIMEOUT SEC: ",TIMEOUT_SEC);
     setTimeout(function() {
       // happy case DELAY - paVerifyPaymentNoticeRes
       const paVerifyPaymentNoticeResponse = paVerifyPaymentNoticeRes({
@@ -232,6 +233,14 @@ export const handlePaVerifyPaymentNotice = async (
 
       log_event_tx(paVerifyPaymentNoticeResponse);
       return res.status(paVerifyPaymentNoticeResponse[0]).send(paVerifyPaymentNoticeResponse[1]);
-    }, +TIMEOUT_SEC);
+    }, +TIMEOUT_SEC*1000);
   }  
+ 
+  if(!isErrorXsd && !isFixedError && !isExpiredNotice && !isTimeout){
+    console.log("PAGAMNTO SCONOSCIUTO");
+    const errorPaymentUnknown = paErrorPaymentUnknown({ typeR: 'paVerifyPaymentNoticeRes' });
+    log_event_tx(errorPaymentUnknown);
+    return res.status(errorPaymentUnknown[0]).send(errorPaymentUnknown[1]);
+  }
+  
 };

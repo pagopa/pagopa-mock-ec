@@ -291,6 +291,35 @@ const buildPaVerify = (opts: PaVerifyOptions = {}): PaVerifyResult => {
   };
 };
 
+const paActivatePagamentoDuplicato = (opts: PaVerifyOptions = {}): PaVerifyResult => {
+  const options: Required<PaVerifyOptions> = {
+    allCCP: opts.allCCP ?? true,
+    amount: opts.amount ?? '120.00',
+    dueDate: opts.dueDate ?? '2030-07-31',
+    companyName: opts.companyName ?? 'companyName',
+  };
+
+  return {
+    options,
+    xml: `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+            xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
+            <soapenv:Header />
+            <soapenv:Body>
+                <paf:paVerifyPaymentNoticeRes>
+                    <outcome>KO</outcome>
+
+                    <fault>
+                        <faultCode>PAA_PAGAMENTO_DUPLICATO</faultCode>
+                        <faultString>Errore mockato - caso PAA_PAGAMENTO_DUPLICATO</faultString>
+                        <id>77777777777</id>
+                        <description>Errore mockato - caso PAA_PAGAMENTO_DUPLICATO</description>
+                    </fault>
+                </paf:paVerifyPaymentNoticeRes>
+            </soapenv:Body>
+        </soapenv:Envelope>`,
+  };
+};
+
 const LONG_COMPANY_NAME = 'Veeery long company PA name which fills all available 140 characters, (are you still reading? You should not stare at a screen for too long)';
 export const paVerify00 = buildPaVerify({ allCCP: true });
 export const paVerify01 = buildPaVerify({ allCCP: true });
@@ -321,4 +350,4 @@ export const paVerify25 = buildPaVerify({ allCCP: true, dueDate: '2030-07-31+02:
 export const paVerify26 = buildPaVerify({ allCCP: true, dueDate: '2030-07-31+02:00', amount: '3000.00' });
 
 
-export const paVerifyPagamentoDuplicato = buildPaVerify({ allCCP: true, dueDate: '2030-07-31+02:00', amount: '3000.00' });;
+export const paVerifyPagamentoDuplicato = paActivatePagamentoDuplicato();

@@ -64,6 +64,44 @@ export const paErrorVerify = (params: IErrorType): MockResponse => [
 </soapenv:Envelope>`,
 ];
 
+export const paErrorPaymentUnknown= (params: IErrorType): MockResponse => [
+  404,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
+	<soapenv:Header />
+	<soapenv:Body>
+		<paf:${params.typeR}>
+			<outcome>KO</outcome>
+			<fault>
+				<faultCode>PAA_PAGAMENTO_SCONOSCIUTO</faultCode>
+				<faultString>Payment unknown      </faultString>
+				<id>77777777777</id>
+				<description>Payment unknown      </description>
+			</fault>
+		</paf:${params.typeR}>
+	</soapenv:Body>
+</soapenv:Envelope>`,
+];
+
+export const paErrorReacheable = (params: IErrorType): MockResponse => [
+  404,
+  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
+	<soapenv:Header />
+	<soapenv:Body>
+		<paf:${params.typeR}>
+			<outcome>KO</outcome>
+			<fault>
+				<faultCode>NOT_REACHEABLE</faultCode>
+				<faultString>EC Station not reacheable</faultString>
+				<id>77777777777</id>
+				<description>EC Station not reacheable</description>
+			</fault>
+		</paf:${params.typeR}>
+	</soapenv:Body>
+</soapenv:Envelope>`,
+];
+
 export const paVerifyPaymentNoticeRes = (params: IVerifyRequest): MockResponse => [
   200,
   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
