@@ -37,16 +37,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 120.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -72,12 +119,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -107,12 +154,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -142,12 +189,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -182,16 +229,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 120.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -217,12 +311,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -252,12 +346,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -287,12 +381,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -327,16 +421,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 120.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -362,12 +503,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -397,12 +538,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -432,12 +573,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -472,16 +613,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 120.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -507,12 +695,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -542,12 +730,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -577,12 +765,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -622,16 +810,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 100.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(100.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -657,12 +892,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -692,12 +927,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -727,12 +962,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -767,16 +1002,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 100.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(100.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -802,12 +1084,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -837,12 +1119,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -872,12 +1154,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -917,16 +1199,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 100.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(100.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -952,12 +1281,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -987,12 +1316,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1022,12 +1351,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1062,16 +1391,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 100.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(100.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -1097,12 +1473,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1132,12 +1508,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1167,12 +1543,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1207,16 +1583,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 100.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(100.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -1242,12 +1665,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1277,12 +1700,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1312,12 +1735,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1352,16 +1775,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 100.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(100.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -1387,12 +1857,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1422,12 +1892,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1457,12 +1927,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1502,16 +1972,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 70.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(70.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -1537,12 +2054,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1572,12 +2089,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1607,12 +2124,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1647,16 +2164,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 70.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(70.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -1682,12 +2246,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1717,12 +2281,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1752,12 +2316,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -1794,16 +2358,63 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "    return;",
+                  "}",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test(\"Nessun SOAP Fault\", () => {",
+                  "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                  "});",
+                  "",
+                  "pm.test(\"outcome = OK\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.outcome);",
+                  "",
+                  "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                  "    pm.expect(res.outcome).to.eql(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(\"importo = 6000.0\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.paymentList);",
+                  "",
+                  "    const desc = res?.paymentList?.paymentOptionDescription;",
+                  "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                  "",
+                  "    pm.expect(amt, \"importo atteso\").to.eql(6000.0);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "paGetPayment",
@@ -1829,12 +2440,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -1864,12 +2475,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -1899,12 +2510,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -1939,16 +2550,63 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "    return;",
+                  "}",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test(\"Nessun SOAP Fault\", () => {",
+                  "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                  "});",
+                  "",
+                  "pm.test(\"outcome = OK\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.outcome);",
+                  "",
+                  "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                  "    pm.expect(res.outcome).to.eql(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(\"importo = 0.30\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.paymentList);",
+                  "",
+                  "    const desc = res?.paymentList?.paymentOptionDescription;",
+                  "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                  "",
+                  "    pm.expect(amt, \"importo atteso\").to.eql(0.30);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "paGetPayment",
@@ -1974,12 +2632,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -2009,12 +2667,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -2044,12 +2702,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -2084,16 +2742,63 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "    return;",
+                  "}",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test(\"Nessun SOAP Fault\", () => {",
+                  "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                  "});",
+                  "",
+                  "pm.test(\"outcome = OK\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.outcome);",
+                  "",
+                  "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                  "    pm.expect(res.outcome).to.eql(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(\"importo = 120.0\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.paymentList);",
+                  "",
+                  "    const desc = res?.paymentList?.paymentOptionDescription;",
+                  "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                  "",
+                  "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "paGetPayment",
@@ -2119,12 +2824,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -2154,12 +2859,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -2189,12 +2894,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -2229,16 +2934,63 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "    return;",
+                  "}",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test(\"Nessun SOAP Fault\", () => {",
+                  "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                  "});",
+                  "",
+                  "pm.test(\"outcome = OK\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.outcome);",
+                  "",
+                  "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                  "    pm.expect(res.outcome).to.eql(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(\"importo = 120.0\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.paymentList);",
+                  "",
+                  "    const desc = res?.paymentList?.paymentOptionDescription;",
+                  "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                  "",
+                  "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "paGetPayment",
@@ -2264,12 +3016,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -2299,12 +3051,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -2334,12 +3086,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -2374,16 +3126,63 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "    return;",
+                  "}",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test(\"Nessun SOAP Fault\", () => {",
+                  "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                  "});",
+                  "",
+                  "pm.test(\"outcome = OK\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.outcome);",
+                  "",
+                  "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                  "    pm.expect(res.outcome).to.eql(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(\"importo = 120.0\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.paymentList);",
+                  "",
+                  "    const desc = res?.paymentList?.paymentOptionDescription;",
+                  "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                  "",
+                  "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "paGetPayment",
@@ -2409,12 +3208,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -2444,12 +3243,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -2479,12 +3278,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -2522,16 +3321,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 120.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -2557,12 +3403,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -2592,12 +3438,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -2627,12 +3473,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -2667,16 +3513,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 120.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -2702,12 +3595,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -2737,12 +3630,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -2772,12 +3665,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -2817,16 +3710,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 120.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -2852,12 +3792,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -2887,12 +3827,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -2922,12 +3862,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -2962,16 +3902,63 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});",
+                      "",
+                      "pm.test(\"importo = 120.0\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.paymentList);",
+                      "",
+                      "    const desc = res?.paymentList?.paymentOptionDescription;",
+                      "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                      "",
+                      "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -2997,12 +3984,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -3032,12 +4019,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -3067,12 +4054,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -3109,16 +4096,63 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "    return;",
+                  "}",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test(\"Nessun SOAP Fault\", () => {",
+                  "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                  "});",
+                  "",
+                  "pm.test(\"outcome = OK\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.outcome);",
+                  "",
+                  "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                  "    pm.expect(res.outcome).to.eql(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(\"importo = 120.0\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.paymentList);",
+                  "",
+                  "    const desc = res?.paymentList?.paymentOptionDescription;",
+                  "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                  "",
+                  "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "paGetPayment",
@@ -3144,12 +4178,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3179,12 +4213,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3214,12 +4248,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3254,16 +4288,63 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "    return;",
+                  "}",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test(\"Nessun SOAP Fault\", () => {",
+                  "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                  "});",
+                  "",
+                  "pm.test(\"outcome = OK\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.outcome);",
+                  "",
+                  "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                  "    pm.expect(res.outcome).to.eql(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(\"importo = 120.0\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.paymentList);",
+                  "",
+                  "    const desc = res?.paymentList?.paymentOptionDescription;",
+                  "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                  "",
+                  "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "paGetPayment",
@@ -3289,12 +4370,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3324,12 +4405,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3359,12 +4440,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3399,16 +4480,63 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "    return;",
+                  "}",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test(\"Nessun SOAP Fault\", () => {",
+                  "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                  "});",
+                  "",
+                  "pm.test(\"outcome = OK\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.outcome);",
+                  "",
+                  "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                  "    pm.expect(res.outcome).to.eql(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(\"importo = 120.0\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.paymentList);",
+                  "",
+                  "    const desc = res?.paymentList?.paymentOptionDescription;",
+                  "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                  "",
+                  "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "paGetPayment",
@@ -3434,12 +4562,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3469,12 +4597,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3504,12 +4632,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3544,16 +4672,63 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "    return;",
+                  "}",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test(\"Nessun SOAP Fault\", () => {",
+                  "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                  "});",
+                  "",
+                  "pm.test(\"outcome = OK\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.outcome);",
+                  "",
+                  "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                  "    pm.expect(res.outcome).to.eql(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(\"importo = 120.0\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.paymentList);",
+                  "",
+                  "    const desc = res?.paymentList?.paymentOptionDescription;",
+                  "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                  "",
+                  "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "paGetPayment",
@@ -3579,12 +4754,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3614,12 +4789,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3649,12 +4824,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3689,16 +4864,63 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "    return;",
+                  "}",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test(\"Nessun SOAP Fault\", () => {",
+                  "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                  "});",
+                  "",
+                  "pm.test(\"outcome = OK\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.outcome);",
+                  "",
+                  "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                  "    pm.expect(res.outcome).to.eql(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(\"importo = 999999999.99\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.paymentList);",
+                  "",
+                  "    const desc = res?.paymentList?.paymentOptionDescription;",
+                  "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                  "",
+                  "    pm.expect(amt, \"importo atteso\").to.eql(999999999.99);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "paGetPayment",
@@ -3724,12 +4946,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3759,12 +4981,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3794,12 +5016,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3834,16 +5056,63 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "    return;",
+                  "}",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test(\"Nessun SOAP Fault\", () => {",
+                  "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                  "});",
+                  "",
+                  "pm.test(\"outcome = OK\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.outcome);",
+                  "",
+                  "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                  "    pm.expect(res.outcome).to.eql(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(\"importo = 3000.0\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.paymentList);",
+                  "",
+                  "    const desc = res?.paymentList?.paymentOptionDescription;",
+                  "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                  "",
+                  "    pm.expect(amt, \"importo atteso\").to.eql(3000.0);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "paGetPayment",
@@ -3869,12 +5138,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3904,12 +5173,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3939,12 +5208,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -3979,16 +5248,63 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code !== 200) {",
+                  "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "    return;",
+                  "}",
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "",
+                  "pm.test(\"Nessun SOAP Fault\", () => {",
+                  "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                  "});",
+                  "",
+                  "pm.test(\"outcome = OK\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.outcome);",
+                  "",
+                  "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                  "    pm.expect(res.outcome).to.eql(\"OK\");",
+                  "});",
+                  "",
+                  "pm.test(\"importo = 120.0\", () => {",
+                  "    const j = xml2Json(pm.response.text());",
+                  "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                  "    const res =",
+                  "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                  "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                  "        Object.values(body).find(v => v?.paymentList);",
+                  "",
+                  "    const desc = res?.paymentList?.paymentOptionDescription;",
+                  "    const amt = parseFloat(Array.isArray(desc) ? desc[0].amount : desc?.amount);",
+                  "",
+                  "    pm.expect(amt, \"importo atteso\").to.eql(120.0);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "paGetPayment",
@@ -4014,12 +5330,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -4049,12 +5365,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -4084,12 +5400,12 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/mock-ec",
+              "raw": "{{baseUrl}}/{{mockEcPath}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "mock-ec"
+                "{{mockEcPath}}"
               ]
             }
           },
@@ -4127,16 +5443,72 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = KO\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paGetPaymentRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"KO\");",
+                      "});",
+                      "",
+                      "pm.test(\"faultCode = PAA_PAGAMENTO_DUPLICATO\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.fault);",
+                      "",
+                      "    pm.expect(res.fault.faultCode).to.eql(\"PAA_PAGAMENTO_DUPLICATO\");",
+                      "});",
+                      "",
+                      "pm.test(\"faultString corretta\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.fault);",
+                      "",
+                      "    pm.expect(res.fault.faultString).to.include(\"PAA_PAGAMENTO_DUPLICATO\");",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -4162,12 +5534,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -4202,16 +5574,72 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = KO\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paGetPaymentRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"KO\");",
+                      "});",
+                      "",
+                      "pm.test(\"faultCode = PAA_SINTASSI_XSD\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.fault);",
+                      "",
+                      "    pm.expect(res.fault.faultCode).to.eql(\"PAA_SINTASSI_XSD\");",
+                      "});",
+                      "",
+                      "pm.test(\"faultString corretta\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.fault);",
+                      "",
+                      "    pm.expect(res.fault.faultString).to.include(\"messaggio xml non corretto\");",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -4237,12 +5665,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -4277,16 +5705,68 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = KO\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paGetPaymentRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"KO\");",
+                      "});",
+                      "",
+                      "pm.test(\"faultCode = NOT_REACHEABLE\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.fault);",
+                      "",
+                      "    pm.expect(res.fault.faultCode).to.eql(\"NOT_REACHEABLE\");",
+                      "});",
+                      "",
+                      "pm.test(\"faultString corretta\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.fault);",
+                      "",
+                      "    pm.expect(res.fault.faultString).to.include(\"EC Station not reacheable\");",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -4312,12 +5792,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -4352,16 +5832,66 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.variables.set(\"startTime\", Date.now());"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code !== 200) {",
+                      "    pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "    return;",
+                      "}",
+                      "",
+                      "const start = pm.variables.get(\"startTime\");",
+                      "const elapsed = (Date.now() - start) / 1000;",
+                      "console.log(\"ELAPSED:\", elapsed);",
+                      "",
+                      "pm.test(\"Risposta dopo almeno 10 secondo\", () => {",
+                      "    pm.expect(elapsed).to.be.above(10);",
+                      "});",
+                      "",
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = OK\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"paf:paVerifyPaymentNoticeRes\"] ||",
+                      "        body[\"ns2:paVerifyPaymentNoticeRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paVerifyPaymentNoticeRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"OK\");",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -4387,12 +5917,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -4427,16 +5957,68 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = KO\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paGetPaymentRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"KO\");",
+                      "});",
+                      "",
+                      "pm.test(\"faultCode = PAA_PAGAMENTO_SCADUTO\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.fault);",
+                      "",
+                      "    pm.expect(res.fault.faultCode).to.eql(\"PAA_PAGAMENTO_SCADUTO\");",
+                      "});",
+                      "",
+                      "pm.test(\"faultString corretta\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.fault);",
+                      "",
+                      "    pm.expect(res.fault.faultString).to.include(\"Pagamento in attesa risulta scaduto all’Ente Creditore\");",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -4462,12 +6044,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
@@ -4502,16 +6084,68 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
-              "response": []
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));",
+                      "",
+                      "pm.test(\"Nessun SOAP Fault\", () => {",
+                      "    pm.expect(pm.response.text()).to.not.include(\"faultcode\");",
+                      "});",
+                      "",
+                      "pm.test(\"outcome = KO\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.outcome);",
+                      "",
+                      "    pm.expect(res, \"paGetPaymentRes non trovato\").to.exist;",
+                      "    pm.expect(res.outcome).to.eql(\"KO\");",
+                      "});",
+                      "",
+                      "pm.test(\"faultCode = PAA_PAGAMENTO_SCONOSCIUTO\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.fault);",
+                      "",
+                      "    pm.expect(res.fault.faultCode).to.eql(\"PAA_PAGAMENTO_SCONOSCIUTO\");",
+                      "});",
+                      "",
+                      "pm.test(\"faultString corretta\", () => {",
+                      "    const j = xml2Json(pm.response.text());",
+                      "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};",
+                      "    const res =",
+                      "        body[\"pafn:paGetPaymentRes\"] ||",
+                      "        body[\"paf:paGetPaymentRes\"] ||",
+                      "        body[\"ns2:paGetPaymentRes\"] ||",
+                      "        Object.values(body).find(v => v?.fault);",
+                      "",
+                      "    pm.expect(res.fault.faultString).to.include(\"Payment unknown\");",
+                      "});"
+                    ]
+                  }
+                }
+              ]
             },
             {
               "name": "paGetPayment",
@@ -4537,12 +6171,12 @@
                   }
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/mock-ec",
+                  "raw": "{{baseUrl}}/{{mockEcPath}}",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
-                    "mock-ec"
+                    "{{mockEcPath}}"
                   ]
                 }
               },
