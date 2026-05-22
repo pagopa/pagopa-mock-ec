@@ -233,7 +233,7 @@ export const handlePaVerifyPaymentNotice = async (
 
       log_event_tx(paVerifyPaymentNoticeResponse);
       return res.status(paVerifyPaymentNoticeResponse[0]).send(paVerifyPaymentNoticeResponse[1]);
-    }, +TIMEOUT_SEC*1000);
+    }, +TIMEOUT_SEC);
   }  
  
   if(!isErrorXsd && !isFixedError && !isExpiredNotice && !isTimeout){
