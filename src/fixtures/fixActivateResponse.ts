@@ -91,7 +91,7 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
                 <e-mail>${escape(params.email ?? "john.doe@test.it") }</e-mail>
             </debtor>
            
-            <transferList>${(params.transfers ?? DEFAULT_TRANSFERS).map(buildTransfer).join('')}
+            <transferList>${(params.transfers ?? DEFAULT_TRANSFERS).map(buildTransfer).join('')}</transferList>
             
         </data>
     </paf:paGetPaymentRes>
