@@ -1,0 +1,709 @@
+newman
+
+pagopa-mock-ec
+
+❏ Tribute 1 – 120€ → TARI 100€ (EC_TE) + TEFA 20€ (Milano) / 30200 – CCPost / CCPost
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 307ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 60ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 62ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 62ms]
+
+❏ Tribute 1 – 120€ → TARI 100€ (EC_TE) + TEFA 20€ (Milano) / 30201 – CCPost / CCBank
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 61ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 64ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 61ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 63ms]
+
+❏ Tribute 1 – 120€ → TARI 100€ (EC_TE) + TEFA 20€ (Milano) / 30202 – CCBank / CCPost
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 63ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 62ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 62ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 66ms]
+
+❏ Tribute 1 – 120€ → TARI 100€ (EC_TE) + TEFA 20€ (Milano) / 30203 – CCBank / CCBank
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 63ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 62ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 68ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 60ms]
+
+❏ Tribute 2 – 100€ → TARI 100€ (EC_TE) mono-beneficiario / 30204 – CCPost
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 66ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 100.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.14kB, 61ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.15kB, 62ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 61ms]
+
+❏ Tribute 2 – 100€ → TARI 100€ (EC_TE) mono-beneficiario / 30205 – CCBank
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 60ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 100.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.14kB, 60ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.15kB, 59ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 60ms]
+
+❏ Tribute 3 – 100€ → TARI 70€ (EC_TE) + TEFA 30€ (Milano) / 30206 – CCPost / CCPost
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 62ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 100.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 64ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 62ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 62ms]
+
+❏ Tribute 3 – 100€ → TARI 70€ (EC_TE) + TEFA 30€ (Milano) / 30207 – CCPost / CCBank
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 60ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 100.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 62ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 61ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 67ms]
+
+❏ Tribute 3 – 100€ → TARI 70€ (EC_TE) + TEFA 30€ (Milano) / 30208 – CCBank / CCPost
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 64ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 100.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 60ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 60ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 63ms]
+
+❏ Tribute 3 – 100€ → TARI 70€ (EC_TE) + TEFA 30€ (Milano) / 30209 – CCBank / CCBank
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 60ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 100.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 62ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 60ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 59ms]
+
+❏ Tribute 4 – 70€ → TARI 70€ (EC_TE) mono-beneficiario / 30210 – CCPost
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 60ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 70.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.14kB, 60ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.15kB, 60ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 63ms]
+
+❏ Tribute 4 – 70€ → TARI 70€ (EC_TE) mono-beneficiario / 30211 – CCBank
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 60ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 70.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.14kB, 60ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.15kB, 61ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 62ms]
+
+❏ Tribute 5 – 6000€ → TARI 4000€ (EC_TE) + TEFA 2000€ (Milano)
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 60ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 6000.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 62ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.61kB, 60ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 62ms]
+
+❏ Tribute 6 – 0.30€ → TARI 0.10€ (EC_TE) + TEFA 0.20€ (Milano)
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 60ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 0.30
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.59kB, 72ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 61ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 61ms]
+
+❏ Tribute 7 – 120€ → 3 trasferimenti: EC_TE + Milano + Bitetto
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 59ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 3.04kB, 63ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 3.05kB, 61ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 61ms]
+
+❏ Tribute 8 – 120€ → 4 trasferimenti: EC_TE + Milano + Bitetto + Milano
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 59ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 3.5kB, 59ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 3.5kB, 62ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 60ms]
+
+❏ Tribute 9 – 120€ → 5 trasferimenti: EC_TE + Milano x3 + Bitetto
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 60ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 3.95kB, 60ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 3.95kB, 63ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 73ms]
+
+❏ Tribute 10 – 120€ → 0101101IM 100€ + 0201102IM 20€ (EC_TE) / 30217 – CCPost / CCPost
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 62ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.58kB, 62ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.59kB, 65ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 62ms]
+
+❏ Tribute 10 – 120€ → 0101101IM 100€ + 0201102IM 20€ (EC_TE) / 30221 – CCPost / CCBank
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 60ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.58kB, 60ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.59kB, 62ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 59ms]
+
+❏ Tribute 11 – 120€ → 70€+30€+20€ tutti EC_TE / 30219 – CCBank / CCBank / CCPost
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 59ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 3.03kB, 59ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 3.04kB, 58ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 61ms]
+
+❏ Tribute 11 – 120€ → 70€+30€+20€ tutti EC_TE / 30222 – CCPost / CCPost / CCBank
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 64ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 3.03kB, 61ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 3.04kB, 65ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 61ms]
+
+❏ Tribute 12 – 120€ → come Tribute 11, companyName 140 chars
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.42kB, 59ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 3.03kB, 60ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 3.04kB, 80ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 61ms]
+
+❏ Tribute 13 – 120€ → Oneri SUAP: Milano 100€ + Bitetto 20€
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 59ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.63kB, 59ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.63kB, 69ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 69ms]
+
+❏ Tribute 14 – 120€ → Oneri SUAP: Milano 100€ + Milano 20€
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.29kB, 60ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.63kB, 60ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.63kB, 64ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 156ms]
+
+❏ Tribute 15 – 120€ → come Tribute 10, dueDate in formato XSD
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.3kB, 59ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.59kB, 60ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 59ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 60ms]
+
+❏ Tribute 16 – 999999999.99€ → importo massimo
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.3kB, 80ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 999999999.99
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.15kB, 61ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.55kB, 74ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 60ms]
+
+❏ Tribute 17 – 3000€ attualizzato a 3010€ all'attivazione
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.3kB, 59ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 3000.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.54kB, 59ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.55kB, 60ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 60ms]
+
+❏ Tribute 18 – 120€ → come Tribute 10 con richiestaMarcaDaBollo
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.3kB, 61ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+  ✓  importo = 120.0
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.6kB, 60ms]
+
+↳ paGetPaymentV2
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.92kB, 58ms]
+
+↳ paSendRT
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 642B, 59ms]
+
+❏ Edge Cases / Avviso già pagato
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.11kB, 59ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = KO
+  ✓  faultCode = PAA_PAGAMENTO_DUPLICATO
+  ✓  faultString corretta
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.54kB, 60ms]
+
+❏ Edge Cases / EC risponde con errore sintattico
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 881B, 59ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = KO
+  ✓  faultCode = PAA_SINTASSI_XSD
+  ✓  faultString corretta
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.03kB, 60ms]
+
+❏ Edge Cases / Stazione EC non raggiungibile
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [404 Not Found, 853B, 62ms]
+  ✓  HTTP 404
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = KO
+  ✓  faultCode = NOT_REACHEABLE
+  ✓  faultString corretta
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [404 Not Found, 801B, 60ms]
+
+❏ Edge Cases / Timeout stazione EC
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.17kB, 5s]
+  ┌
+  │ 'ELAPSED:', 5.075
+  └
+  ✓  Risposta dopo almeno 5 secondo
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = OK
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 2.94kB, 5s]
+
+❏ Edge Cases / Pagamento scaduto
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 939B, 62ms]
+  ✓  HTTP 200
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = KO
+  ✓  faultCode = PAA_PAGAMENTO_SCADUTO
+  ✓  faultString corretta
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 966B, 60ms]
+
+❏ Edge Cases / YY ignoto → Pagamento sconosciuto
+↳ paVerifyPaymentNotice
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [404 Not Found, 856B, 59ms]
+  ✓  HTTP 404
+  ✓  Nessun SOAP Fault
+  ┌
+  │ `Using "xml2Json" is deprecated. Use "require('xml2js'
+  │ )" instead.`
+  └
+  ✓  outcome = KO
+  ✓  faultCode = PAA_PAGAMENTO_SCONOSCIUTO
+  ✓  faultString corretta
+
+↳ paGetPayment
+  POST https://api.uat.platform.pagopa.it/mock-ec-primary/service/v1/mock [200 OK, 1.03kB, 59ms]
+
+┌─────────────────────────┬───────────────────┬──────────────────┐
+│                         │          executed │           failed │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              iterations │                 1 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│                requests │               124 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│            test-scripts │                34 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│      prerequest-scripts │                 1 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              assertions │               141 │                0 │
+├─────────────────────────┴───────────────────┴──────────────────┤
+│ total run duration: 19.6s                                      │
+├────────────────────────────────────────────────────────────────┤
+│ total data received: 176.92kB (approx)                         │
+├────────────────────────────────────────────────────────────────┤
+│ average response time: 145ms [min: 58ms, max: 5s, s.d.: 630ms] │
+└────────────────────────────────────────────────────────────────┘

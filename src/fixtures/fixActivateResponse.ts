@@ -12,13 +12,20 @@ export interface IECConfig {
   CCBankThirdEC: string;
 }
 
+type MarcaDaBollo = {
+  hashDocumento: string;
+  tipoBollo: string;
+  provinciaResidenza: string;
+};
+
 interface ITransfer {
   idTransfer: number;
   transferAmount: string;
   fiscalCodePA?: string;
-  iban: string;
+  iban?: string;
   remittanceInformation?: string;
   transferCategory?: string;
+  richiestaMarcaDaBollo?: MarcaDaBollo;
 }
 
 
@@ -46,19 +53,32 @@ export interface IActivateRequest {
 const escape = (v?: string) => escapeHtml(v ?? '');
 
 const buildTransfer = (t: ITransfer): string => `
-                <transfer>
-                    <idTransfer>${t.idTransfer}</idTransfer>
-                    <transferAmount>${escape(t.transferAmount)}</transferAmount>
-                    <fiscalCodePA>${escape(t.fiscalCodePA ?? '77777777777')}</fiscalCodePA>
-                    <IBAN>${escape(t.iban)}</IBAN>
-                    <remittanceInformation>${escape(t.remittanceInformation ?? 'remittance information')}</remittanceInformation>
-                    <transferCategory>${escape(t.transferCategory ?? '0101101IM')}</transferCategory>
-                </transfer>`;
+    <transfer>
+        <idTransfer>${t.idTransfer}</idTransfer>
+        <transferAmount>${escape(t.transferAmount)}</transferAmount>
+        <fiscalCodePA>${escape(t.fiscalCodePA ?? '77777777777')}</fiscalCodePA>
 
-                const DEFAULT_TRANSFERS: ITransfer[] = [
-    { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "",   iban: 'IT57N0760114800000011050036' },
-    { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "",   iban: 'IT86H0760101000000000001015' },
-  ];
+        ${t.iban ? `<IBAN>${escape(t.iban)}</IBAN>` : ''}
+
+        ${
+          t.richiestaMarcaDaBollo
+            ? `
+        <richiestaMarcaDaBollo>
+            <hashDocumento>${escape(t.richiestaMarcaDaBollo.hashDocumento)}</hashDocumento>
+            <tipoBollo>${escape(t.richiestaMarcaDaBollo.tipoBollo)}</tipoBollo>
+            <provinciaResidenza>${escape(t.richiestaMarcaDaBollo.provinciaResidenza)}</provinciaResidenza>
+        </richiestaMarcaDaBollo>
+        `
+            : ''
+        }
+
+        <remittanceInformation>${escape(t.remittanceInformation ?? 'remittance information')}</remittanceInformation>
+        <transferCategory>${escape(t.transferCategory ?? '0101101IM')}</transferCategory>
+    </transfer>`;
+    const DEFAULT_TRANSFERS: ITransfer[] = [
+  { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "", iban: '...' },
+  { idTransfer: 2, transferAmount: '20.00', fiscalCodePA: "", iban: '...' },
+];
 
 
 export const paActivate = (params: IActivateRequest): MockResponse => [
@@ -296,11 +316,17 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
       ],
     },
     // avviso26: importo 3010
+    '26': {
+      amount: "3010.00",
+      transfers: [
+        { idTransfer: 1, transferAmount: '3010.00', fiscalCodePA: ec.CF, iban: ec.CCBankPrimaryEC,remittanceInformation:"EC_TE su bollettino CCBank",  },
+      ],
+    },
     '27': {
       amount: "120.00",
       transfers: [
         { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: ec.CF, iban: ec.CCPostPrimaryEC, remittanceInformation:"Comune Milano su bollettino  CCPost",transferCategory:"0101101IM"},
-        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: ec.CF, iban:ec.CCBankPrimaryEC, remittanceInformation:"Comune Milano su bollettino  CCBank", transferCategory:"0201102IM"},    
+        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: ec.CF,richiestaMarcaDaBollo: {hashDocumento: 'QUJDRA==', tipoBollo: '01', provinciaResidenza: 'RM'} , remittanceInformation:"Comune Milano su bollettino  CCBank", transferCategory:"0201102IM"},    
    
       ],
     },
