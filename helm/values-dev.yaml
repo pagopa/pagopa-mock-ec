@@ -1,12 +1,13 @@
 microservice-chart: &microservice-chart
-  namespace: "nodo"
+  namespace: "mock"
   nameOverride: ""
   fullnameOverride: ""
   terminationGracePeriodSeconds: 140
-
+  critical: false
   image:
-    repository: pagopadcommonacr.azurecr.io/pagopamockec
-    tag: "0.0.1"
+    #    repository: pagopadcommonacr.azurecr.io/pagopamockec
+    repository: ghcr.io/pagopa/pagopa-mock-ec
+    tag: "1.6.15-17-PIDM-1127-refactoring"
     pullPolicy: Always
   readinessProbe:
     handlerType: tcpSocket
@@ -24,23 +25,34 @@ microservice-chart: &microservice-chart
     strategy:
       type: RollingUpdate
       rollingUpdate:
-        maxUnavailable: 0
         maxSurge: 1
-#  serviceMonitor:
-#    create: true
-#    endpoints:
-#      - interval: 5s
-#        targetPort: 8080
-#        path: /q/metrics
+        maxUnavailable: 0
+  #  serviceMonitor:
+  #    create: true
+  #    endpoints:
+  #      - interval: 5s
+  #        targetPort: 8080
+  #        path: /q/metrics
+
+  ports:
+    - 8080
   service:
-    create: true
     type: ClusterIP
     ports:
       - 8080
+  ingress: &ingress
+    create: true
+    host: "weudev.mock.internal.dev.platform.pagopa.it"
+    path: /pagopa-mock-ec-service/(.*)
+    servicePort: 8080
   serviceAccount:
-    name: "nodo-workload-identity"
+    name: "mock-workload-identity"
   azure:
     workloadIdentityClientId: <workload-identity-client-id-set-automatically-by-gha>
+  podAnnotations: {}
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
   securityContext:
     readOnlyRootFilesystem: true
     allowPrivilegeEscalation: false
@@ -56,20 +68,20 @@ microservice-chart: &microservice-chart
       cpu: "400m"
   autoscaling:
     enable: false
-#    minReplica: 1
-#    maxReplica: 1
-#    pollingInterval: 10 # seconds
-#    cooldownPeriod: 50 # seconds
-#    triggers:
-#      - type: cpu
-#        metadata:
-#          type: Utilization
-#          value: "75"
-#      - type: memory
-#        metadata:
-#          type: Utilization
-#          value: "75"
-  envConfig:
+    #    minReplica: 1
+    #    maxReplica: 1
+    #    pollingInterval: 10 # seconds
+    #    cooldownPeriod: 50 # seconds
+    #    triggers:
+    #      - type: cpu
+    #        metadata:
+    #          type: Utilization
+    #          value: "75"
+    #      - type: memory
+    #        metadata:
+    #          type: Utilization
+    #          value: "75"
+  envConfig: &envConfig
     TIMEOUT_DELAY: "5000"
     PPT_NODO: "/mock"
     PORT: "8080"
@@ -83,41 +95,37 @@ microservice-chart: &microservice-chart
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: "elastic-apm-secret-token"
   keyvault:
-    name: "pagopa-d-nodo-kv"
+    name: "pagopa-d-mock-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  tolerations:
-    - key: dedicated
-      operator: Equal
-      value: "nodo"
-      effect: NoSchedule
+  tolerations: []
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: nodo
+              - key: node_type
                 operator: In
                 values:
-                  - "true"
-
-mock-primary:
+                  - 'user'
+  canaryDelivery:
+    create: false
+mock-ec-primary:
   !!merge <<: *microservice-chart
+  fullnameOverride: "mock-ec-primary"
   ingress:
-    create: true
-    host: "weudev.nodo.internal.dev.platform.pagopa.it"
-    path: /mock-ec(/|$)(.*)
+    !!merge <<: *ingress
+    path: /mock-ec-primary(/|$)(.*)
     pathType: ImplementationSpecific
     servicePort: 8080
     annotations:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
     proxyBodySize: 100m
     rewriteTarget: /$2
-
-mock-secondary:
+mock-ec-secondary:
   !!merge <<: *microservice-chart
+  fullnameOverride: "mock-ec-secondary"
   ingress:
-    create: true
-    host: "weudev.nodo.internal.dev.platform.pagopa.it"
+    !!merge <<: *ingress
     path: /mock-ec-secondary(/|$)(.*)
     pathType: ImplementationSpecific
     servicePort: 8080
@@ -125,16 +133,15 @@ mock-secondary:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
     proxyBodySize: 100m
     rewriteTarget: /$2
-
-mock-ec-replica:
-  !!merge <<: *microservice-chart
-  ingress:
-    create: true
-    host: "weudev.nodo.internal.dev.platform.pagopa.it"
-    path: /mock-ec-rep(/|$)(.*)
-    pathType: ImplementationSpecific
-    servicePort: 8080
-    annotations:
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
-    proxyBodySize: 100m
-    rewriteTarget: /$2
+#mock-ec-replica:
+#  !!merge <<: *microservice-chart
+#  ingress:
+#    create: true
+#    host: "weudev.nodo.internal.dev.platform.pagopa.it"
+#    path: /mock-ec-rep(/|$)(.*)
+#    pathType: ImplementationSpecific
+#    servicePort: 8080
+#    annotations:
+#      nginx.ingress.kubernetes.io/proxy-read-timeout: "130"
+#    proxyBodySize: 100m
+#    rewriteTarget: /$2

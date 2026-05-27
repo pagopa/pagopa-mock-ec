@@ -2,19 +2,14 @@ apiVersion: v2
 name: mock-ec-chart
 description: Mock EC
 type: application
-version: 0.0.1
-appVersion: 1.6.13
+version: 0.17.0
+appVersion: 1.6.15-17-PIDM-1127-refactoring
 dependencies:
   - name: microservice-chart
-    version: 8.0.2
+    version: 8.4.1
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
-    alias: mock-primary
+    alias: mock-ec-primary
   - name: microservice-chart
-    version: 8.0.2
+    version: 8.4.1
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
-    alias: mock-ec-replica
-  - name: microservice-chart
-    version: 8.0.2
-    repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
-    alias: mock-secondary
-
+    alias: mock-ec-secondary

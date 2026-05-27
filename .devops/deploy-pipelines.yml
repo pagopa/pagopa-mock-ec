@@ -8,7 +8,8 @@ parameters:
       - major
       - minor
       - patch
-    default: minor
+      - skip
+    default: skip
   - name: environment
     displayName: Target Environment
     type: string
@@ -19,8 +20,9 @@ parameters:
   - name: DEPLOY_TYPE
     displayName: Deployment type
     type: string
+    default: production_slot
     values:
-      - staging_slot_and_swap
+#      - staging_slot_and_swap
       - production_slot
 
 # Only manual activations are intended
@@ -65,105 +67,93 @@ stages:
         steps:
           - script: |
               echo "Debug..."
+              echo ${{ parameters.RELEASE_SEMVER }}
               echo ${{ variables['Build.SourceBranch'] }}
               echo ${{ variables.DEFAULT_BRANCH }} 
               echo $(DEFAULT_BRANCH)
             displayName: 'Print info'
 
   # Create a release
-  # Activated when ONE OF these are met:
-  # - is on branch $(DEFAULT_BRANCH)
-  # - is a tag in the form v{version}-RELEASE
-  - stage: Release
-    # condition: or(
-    #   eq(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH)),
-    #   and(
-    #   startsWith(variables['Build.SourceBranch'], 'refs/tags'),
-    #   endsWith(variables['Build.SourceBranch'], '-RELEASE')
-    #   )
-    #   )
-    pool:
-      vmImage: 'ubuntu-latest'
-    jobs:
-      - job: make_release
-        condition: eq(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
-        steps:
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
-            parameters:
-              persistCredentials: true
-          - template: templates/node-github-release/template.yaml@pagopaCommons
-            parameters:
-#              release_branch: '$(DEFAULT_BRANCH)'
-              release_branch: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
-              semver: '${{ parameters.RELEASE_SEMVER }}'
-              gitEmail: '$(GIT_EMAIL)'
-              gitUsername: '$(GIT_USERNAME)'
-              gitHubConnection: '$(GITHUB_CONNECTION)'
-
-      - job: skip_release
-        condition: ne(variables['Build.SourceBranch'], format('refs/heads/{0}', variables.DEFAULT_BRANCH))
-        steps:
-          - script: |
-              echo "We assume this reference to be a valid release: $(Build.SourceBranch). Therefore, there is no need to bundle a new release."
-            displayName: 'Skip release bundle'
+  # Only executed when RELEASE_SEMVER is not 'skip'
+  - ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
+    - stage: Release
+      pool:
+        vmImage: 'ubuntu-latest'
+      jobs:
+        - job: make_release
+          steps:
+            - template: templates/node-job-setup/template.yaml@pagopaCommons
+              parameters:
+                persistCredentials: true
+            - template: templates/node-github-release/template.yaml@pagopaCommons
+              parameters:
+                release_branch: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
+                semver: '${{ parameters.RELEASE_SEMVER }}'
+                gitEmail: '$(GIT_EMAIL)'
+                gitUsername: '$(GIT_USERNAME)'
+                gitHubConnection: '$(GITHUB_CONNECTION)'
 
   # Prepare Artifact
-  - stage: Prepare_artifact
-    dependsOn:
-      - Release
-    jobs:
-      - job: 'prepare_artifact'
-        steps:
-          # Build application
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
-            parameters:
-              # On the assumption that this stage is executed only when Release stage is,
-              #  with this parameter we set the reference the deployment script must pull changes from.
-              # The branch/tag name is calculated from the source branch
-              #  ex: Build.SourceBranch=refs/heads/master --> master
-              #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
-              gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
-          - script: |
-              yarn build
-            displayName: 'Build'
+  # Only executed when RELEASE_SEMVER is not 'skip'
+  - ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
+    - stage: Prepare_artifact
+      dependsOn:
+        - Release
+      jobs:
+        - job: 'prepare_artifact'
+          steps:
+            # Build application
+            - template: templates/node-job-setup/template.yaml@pagopaCommons
+              parameters:
+                # On the assumption that this stage is executed only when Release stage is,
+                #  with this parameter we set the reference the deployment script must pull changes from.
+                # The branch/tag name is calculated from the source branch
+                #  ex: Build.SourceBranch=refs/heads/master --> master
+                #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
+                gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
+            - script: |
+                yarn build
+              displayName: 'Build'
 
-          # Copy application to
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: '$(System.DefaultWorkingDirectory)'
-              TargetFolder: '$(System.DefaultWorkingDirectory)/bundle'
-              Contents: |
-                **/*
-                web.config
-                !.git/**/*
-                !**/*.js.map
-                !**/*.ts
-                !.vscode/**/*
-                !.devops/**/*
-                !.prettierrc
-                !.gitignore
-                !README.md
-                !jest.integration.js
-                !test
-                !tsconfig.json
-                !tslint.json
-                !yarn.lock
-                !Dangerfile.js
-                !CODEOWNERS
-                !Dockerfile
-                !preview.hbs
-                !.auto-changelog.json
-                !api_pagopa.yaml
-                !__*/**/*
-            displayName: 'Copy deploy files'
+            # Copy application to
+            - task: CopyFiles@2
+              inputs:
+                SourceFolder: '$(System.DefaultWorkingDirectory)'
+                TargetFolder: '$(System.DefaultWorkingDirectory)/bundle'
+                Contents: |
+                  **/*
+                  web.config
+                  !.git/**/*
+                  !**/*.js.map
+                  !**/*.ts
+                  !.vscode/**/*
+                  !.devops/**/*
+                  !.prettierrc
+                  !.gitignore
+                  !README.md
+                  !jest.integration.js
+                  !test
+                  !tsconfig.json
+                  !tslint.json
+                  !yarn.lock
+                  !Dangerfile.js
+                  !CODEOWNERS
+                  !Dockerfile
+                  !preview.hbs
+                  !.auto-changelog.json
+                  !api_pagopa.yaml
+                  !__*/**/*
+              displayName: 'Copy deploy files'
 
-          - publish: $(System.DefaultWorkingDirectory)/bundle
-            artifact: Bundle
+            - publish: $(System.DefaultWorkingDirectory)/bundle
+              artifact: Bundle
 
   # Deploy
+  # Always executed
   - stage: 'Deploy_to_${{ parameters.environment }}'
-    dependsOn:
-      - Prepare_artifact
+    ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
+      dependsOn:
+        - Prepare_artifact
     jobs:
       - job: 'do_deploy_staging_slot_and_swap'
         condition: eq('${{ parameters.DEPLOY_TYPE }}', 'staging_slot_and_swap')
