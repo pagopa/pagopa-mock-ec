@@ -27,7 +27,7 @@ To be able to use as PSP the following `pagopa-mock-ec` remebers to configure in
 
 - PSP [Identification and Authentication](https://pagopa.github.io/pagopa-api/#section/Introduction/Identification-and-Authentication)
 - as EC the `77777777777` fiscalCode
-- as `noticeNumber` one of those described in to below section [Tribute description](#tribute-description)
+- as `noticeNumber` one of those described in to below section [Tribute descriptions](#tribute-descriptions)
 
 ## Functionalities
 
@@ -41,14 +41,14 @@ The following functionalites are available (EC Side)
 - _paSendRT_
 - _paSendRTV2_
 - _paDemandPaymentNotice_
-- _paaChiediNumeroAvviso_
+- _paaChiediNumeroAvviso_ (Deprecated)
 
 These mock functionalities allows the PSP to invoke all the payment steps
 
 > (_see [here](https://pagopa.github.io/pagopa-api/) to details_)
 
 - _verifyPaymentNotice_ or _verificaBollettino_
-- _activatePaymentNotice_
+- _activatePaymentNotice_ or _activatePaymentNoticeV2_
 - _sendPaymentOutcome_
 
 ## Tribute descriptions
@@ -276,7 +276,7 @@ The following edge cases are available (stateless, based on notice number)
 | 302**99**xxxxxxxxxxx | Payment expired                                      |
 | 302**YY**xxxxxxxxxxx | Payment unknown                                      |
 
-**_NOTE:_** YY: every code not mentioned before -> from 17 to 94
+**_NOTE:_** YY: every code not mentioned before
 
 <br>
 <!-- 
