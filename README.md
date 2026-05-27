@@ -58,7 +58,7 @@ Based on notice number the mock will reply with a certain configuration of the t
 
 ### Tribute 1
 
-The tribute is 120 EUR divided in 2 transfers:
+The tribute is 120 € divided in 2 transfers:
 
 - Transfer 1 : TARI, 100€ due to **EC_TE**
 - Transfer 2 : TEFA, 20€ due to **Comune di Milano**
@@ -72,7 +72,7 @@ The tribute is 120 EUR divided in 2 transfers:
 
 ### Tribute 2
 
-The tribute is 100 EUR in a single transfers:
+The tribute is 100 € in a single transfers:
 
 - Transfer 1 : TARI, 100€ due to **EC_TE**
 
@@ -83,7 +83,7 @@ The tribute is 100 EUR in a single transfers:
 
 ### Tribute 3
 
-The tribute is 100 EUR divided in 2 transfers:
+The tribute is 100 € divided in 2 transfers:
 
 - Transfer 1 : TARI, 70€ due to **EC_TE**
 - Transfer 2 : TEFA, 30€ due to **Comune di Milano**
@@ -97,7 +97,7 @@ The tribute is 100 EUR divided in 2 transfers:
 
 ### Tribute 4
 
-The tribute is 70 EUR in a single transfer:
+The tribute is 70 € in a single transfer:
 
 - Transfer 1 : TARI, 70€ due to **EC_TE**
 
@@ -108,7 +108,7 @@ The tribute is 70 EUR in a single transfer:
 
 ### Tribute 5
 
-The tribute is 6000 EUR divided in 2 transfers:
+The tribute is 6000 € divided in 2 transfers:
 
 - Transfer 1 : TARI, 4000€ due to **EC_TE**
 - Transfer 2 : TEFA, 2000€ due to **Comune di Milano**
@@ -119,7 +119,7 @@ The tribute is 6000 EUR divided in 2 transfers:
 
 ### Tribute 6
 
-The tribute is 0.30 EUR divided in 2 transfers:
+The tribute is 0.30 € divided in 2 transfers:
 
 - Transfer 1 : TARI, 0.10€ due to **EC_TE**
 - Transfer 2 : TEFA, 0.20€ due to **Comune di Milano**
@@ -169,7 +169,7 @@ The amount of the tribute is is 120€ and divided in 5 transfers:
 
 ### Tribute 10
 
-The tribute is 120.00 EUR divided in 2 transfers:
+The tribute is 120.00 € divided in 2 transfers:
 - Transfer 1 : 0101101IM, 100.00€ due to **EC_TE**
 - Transfer 2 : 0201102IM, 20.00€ due to **EC_TE**
 
@@ -207,7 +207,7 @@ It is the same as tribute 11, with the exception that the returned `companyName`
 
 ### Tribute 13
 
-The tribute is 120.00 EUR divided in 2 transfers:
+The tribute is 120.00 € divided in 2 transfers:
 - Transfer 1 : Oneri SUAP 1, 100.00€ due to **Comune di Milano**
 - Transfer 2 : Oneri SUAP 2, 20.00€ due to **Comune di Bitetto**
 
@@ -217,7 +217,7 @@ The tribute is 120.00 EUR divided in 2 transfers:
 
 ### Tribute 14
 
-The tribute is 120.00 EUR divided in 2 transfers:
+The tribute is 120.00 € divided in 2 transfers:
 - Transfer 1 : Oneri SUAP 1, 100.00€ due to **Comune di Milano**
 - Transfer 2 : Oneri SUAP 2, 20.00€ due to **Comune di Milano**
 
@@ -229,7 +229,7 @@ The tribute is 120.00 EUR divided in 2 transfers:
 
 Same as Tribute 10, but with a returned `dueDate` with XSD format (e.g. `2024-10-05+02:00`).
 
-The tribute is 120.00 EUR divided in 2 transfers:
+The tribute is 120.00 € divided in 2 transfers:
 - Transfer 1 : 0101101IM, 100.00€ due to **EC_TE**
 - Transfer 2 : 0201102IM, 20.00€ due to **EC_TE**
 
@@ -239,7 +239,7 @@ The tribute is 120.00 EUR divided in 2 transfers:
 
 ### Tribute 16
 
-The tribute is 999999999.99 EUR:
+The tribute is 999999999.99 €:
 
 | Notice number        | CC Comune di Milano | CC Comune di Milano |
 |----------------------|---------------------|---------------------|
@@ -248,11 +248,14 @@ The tribute is 999999999.99 EUR:
 ### Tribute 17
 
 The amount of the tribute is 3000€ later actualized as 3010€ on activation.
+| Notice number        | CC Comune di Milano |
+|----------------------|---------------------|
+| 302**26**xxxxxxxxxxx | CCBank              |
 
 ### Tribute 18
 Same as Tribute 10, but with the digital stamp (`richiestaMarcaDaBollo`) informations.
 
-The tribute is 120.00 EUR divided in 2 transfers:
+The tribute is 120.00 € divided in 2 transfers:
 - Transfer 1 : 0101101IM, 100.00€ due to **EC_TE**
 - Transfer 2 : 0201102IM, 20.00€ due to **EC_TE**
 
