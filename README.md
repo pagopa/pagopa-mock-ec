@@ -51,7 +51,7 @@ These mock functionalities allows the PSP to invoke all the payment steps
 - _activatePaymentNotice_
 - _sendPaymentOutcome_
 
-## Tribute description
+## Tribute descriptions
 
 Both EC have at their disposal a bank IBAN and a postal IBAN.
 Based on notice number the mock will reply with a certain configuration of the tribute.
