@@ -1,4 +1,8 @@
 # Azure DevOps pipeline to release a new version and deploy to production.
+########################################################################
+# PAY ATTENTION: this pipeline does not push in any ACR,               #
+# it deploys directly the artifact to the web app.                     #
+########################################################################
 
 parameters:
   - name: 'RELEASE_SEMVER'
@@ -24,10 +28,20 @@ parameters:
     values:
 #      - staging_slot_and_swap
       - production_slot
+  - name: "FORCE_REPLACE"
+    displayName: "Force the replacement of the artifact"
+    type: boolean
+    default: False
+    values:
+      - False
+      - True
 
 # Only manual activations are intended
 trigger: none
 pr: none
+
+pool:
+  vmImage: 'ubuntu-22.04'
 
 # variables set on azdevops to avoid circular dependency warning
 # $(DEFAULT_BRANCH)
@@ -40,6 +54,7 @@ variables:
     WEB_APP_RESOURCE_GROUP_NAME: $(DEV_WEB_APP_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(DEV_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_VNET: $(DEV_HEALTHCHECK_CONTAINER_VNET)
+
   ${{ if eq(parameters['environment'], 'uat') }}:
     AZURE_SUBSCRIPTION: $(UAT_AZURE_SUBSCRIPTION)
     WEB_APP_NAME: $(UAT_WEB_APP_NAME)
@@ -47,8 +62,10 @@ variables:
     HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(UAT_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_VNET: $(UAT_HEALTHCHECK_CONTAINER_VNET)
 
-pool:
-  vmImage: 'ubuntu-latest'
+  ${{ if eq(variables['Build.SourceBranchName'], 'merge') }}:
+    SOURCE_BRANCH: "main" # force to main branch
+  ${{ if ne(variables['Build.SourceBranchName'], 'merge') }}:
+    SOURCE_BRANCH: ${{ variables['Build.SourceBranchName'] }}
 
 resources:
   repositories:
@@ -60,8 +77,7 @@ resources:
 
 stages:
   - stage: EchoDbg
-    pool:
-      vmImage: 'ubuntu-latest'
+
     jobs:
       - job: Print
         steps:
@@ -75,12 +91,11 @@ stages:
 
   # Create a release
   # Only executed when RELEASE_SEMVER is not 'skip'
+
   - ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
     - stage: Release
-      pool:
-        vmImage: 'ubuntu-latest'
       jobs:
-        - job: make_release
+        - job: releaseService
           steps:
             - template: templates/node-job-setup/template.yaml@pagopaCommons
               parameters:
@@ -95,10 +110,9 @@ stages:
 
   # Prepare Artifact
   # Only executed when RELEASE_SEMVER is not 'skip'
-  - ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
+  - ${{ if or(ne(parameters.RELEASE_SEMVER, 'skip'), eq(parameters.FORCE_REPLACE, true)) }}:
     - stage: Prepare_artifact
-      dependsOn:
-        - Release
+
       jobs:
         - job: 'prepare_artifact'
           steps:
@@ -151,7 +165,7 @@ stages:
   # Deploy
   # Always executed
   - stage: 'Deploy_to_${{ parameters.environment }}'
-    ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
+    ${{ if or(ne(parameters.RELEASE_SEMVER, 'skip'), eq(parameters.FORCE_REPLACE, true)) }}:
       dependsOn:
         - Prepare_artifact
     jobs:
