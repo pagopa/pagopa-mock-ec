@@ -1,4 +1,8 @@
 # Azure DevOps pipeline to release a new version and deploy to production.
+########################################################################
+# PAY ATTENTION: this pipeline does not push in any ACR,               #
+# it deploys directly the artifact to the web app.                     #
+########################################################################
 
 parameters:
   - name: 'RELEASE_SEMVER'
@@ -24,8 +28,8 @@ parameters:
     values:
 #      - staging_slot_and_swap
       - production_slot
-  - name: "FORCE_REPLACE_DOCKER_IMAGE"
-    displayName: "Force the existing docker image to be replaced (latest tag)"
+  - name: "FORCE_REPLACE"
+    displayName: "Force the replacement of the artifact"
     type: boolean
     default: False
     values:
@@ -106,7 +110,7 @@ stages:
 
   # Prepare Artifact
   # Only executed when RELEASE_SEMVER is not 'skip'
-  - ${{ if or(ne(parameters.RELEASE_SEMVER, 'skip'), eq(parameters.FORCE_REPLACE_DOCKER_IMAGE, true)) }}:
+  - ${{ if or(ne(parameters.RELEASE_SEMVER, 'skip'), eq(parameters.FORCE_REPLACE, true)) }}:
     - stage: Prepare_artifact
 
       jobs:
@@ -161,7 +165,7 @@ stages:
   # Deploy
   # Always executed
   - stage: 'Deploy_to_${{ parameters.environment }}'
-    ${{ if or(ne(parameters.RELEASE_SEMVER, 'skip'), eq(parameters.FORCE_REPLACE_DOCKER_IMAGE, true)) }}:
+    ${{ if or(ne(parameters.RELEASE_SEMVER, 'skip'), eq(parameters.FORCE_REPLACE, true)) }}:
       dependsOn:
         - Prepare_artifact
     jobs:
