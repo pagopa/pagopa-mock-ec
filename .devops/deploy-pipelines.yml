@@ -88,22 +88,21 @@ stages:
   # Create a release
   # Only executed when RELEASE_SEMVER is not 'skip'
 
-  - stage: Release
-    condition: ne('${{ parameters.RELEASE_SEMVER }}', 'skip')
-
-    jobs:
-      - job: releaseService
-        steps:
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
-            parameters:
-              persistCredentials: true
-          - template: templates/node-github-release/template.yaml@pagopaCommons
-            parameters:
-              release_branch: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
-              semver: '${{ parameters.RELEASE_SEMVER }}'
-              gitEmail: '$(GIT_EMAIL)'
-              gitUsername: '$(GIT_USERNAME)'
-              gitHubConnection: '$(GITHUB_CONNECTION)'
+  - ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
+    - stage: Release
+      jobs:
+        - job: releaseService
+          steps:
+            - template: templates/node-job-setup/template.yaml@pagopaCommons
+              parameters:
+                persistCredentials: true
+            - template: templates/node-github-release/template.yaml@pagopaCommons
+              parameters:
+                release_branch: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
+                semver: '${{ parameters.RELEASE_SEMVER }}'
+                gitEmail: '$(GIT_EMAIL)'
+                gitUsername: '$(GIT_USERNAME)'
+                gitHubConnection: '$(GITHUB_CONNECTION)'
 
   # Prepare Artifact
   # Only executed when RELEASE_SEMVER is not 'skip'
