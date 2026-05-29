@@ -24,10 +24,13 @@ parameters:
     values:
 #      - staging_slot_and_swap
       - production_slot
-
-# Only manual activations are intended
-trigger: none
-pr: none
+  - name: "FORCE_REPLACE_DOCKER_IMAGE"
+    displayName: "Force the existing docker image to be replaced (latest tag)"
+    type: boolean
+    default: False
+    values:
+      - False
+      - True
 
 # variables set on azdevops to avoid circular dependency warning
 # $(DEFAULT_BRANCH)
@@ -40,6 +43,7 @@ variables:
     WEB_APP_RESOURCE_GROUP_NAME: $(DEV_WEB_APP_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(DEV_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_VNET: $(DEV_HEALTHCHECK_CONTAINER_VNET)
+
   ${{ if eq(parameters['environment'], 'uat') }}:
     AZURE_SUBSCRIPTION: $(UAT_AZURE_SUBSCRIPTION)
     WEB_APP_NAME: $(UAT_WEB_APP_NAME)
@@ -47,8 +51,18 @@ variables:
     HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME: $(UAT_HEALTHCHECK_CONTAINER_RESOURCE_GROUP_NAME)
     HEALTHCHECK_CONTAINER_VNET: $(UAT_HEALTHCHECK_CONTAINER_VNET)
 
+  ${{ if eq(variables['Build.SourceBranchName'], 'merge') }}:
+    SOURCE_BRANCH: "main" # force to main branch
+  ${{ if ne(variables['Build.SourceBranchName'], 'merge') }}:
+    SOURCE_BRANCH: ${{ variables['Build.SourceBranchName'] }}
+
+
+# Only manual activations are intended
+trigger: none
+pr: none
+
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-22.04'
 
 resources:
   repositories:
@@ -60,8 +74,7 @@ resources:
 
 stages:
   - stage: EchoDbg
-    pool:
-      vmImage: 'ubuntu-latest'
+
     jobs:
       - job: Print
         steps:
@@ -75,30 +88,74 @@ stages:
 
   # Create a release
   # Only executed when RELEASE_SEMVER is not 'skip'
-  - ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
-    - stage: Release
-      pool:
-        vmImage: 'ubuntu-latest'
-      jobs:
-        - job: make_release
-          steps:
-            - template: templates/node-job-setup/template.yaml@pagopaCommons
-              parameters:
-                persistCredentials: true
-            - template: templates/node-github-release/template.yaml@pagopaCommons
-              parameters:
-                release_branch: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
-                semver: '${{ parameters.RELEASE_SEMVER }}'
-                gitEmail: '$(GIT_EMAIL)'
-                gitUsername: '$(GIT_USERNAME)'
-                gitHubConnection: '$(GITHUB_CONNECTION)'
+
+  - stage: Release
+    condition: ne('${{ parameters.SEMVER }}', 'skip')
+
+    jobs:
+      - job: releaseService
+        steps:
+          - checkout: self
+            clean: true
+            persistCredentials: true
+
+          - script: |
+              git checkout $(SOURCE_BRANCH)
+
+          - script: |
+              git config --global user.name "$(GIT_USERNAME)"
+              git config --global user.email "$(GIT_EMAIL)"
+            displayName: Set Git global config
+          - template: azure-templates/maven-versioning.yml
+            parameters:
+              semver: "${{ parameters.SEMVER }}"
+
+          - task: Bash@3
+            name: pomversion
+            inputs:
+              targetType: "inline"
+              script: |
+                version=$(mvn -f pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
+                echo "##vso[task.setvariable variable=next;isOutput=true]$version"
+              failOnStderr: true
+
+          - script: |
+              git add pom.xml
+              git commit -m "Bump version [skip ci]"
+              git push origin $(SOURCE_BRANCH)
+
+
+          - script: |
+              HEAD_SHA=$(git rev-parse HEAD)
+              TAG="$(pomversion.next)"
+              TITLE="Release $(pomversion.next)"
+              echo "##vso[task.setvariable variable=title]$TITLE"
+              echo "##vso[task.setvariable variable=sha]$HEAD_SHA"
+              echo "##vso[task.setvariable variable=tag]$TAG"
+            displayName: Setting vars
+          - script: |
+              echo $(tag)
+              echo $(title)
+              echo $(sha)
+            displayName: Debug step
+
+          # create new release
+          - task: GitHubRelease@0
+            inputs:
+              gitHubConnection: $(GITHUB_CONNECTION)
+              repositoryName: $(Build.Repository.Name)
+              action: create
+              target: $(sha)
+              tagSource: manual
+              tag: $(tag)
+              title: $(title)
+              addChangelog: true
 
   # Prepare Artifact
   # Only executed when RELEASE_SEMVER is not 'skip'
-  - ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
+  - ${{ if ne(parameters.RELEASE_SEMVER, 'skip') or (eq(parameters.RELEASE_SEMVER, 'skip') and (parameters.FORCE_REPLACE_DOCKER_IMAGE, True)) }}:
     - stage: Prepare_artifact
-      dependsOn:
-        - Release
+
       jobs:
         - job: 'prepare_artifact'
           steps:
@@ -151,7 +208,7 @@ stages:
   # Deploy
   # Always executed
   - stage: 'Deploy_to_${{ parameters.environment }}'
-    ${{ if ne(parameters.RELEASE_SEMVER, 'skip') }}:
+    ${{ if ne(parameters.RELEASE_SEMVER, 'skip') or (eq(parameters.RELEASE_SEMVER, 'skip') and (parameters.FORCE_REPLACE_DOCKER_IMAGE, True)) }}:
       dependsOn:
         - Prepare_artifact
     jobs:
