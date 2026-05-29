@@ -107,7 +107,7 @@ stages:
 
   # Prepare Artifact
   # Only executed when RELEASE_SEMVER is not 'skip'
-  - ${{ if ne(parameters.RELEASE_SEMVER, 'skip') or (eq(parameters.RELEASE_SEMVER, 'skip') and (parameters.FORCE_REPLACE_DOCKER_IMAGE, True)) }}:
+  - ${{ if or(ne(parameters.RELEASE_SEMVER, 'skip'), eq(parameters.FORCE_REPLACE_DOCKER_IMAGE, true)) }}:
     - stage: Prepare_artifact
 
       jobs:
@@ -162,7 +162,7 @@ stages:
   # Deploy
   # Always executed
   - stage: 'Deploy_to_${{ parameters.environment }}'
-    ${{ if ne(parameters.RELEASE_SEMVER, 'skip') or (eq(parameters.RELEASE_SEMVER, 'skip') and (parameters.FORCE_REPLACE_DOCKER_IMAGE, True)) }}:
+    ${{ if or(ne(parameters.RELEASE_SEMVER, 'skip'), eq(parameters.FORCE_REPLACE_DOCKER_IMAGE, true)) }}:
       dependsOn:
         - Prepare_artifact
     jobs:
