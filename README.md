@@ -241,23 +241,23 @@ The tribute is 120.00 € divided in 2 transfers:
 
 The tribute is 999999999.99 €:
 
-| Notice number        | CC Comune di Milano | CC Comune di Milano |
-|----------------------|---------------------|---------------------|
-| 302**25**xxxxxxxxxxx | CCPost              | CCBank              |
+| Notice number        |  CC EC_TE            |
+|----------------------|----------------------|
+| 302**25**xxxxxxxxxxx |  CCBank              |
 
 ### Tribute 17
 
 The amount of the tribute is 3000€ later actualized as 3010€ on activation.
-| Notice number        | CC Comune di Milano |
+| Notice number        | CC EC_TE |
 |----------------------|---------------------|
 | 302**26**xxxxxxxxxxx | CCBank              |
 
 ### Tribute 18
-Same as Tribute 10, but with the digital stamp (`richiestaMarcaDaBollo`) informations.
+Tribute with the digital stamp (`richiestaMarcaDaBollo`) informations.
 
 The tribute is 120.00 € divided in 2 transfers:
-- Transfer 1 : 0101101IM, 100.00€ due to **EC_TE**
-- Transfer 2 : 0201102IM, 20.00€ due to **EC_TE**
+- Transfer 1 : 0101101IM, 100.00€ due to **Comune di Milano**
+- Transfer 2 : 0201102IM, 20.00€ due to **Comune di Milano**
 
 | Notice number        | CC Comune di Milano | CC Comune di Milano |
 |----------------------|---------------------|---------------------|
@@ -369,3 +369,31 @@ if all rights you'd see something like that 👍
 ```
 
 </details> -->
+
+## Testing
+
+To run the test collection using [Newman](https://github.com/postmanlabs/newman), use the following command:
+
+```sh
+newman run pagopa-mock-ec.postman_collection.json -e pagopa-mock-ec.<ENV>.postman_environment.json
+```
+
+Where `<ENV>` can be:
+
+| ENV     | Description       |
+| ------- | ----------------- |
+| `LOCAL` | Local environment |
+| `DEV`   | Development       |
+| `UAT`   | UAT               |
+
+### Example
+
+```sh
+# Local
+newman run pagopa-mock-ec.postman_collection.json -e pagopa-mock-ec.LOCAL.postman_environment.json
+
+# DEV
+newman run pagopa-mock-ec.postman_collection.json -e pagopa-mock-ec.DEV.postman_environment.json
+```
+
+> **NOTE**: Make sure Newman is installed: `npm install -g newman`
