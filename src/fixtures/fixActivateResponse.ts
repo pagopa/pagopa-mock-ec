@@ -81,8 +81,11 @@ const buildTransfer = (t: ITransfer): string => `
 ];
 
 
-export const paActivate = (params: IActivateRequest): MockResponse => [
-  200,
+export const paActivate = (params: IActivateRequest): MockResponse => {
+  const body = (params as any)['soapenv:envelope']['soapenv:body'][0];
+  const noticenumber = body['pafn:pagetpaymentreq'][0]['qrcode'][0]['noticenumber'][0];
+  const creditorReferenceId = noticenumber.substring(1);
+  return [200,
   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
 xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
 <soapenv:Header />
@@ -90,7 +93,7 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
     <paf:paGetPaymentRes>
         <outcome>OK</outcome>
         <data>
-            <creditorReferenceId>${escape(params.creditorReferenceId ??  "0200000000001") }</creditorReferenceId>
+            <creditorReferenceId>${escape(creditorReferenceId ?? "0200000000001")}</creditorReferenceId>
             <paymentAmount>${params.amount ?? "120.00"}</paymentAmount>
             <dueDate>${escape(params.dueDate?? "2021-07-31") }</dueDate>
             <description>${escape(params.description ?? "TARI/TEFA 2021") }</description>
@@ -117,7 +120,8 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
     </paf:paGetPaymentRes>
 </soapenv:Body>
 </soapenv:Envelope>`,
-];
+]
+}
 
 interface AvvisoConfig {  
   creditorReferenceId  ?:string;
