@@ -1,6 +1,6 @@
 {
   "name": "io-pagopa-node-mock",
-  "version": "1.6.19",
+  "version": "1.6.19-1-PIDM-1127-bug-cf-ec-transfer",
   "description": "TODO",
   "repository": "https://github.com/pagopa/io-pagopa-node-mock.git",
   "author": "https://pagopa.it",

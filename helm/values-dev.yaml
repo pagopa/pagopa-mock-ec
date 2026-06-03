@@ -7,7 +7,7 @@ microservice-chart: &microservice-chart
   image:
     #    repository: pagopadcommonacr.azurecr.io/pagopamockec
     repository: ghcr.io/pagopa/pagopa-mock-ec
-    tag: "1.6.17"
+    tag: "1.6.19-1-PIDM-1127-bug-cf-ec-transfer"
     pullPolicy: Always
   readinessProbe:
     handlerType: tcpSocket
