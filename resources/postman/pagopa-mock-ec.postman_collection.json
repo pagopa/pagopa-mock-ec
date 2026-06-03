@@ -4429,7 +4429,7 @@
                       "    pm.expect(t2.remittanceInformation, \"remittanceInformation transfer 2\").to.include(\"CCBank\");\r",
                       "});\r",
                       "\r",
-                      "pm.test(\"transfer 3 – CCPost e remittanceInformation corretta\", () => {\r",
+                      "pm.test(\"transfer 3 – CCpost e remittanceInformation corretta\", () => {\r",
                       "    const j    = xml2Json(pm.response.text());\r",
                       "    const body = j[\"soapenv:Envelope\"]?.[\"soapenv:Body\"] || {};\r",
                       "    const res  =\r",
