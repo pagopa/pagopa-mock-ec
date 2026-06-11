@@ -208,8 +208,6 @@ export async function newExpressApp(
       const body = envelope?.['soapenv:Body'] ||  envelope?.['soapenv:body'];
 
       const soapRequest = Array.isArray(body) ? body[0] : body;
-
-      logger.info("soapRequest  =",soapRequest);
      
       //  1. paVerifyPaymentNotice     
       //  2. paGetPayment
