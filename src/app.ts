@@ -203,7 +203,11 @@ export async function newExpressApp(
     logger.info(JSON.stringify(req.body));
     try {
 
-      const soapRequest = req.body['soapenv:envelope']['soapenv:body'][0];
+      const envelope = req.body['soapenv:Envelope'] ||  req.body['soapenv:envelope'];
+
+      const body = envelope?.['soapenv:Body'] ||  envelope?.['soapenv:body'];
+
+      const soapRequest = Array.isArray(body) ? body[0] : body;
      
       //  1. paVerifyPaymentNotice     
       //  2. paGetPayment

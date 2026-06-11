@@ -23,7 +23,7 @@ const createActivateV2Response = (
   paActivateV1Fn: (params: { creditorReferenceId: string; ec: IECConfig }) => MockResponse
 ) => {
   return (params: IActivateRequestV2): MockResponse => {
-    const creditorReferenceId = escapeHtml(params.creditorReferenceId ?? '');
+    const creditorReferenceId = (params.creditorReferenceId ?? '');
     const paActivateV1res = paActivateV1Fn({
       creditorReferenceId,
       ec: params.ec
@@ -31,7 +31,7 @@ const createActivateV2Response = (
 
     return [
       paActivateV1res[0],
-      paActivateV1res[1].replace('paGetPaymentRes', 'paGetPaymentV2Response')
+      paActivateV1res[1]
     ];
   };
 };
