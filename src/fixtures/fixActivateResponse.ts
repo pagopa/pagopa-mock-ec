@@ -79,14 +79,9 @@ const DEFAULT_TRANSFERS: ITransfer[] = [
 
 
 export const paActivate = (params: IActivateRequest): MockResponse => {
-
-  console.log("params", params);
-
   const v2Creditor = (params as any).creditorReferenceId;
 
   if (v2Creditor) {
-    console.log("RESP V2", buildPaGetPaymentResponse(params, v2Creditor,"paGetPaymentV2Response"));
-
     return buildPaGetPaymentResponse(params, v2Creditor,"paGetPaymentV2Response");
   }
   
