@@ -7,7 +7,7 @@ microservice-chart: &microservice-chart
   image:
     #    repository: pagopadcommonacr.azurecr.io/pagopamockec
     repository: ghcr.io/pagopa/pagopa-mock-ec
-    tag: "1.7.0-1-PIDM-2093-fix-error-ressponse-avviso-04"
+    tag: "1.7.1"
     pullPolicy: Always
   readinessProbe:
     handlerType: tcpSocket

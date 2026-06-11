@@ -2,8 +2,8 @@ apiVersion: v2
 name: mock-ec-chart
 description: Mock EC
 type: application
-version: 0.25.0
-appVersion: 1.7.0-1-PIDM-2093-fix-error-ressponse-avviso-04
+version: 0.26.0
+appVersion: 1.7.1
 dependencies:
   - name: microservice-chart
     version: 8.4.1
