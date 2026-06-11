@@ -1,6 +1,6 @@
 {
   "name": "io-pagopa-node-mock",
-  "version": "1.6.19-2-PIDM-1127-bug-cf-ec-transfer",
+  "version": "1.6.19-3-PIDM-2093-fix-error-iban-e-responseV2",
   "description": "TODO",
   "repository": "https://github.com/pagopa/io-pagopa-node-mock.git",
   "author": "https://pagopa.it",

@@ -7,7 +7,7 @@ microservice-chart: &microservice-chart
   image:
     #    repository: pagopadcommonacr.azurecr.io/pagopamockec
     repository: ghcr.io/pagopa/pagopa-mock-ec
-    tag: "1.6.19-2-PIDM-1127-bug-cf-ec-transfer"
+    tag: "1.6.19-3-PIDM-2093-fix-error-iban-e-responseV2"
     pullPolicy: Always
   readinessProbe:
     handlerType: tcpSocket
