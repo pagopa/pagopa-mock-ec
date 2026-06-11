@@ -215,7 +215,7 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
     '04': {  
         amount:"100.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
       ], },
     '05': {  
         amount:"100.00",
