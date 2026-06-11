@@ -389,11 +389,14 @@ Where `<ENV>` can be:
 ### Example
 
 ```sh
-# Local
+# LOCAL
 newman run pagopa-mock-ec.postman_collection.json -e pagopa-mock-ec.LOCAL.postman_environment.json
 
 # DEV
 newman run pagopa-mock-ec.postman_collection.json -e pagopa-mock-ec.DEV.postman_environment.json
+
+# UAT
+newman run pagopa-mock-ec.postman_collection.json -e pagopa-mock-ec.UAT.postman_environment.json
 ```
 
 > **NOTE**: Make sure Newman is installed: `npm install -g newman`

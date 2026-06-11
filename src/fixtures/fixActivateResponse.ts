@@ -52,76 +52,120 @@ export interface IActivateRequest {
 
 const escape = (v?: string) => escapeHtml(v ?? '');
 
-const buildTransfer = (t: ITransfer): string => `
-    <transfer>
-        <idTransfer>${t.idTransfer}</idTransfer>
-        <transferAmount>${escape(t.transferAmount)}</transferAmount>
-        <fiscalCodePA>${escape(t.fiscalCodePA ?? '77777777777')}</fiscalCodePA>
+const buildTransfer = (t: ITransfer): string => {
+  const xml = [`<transfer>`,
+    `  <idTransfer>${t.idTransfer}</idTransfer>`,
+    `  <transferAmount>${escape(t.transferAmount)}</transferAmount>`,
+    `  <fiscalCodePA>${escape(t.fiscalCodePA ?? '77777777777')}</fiscalCodePA>`,
+    t.iban ? `  <IBAN>${escape(t.iban)}</IBAN>` : null,
+    t.richiestaMarcaDaBollo 
+    ? `<richiestaMarcaDaBollo>
+        <hashDocumento>${escape(t.richiestaMarcaDaBollo.hashDocumento)}</hashDocumento>
+        <tipoBollo>${escape(t.richiestaMarcaDaBollo.tipoBollo)}</tipoBollo>
+        <provinciaResidenza>${escape(t.richiestaMarcaDaBollo.provinciaResidenza)}</provinciaResidenza>
+       </richiestaMarcaDaBollo>` : null,
+    `  <remittanceInformation>${escape(t.remittanceInformation ?? 'remittance information')}</remittanceInformation>`,
+    `  <transferCategory>${escape(t.transferCategory ?? '0101101IM')}</transferCategory>`,
+    `</transfer>`
+  ];
 
-        ${t.iban ? `<IBAN>${escape(t.iban)}</IBAN>` : ''}
+  return xml.filter(Boolean).join('\n');
+};
 
-        ${
-          t.richiestaMarcaDaBollo
-            ? `
-        <richiestaMarcaDaBollo>
-            <hashDocumento>${escape(t.richiestaMarcaDaBollo.hashDocumento)}</hashDocumento>
-            <tipoBollo>${escape(t.richiestaMarcaDaBollo.tipoBollo)}</tipoBollo>
-            <provinciaResidenza>${escape(t.richiestaMarcaDaBollo.provinciaResidenza)}</provinciaResidenza>
-        </richiestaMarcaDaBollo>
-        `
-            : ''
-        }
-
-        <remittanceInformation>${escape(t.remittanceInformation ?? 'remittance information')}</remittanceInformation>
-        <transferCategory>${escape(t.transferCategory ?? '0101101IM')}</transferCategory>
-    </transfer>`;
-    const DEFAULT_TRANSFERS: ITransfer[] = [
+const DEFAULT_TRANSFERS: ITransfer[] = [
   { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "", iban: '...' },
   { idTransfer: 2, transferAmount: '20.00', fiscalCodePA: "", iban: '...' },
 ];
 
 
 export const paActivate = (params: IActivateRequest): MockResponse => {
-  const body = (params as any)['soapenv:envelope']['soapenv:body'][0];
-  const noticenumber = body['pafn:pagetpaymentreq'][0]['qrcode'][0]['noticenumber'][0];
+
+  console.log("params", params);
+
+  const v2Creditor = (params as any).creditorReferenceId;
+
+  if (v2Creditor) {
+    console.log("RESP V2", buildPaGetPaymentResponse(params, v2Creditor,"paGetPaymentV2Response"));
+
+    return buildPaGetPaymentResponse(params, v2Creditor,"paGetPaymentV2Response");
+  }
+  
+  const envelope =
+    (params as any)['soapenv:envelope'] ||
+    (params as any)['soapenv:Envelope'];
+
+  const bodyRaw =
+    envelope?.['soapenv:body'] ||
+    envelope?.['soapenv:Body'];
+
+  const body = Array.isArray(bodyRaw) ? bodyRaw[0] : bodyRaw;
+
+  const req =
+  body?.['pafn:paGetPaymentRequest']?.[0] ||
+  body?.['pafn:paGetPaymentV2Request']?.[0] ||
+  body?.['pafn:pagetpaymentreq']?.[0] ||   
+  body?.['pafn:pagetpaymentv2request']?.[0];
+
+  if (!req) {
+    throw new Error("Missing SOAP request (paGetPayment / V2)");
+  }
+
+  const qrCode = req?.qrcode?.[0] ?? req?.qrCode?.[0] ?? {};
+
+  const noticenumber =
+    qrCode?.noticenumber?.[0] ??
+    qrCode?.noticeNumber?.[0];
+
+  if (!noticenumber) {
+    throw new Error("Missing noticeNumber (SOAP)");
+  }  
+
   const creditorReferenceId = noticenumber.substring(1);
-  return [200,
-  `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+
+  return buildPaGetPaymentResponse(params, creditorReferenceId,"paGetPaymentRes");
+};
+
+const buildPaGetPaymentResponse = (
+  params: IActivateRequest,
+  creditorReferenceId: string,
+  res:string
+): MockResponse => {
+  return [
+    200,
+    `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
 xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
 <soapenv:Header />
 <soapenv:Body>
-    <paf:paGetPaymentRes>
+    <paf:${res}>
         <outcome>OK</outcome>
         <data>
             <creditorReferenceId>${escape(creditorReferenceId ?? "0200000000001")}</creditorReferenceId>
             <paymentAmount>${params.amount ?? "120.00"}</paymentAmount>
-            <dueDate>${escape(params.dueDate?? "2021-07-31") }</dueDate>
-            <description>${escape(params.description ?? "TARI/TEFA 2021") }</description>
-            <companyName>${escape(params.companyName ?? "company PA") }</companyName>
-            <officeName>${escape(params.officeName ?? "office PA") }</officeName>
+            <dueDate>${escape(params.dueDate ?? "2021-07-31")}</dueDate>
+            <description>${escape(params.description ?? "TARI/TEFA 2021")}</description>
+            <companyName>${escape(params.companyName ?? "company PA")}</companyName>
+            <officeName>${escape(params.officeName ?? "office PA")}</officeName>
             <debtor>
                 <uniqueIdentifier>
-                    <entityUniqueIdentifierType>${escape(params.entityUniqueIdentifierType ?? "F") }</entityUniqueIdentifierType>
-                    <entityUniqueIdentifierValue>${escape(params.entityUniqueIdentifierValue ??  "JHNDOE00A01F205N") }</entityUniqueIdentifierValue>
+                    <entityUniqueIdentifierType>${escape(params.entityUniqueIdentifierType ?? "F")}</entityUniqueIdentifierType>
+                    <entityUniqueIdentifierValue>${escape(params.entityUniqueIdentifierValue ?? "JHNDOE00A01F205N")}</entityUniqueIdentifierValue>
                 </uniqueIdentifier>
-                <fullName>${escape(params.fullName ?? "John Doe") }</fullName>
-                <streetName>${escape(params.streetName ?? "street") }</streetName>
-                <civicNumber>${escape(params.civicNumber ?? "12") }</civicNumber>
-                <postalCode>${escape(params.postalCode ?? "89020") }</postalCode>
-                <city>${escape(params.city ?? "city") }</city>
-                <stateProvinceRegion>${escape(params.stateProvinceRegion ?? "MI") }</stateProvinceRegion>
-                <country>${escape(params.country ?? "IT") }</country>
-                <e-mail>${escape(params.email ?? "john.doe@test.it") }</e-mail>
+                <fullName>${escape(params.fullName ?? "John Doe")}</fullName>
+                <streetName>${escape(params.streetName ?? "street")}</streetName>
+                <civicNumber>${escape(params.civicNumber ?? "12")}</civicNumber>
+                <postalCode>${escape(params.postalCode ?? "89020")}</postalCode>
+                <city>${escape(params.city ?? "city")}</city>
+                <stateProvinceRegion>${escape(params.stateProvinceRegion ?? "MI")}</stateProvinceRegion>
+                <country>${escape(params.country ?? "IT")}</country>
+                <e-mail>${escape(params.email ?? "john.doe@test.it")}</e-mail>
             </debtor>
-           
             <transferList>${(params.transfers ?? DEFAULT_TRANSFERS).map(buildTransfer).join('')}</transferList>
-            
         </data>
-    </paf:paGetPaymentRes>
+    </paf:${res}>
 </soapenv:Body>
-</soapenv:Envelope>`,
-]
-}
+</soapenv:Envelope>`
+  ];
+};
 
 interface AvvisoConfig {  
   creditorReferenceId  ?:string;
@@ -159,19 +203,19 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
         amount:"120.00",
         transfers: [
         { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
-        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "01199250158", iban:ec.CCPostSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
+        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "01199250158", iban:ec.CCBankPrimaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
       ], },
     '02': {  
         amount:"120.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
-        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "01199250158", iban:ec.CCPostSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCPost", transferCategory:"0201102IM"},
+        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
+        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "01199250158", iban:ec.CCPostPrimaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCPost", transferCategory:"0201102IM"},
       ], },
     '03': {  
         amount:"120.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
-        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "01199250158", iban:ec.CCPostSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
+        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
+        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "01199250158", iban:ec.CCBankPrimaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
       ], },
     '04': {  
         amount:"100.00",
@@ -227,7 +271,7 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
         amount:"0.30",
         transfers: [
         { idTransfer: 1, transferAmount: '0.10', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
-        { idTransfer: 2, transferAmount: '0.20',  fiscalCodePA: "01199250158", iban:ec.CCPostSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
+        { idTransfer: 2, transferAmount: '0.20',  fiscalCodePA: "01199250158", iban:ec.CCBankPrimaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
       ], },
     '14': {  
         amount:"120.00",
@@ -330,7 +374,7 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
       amount: "120.00",
       transfers: [
         { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "01199250158", iban: ec.CCPostPrimaryEC, remittanceInformation:"Comune Milano su bollettino  CCPost",transferCategory:"0101101IM"},
-        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "01199250158",richiestaMarcaDaBollo: {hashDocumento: 'QUJDRA==', tipoBollo: '01', provinciaResidenza: 'RM'} , remittanceInformation:"Comune Milano su bollettino  CCBank", transferCategory:"0201102IM"},    
+        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "01199250158",iban: ec.CCBankPrimaryEC,richiestaMarcaDaBollo: {hashDocumento: 'QUJDRA==', tipoBollo: '01', provinciaResidenza: 'RM'} , remittanceInformation:"Comune Milano su bollettino  CCBank", transferCategory:"0201102IM"},    
    
       ],
     },
