@@ -143,16 +143,16 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
             <debtor>
                 <uniqueIdentifier>
                     <entityUniqueIdentifierType>${escape(params.entityUniqueIdentifierType ?? "F")}</entityUniqueIdentifierType>
-                    <entityUniqueIdentifierValue>${escape(params.entityUniqueIdentifierValue ?? "JHNDOE00A01F205N")}</entityUniqueIdentifierValue>
+                    <entityUniqueIdentifierValue>${escape(params.entityUniqueIdentifierValue ?? "RCCGLD63D14H501F")}</entityUniqueIdentifierValue>
                 </uniqueIdentifier>
-                <fullName>${escape(params.fullName ?? "John Doe")}</fullName>
-                <streetName>${escape(params.streetName ?? "street")}</streetName>
-                <civicNumber>${escape(params.civicNumber ?? "12")}</civicNumber>
-                <postalCode>${escape(params.postalCode ?? "89020")}</postalCode>
-                <city>${escape(params.city ?? "city")}</city>
-                <stateProvinceRegion>${escape(params.stateProvinceRegion ?? "MI")}</stateProvinceRegion>
+                <fullName>${escape(params.fullName ?? "Riccitelli Gesualdo")}</fullName>
+                <streetName>${escape(params.streetName ?? "stradina Via")}</streetName>
+                <civicNumber>${escape(params.civicNumber ?? "2")}</civicNumber>
+                <postalCode>${escape(params.postalCode ?? "54321")}</postalCode>
+                <city>${escape(params.city ?? "borgo")}</city>
+                <stateProvinceRegion>${escape(params.stateProvinceRegion ?? "provincia regione")}</stateProvinceRegion>
                 <country>${escape(params.country ?? "IT")}</country>
-                <e-mail>${escape(params.email ?? "john.doe@test.it")}</e-mail>
+                <e-mail>${escape(params.email ?? "mail@mail.it")}</e-mail>
             </debtor>
             <transferList>${(params.transfers ?? DEFAULT_TRANSFERS).map(buildTransfer).join('')}</transferList>
         </data>
@@ -260,7 +260,7 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
         amount:"6000.00",
         transfers: [
         { idTransfer: 1, transferAmount: '4000.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
-        { idTransfer: 2, transferAmount: '2000.00',  fiscalCodePA: "01199250158", iban:ec.CCBankPrimaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
+        { idTransfer: 2, transferAmount: '2000.00',  fiscalCodePA: "01199250158", iban:ec.CCBankSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
       ], },
     '13': {  
         amount:"0.30",
