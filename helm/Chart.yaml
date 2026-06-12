@@ -3,7 +3,7 @@ name: mock-ec-chart
 description: Mock EC
 type: application
 version: 0.29.0
-appVersion: 1.7.6-1-PIDM-2093-test-refactoring
+appVersion: 1.7.7
 dependencies:
   - name: microservice-chart
     version: 8.4.1
