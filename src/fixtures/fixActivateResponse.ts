@@ -146,7 +146,7 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
                     <entityUniqueIdentifierValue>${escape(params.entityUniqueIdentifierValue ?? "RCCGLD63D14H501F")}</entityUniqueIdentifierValue>
                 </uniqueIdentifier>
                 <fullName>${escape(params.fullName ?? "Riccitelli Gesualdo")}</fullName>
-                <streetName>${escape(params.streetName ?? "stradina Via")}</streetName>
+                <streetName>${escape(params.streetName ?? "Stradina Via")}</streetName>
                 <civicNumber>${escape(params.civicNumber ?? "2")}</civicNumber>
                 <postalCode>${escape(params.postalCode ?? "54321")}</postalCode>
                 <city>${escape(params.city ?? "borgo")}</city>
