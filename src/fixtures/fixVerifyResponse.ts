@@ -260,7 +260,7 @@ const buildPaVerify = (opts: PaVerifyOptions = {}): PaVerifyResult => {
   const options: Required<PaVerifyOptions> = {
     allCCP: opts.allCCP ?? true,
     amount: opts.amount ?? '120.00',
-    dueDate: opts.dueDate ?? '2030-07-31',
+    dueDate: opts.dueDate ?? '2021-07-31',
     companyName: opts.companyName ?? 'companyName',
   };
 
@@ -295,7 +295,7 @@ const paActivatePagamentoDuplicato = (opts: PaVerifyOptions = {}): PaVerifyResul
   const options: Required<PaVerifyOptions> = {
     allCCP: opts.allCCP ?? true,
     amount: opts.amount ?? '120.00',
-    dueDate: opts.dueDate ?? '2030-07-31',
+    dueDate: opts.dueDate ?? '2021-07-31',
     companyName: opts.companyName ?? 'companyName',
   };
 
