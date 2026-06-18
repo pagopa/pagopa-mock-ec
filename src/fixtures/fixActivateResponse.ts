@@ -353,9 +353,9 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
     },
     // avviso25: importo massimo
     '25': {
-      amount: "999999999.99",
+      amount: "999999900.00",
       transfers: [
-        { idTransfer: 1, transferAmount: '999999999.99', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC,remittanceInformation:"EC_TE su bollettino CCBank",  },
+        { idTransfer: 1, transferAmount: '999999900.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC,remittanceInformation:"EC_TE su bollettino CCBank",  },
       ],
     },
     // avviso26: importo 3010
