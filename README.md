@@ -239,7 +239,7 @@ The tribute is 120.00 € divided in 2 transfers:
 
 ### Tribute 16
 
-The tribute is 999999999.99 €:
+The tribute is 999999900.00 €:
 
 | Notice number        |  CC EC_TE            |
 |----------------------|----------------------|
