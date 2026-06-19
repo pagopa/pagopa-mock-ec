@@ -25,6 +25,51 @@ const paaChiediNumeroAvvisoreq = 'ppt:paachiedinumeroavviso';
 const paGetPaymentV2req = 'pafn:pagetpaymentv2request';
 const paSendRTV2req = 'pafn:pasendrtv2request';
 
+const paVerifyPaymentNoticeQueue = new Array<string>();
+const paGetPaymentQueue = new Array<string>();
+const paSendRTQueue = new Array<string>();
+const pspNotifyPaymentQueue = new Array<string>();
+const paaVerificaRPTQueue = new Array<string>();
+const paAttivaRPTQueue = new Array<string>();
+const paInviaRTQueue = new Array<string>();
+const paDemandPaymentNoticeQueue = new Array<string>();
+const paChiediNumeroAvvisoQueue = new Array<string>();
+const paGetPaymentV2Queue = new Array<string>();
+const paSendRTV2Queue = new Array<string>();
+
+const queueMap: Record<string, Array<string>> = {
+  paVerifyPaymentNotice: paVerifyPaymentNoticeQueue,
+  paGetPayment:          paGetPaymentQueue,
+  paSendRT:              paSendRTQueue,
+  pspNotifyPayment:      pspNotifyPaymentQueue,
+  paaVerificaRPT:        paaVerificaRPTQueue,
+  paaAttivaRPT:          paAttivaRPTQueue,
+  paaInviaRT:            paInviaRTQueue,
+  paDemandPaymentNotice: paDemandPaymentNoticeQueue,
+  paaChiediNumeroAvviso: paChiediNumeroAvvisoQueue,
+  paGetPaymentV2:        paGetPaymentV2Queue,
+  paSendRTV2:            paSendRTV2Queue,
+};
+
+export function pushToQueue(primitive: string, body: string, override: boolean): string {
+    if (!Object.prototype.hasOwnProperty.call(queueMap, primitive)) {
+        return `unknown ${primitive}`;
+    }
+    const queue = queueMap[primitive];
+
+    if (override) {
+        if (queue.length > 0) {
+        queue.pop();
+        }
+        queue.push(body);
+        return `${primitive} updated`;
+    }
+
+    queue.push(body);
+    return `${primitive} saved. ${queue.length} pushed`;
+}
+
+
 export const dispatchSoapRequest = async (
   config: Configuration,
   soapRequest: any,
@@ -34,22 +79,8 @@ export const dispatchSoapRequest = async (
   db:  Map<string, POSITIONS_STATUS>,
   noticenumberRequests: Map<string, JSON>,
   noticenumberResponses: Map<string, JSON>,
-): Promise<void> => {
-
-    const paVerifyPaymentNoticeQueue = new Array<string>();
-    const paGetPaymentQueue = new Array<string>();
-    const paSendRTQueue = new Array<string>();
-    const pspNotifyPaymentQueue = new Array<string>();
-    const paaVerificaRPTQueue = new Array<string>();
-    const paAttivaRPTQueue = new Array<string>();
-    const paInviaRTQueue = new Array<string>();
-    const paDemandPaymentNoticeQueue = new Array<string>();
-    const paChiediNumeroAvvisoQueue = new Array<string>();
-    const paGetPaymentV2Queue = new Array<string>();
-    const paSendRTV2Queue = new Array<string>();
-  
-    console.log("CALL  dispatchSoapRequest");
-  
+): Promise<void> => {  
+    console.log("CALL  dispatchSoapRequest");  
     if (
         !(
           soapRequest[sentReceipt] ||
@@ -128,3 +159,18 @@ export function ritorno(res: any, customResponse: string | undefined) {
       .status(customResponse && customResponse.trim() === '<response>error</response>' ? 500 : 200)
       .send(customResponse);
   }
+
+export function clearQueue(primitive?: string): string {
+  if (primitive) {
+    if (!Object.prototype.hasOwnProperty.call(queueMap, primitive)) {
+       return `unknown ${primitive}`;
+    }
+    const queue = queueMap[primitive];
+    queue.length = 0;
+    return `${primitive} queue cleared`;
+  } else {
+    // svuota tutte
+    Object.values(queueMap).forEach(q => q.length = 0);
+    return 'all queues cleared';
+  }
+}
