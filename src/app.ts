@@ -15,20 +15,8 @@ import {
   POSITIONS_STATUS,
 } from './utils/helper';
 
-import { dispatchSoapRequest } from './handlers/dispatcher';
+import { clearQueue, dispatchSoapRequest, pushToQueue } from './handlers/dispatcher';
 import { logger } from './utils/logger';
-
-const paVerifyPaymentNoticeQueue = new Array<string>();
-const paGetPaymentQueue = new Array<string>();
-const paSendRTQueue = new Array<string>();
-const pspNotifyPaymentQueue = new Array<string>();
-const paaVerificaRPTQueue = new Array<string>();
-const paaAttivaRPTQueue = new Array<string>();
-const paaInviaRTQueue = new Array<string>();
-const paDemandPaymentNoticeQueue = new Array<string>();
-const paaChiediNumeroAvvisoQueue = new Array<string>();
-const paGetPaymentV2Queue = new Array<string>();
-const paSendRTV2Queue = new Array<string>();
 
 // tslint:disable-next-line: no-big-function
 export async function newExpressApp(
@@ -39,10 +27,6 @@ export async function newExpressApp(
   noticenumberResponses: Map<string, JSON>,
 ): Promise<Express.Application> {
   // config params...
- 
-  
-
-
   const testDebug = config.PA_MOCK.TEST_DEBUG;
 
   // app
@@ -57,11 +41,8 @@ export async function newExpressApp(
     app.use(requireClientCertificateFingerprint(clientCertificateFingerprint));
   }
 
-
-
   /* tslint:disable:immutable-data */
   app.use(bodyParser.json({ verify: (req, res, buf) => (req.rawBody = buf) }));
-
   app.use(express.json());
   app.use(express.urlencoded());
   app.use(bodyParserXml({}));
@@ -70,6 +51,12 @@ export async function newExpressApp(
 
   // health check
   app.get(`${config.PA_MOCK.ROUTES.PPT_NODO}/info`, async (_, res) => res.status(200).send({ status: 'iamalive' }));
+
+  // Svuota una coda specifica o tutte
+  app.delete(`${config.PA_MOCK.ROUTES.PPT_NODO}/response/:primitive?`, async (req, res) => {
+    const result = clearQueue(req.params.primitive);
+    res.status(200).send(result);
+  });
 
   // return history of requests and responses
   app.get(`${config.PA_MOCK.ROUTES.PPT_NODO}/history/:noticenumber/:primitive`, async (req, res) => {
@@ -86,110 +73,15 @@ export async function newExpressApp(
     }
   });
 
-  // save custom response
-  // eslint-disable-next-line complexity
+  
   app.post(`${config.PA_MOCK.ROUTES.PPT_NODO}/response/:primitive`, async (req, res) => {
-    if (req.params.primitive === 'paVerifyPaymentNotice') {
-      if (String(req.query.override).toLowerCase() === 'true') {
-        paVerifyPaymentNoticeQueue.pop();
-        paVerifyPaymentNoticeQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);
-      } else {
-        paVerifyPaymentNoticeQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${paVerifyPaymentNoticeQueue.length} pushed`);
-      }
-    } else if (req.params.primitive === 'paGetPayment') {
-      if (String(req.query.override).toLowerCase() === 'true') {
-        paGetPaymentQueue.pop();
-        paGetPaymentQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);
-      } else {
-        paGetPaymentQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${paGetPaymentQueue.length} pushed`);
-      }
-    } else if (req.params.primitive === 'paSendRT') {
-      if (String(req.query.override).toLowerCase() === 'true') {
-        paSendRTQueue.pop();
-        paSendRTQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);
-      } else {
-        paSendRTQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${paSendRTQueue.length} pushed`);
-      }
-    } else if (req.params.primitive === 'paaVerificaRPT') {
-      if (String(req.query.override).toLowerCase() === 'true') {
-        paaVerificaRPTQueue.pop();
-        paaVerificaRPTQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);
-      } else {
-        paaVerificaRPTQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${paaVerificaRPTQueue.length} pushed`);
-      }
-    } else if (req.params.primitive === 'pspNotifyPayment') {
-      if (String(req.query.override).toLowerCase() === 'true') {
-        pspNotifyPaymentQueue.pop();
-        pspNotifyPaymentQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);
-      } else {
-        pspNotifyPaymentQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${pspNotifyPaymentQueue.length} pushed`);
-      }
-    } else if (req.params.primitive === 'paaAttivaRPT') {
-      if (String(req.query.override).toLowerCase() === 'true') {
-        paaAttivaRPTQueue.pop();
-        paaAttivaRPTQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);
-      } else {
-        paaAttivaRPTQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${paaAttivaRPTQueue.length} pushed`);
-      }
-    } else if (req.params.primitive === 'paaInviaRT') {
-      if (String(req.query.override).toLowerCase() === 'true') {
-        paaInviaRTQueue.pop();
-        paaInviaRTQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);
-      } else {
-        paaInviaRTQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${paaInviaRTQueue.length} pushed`);
-      }
-    } else if (req.params.primitive === 'paDemandPaymentNotice') {
-      if (String(req.query.override).toLowerCase() === 'true') {
-        paDemandPaymentNoticeQueue.pop();
-        paDemandPaymentNoticeQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);
-      } else {
-        paDemandPaymentNoticeQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${paDemandPaymentNoticeQueue.length} pushed`);
-      }
-    } else if (req.params.primitive === 'paaChiediNumeroAvviso') {
-      if (String(req.query.override).toLowerCase() === 'true') {
-        paaChiediNumeroAvvisoQueue.pop();
-        paaChiediNumeroAvvisoQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);
-      } else {
-        paaChiediNumeroAvvisoQueue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${paaChiediNumeroAvvisoQueue.length} pushed`);
-      }
-    } else if (req.params.primitive === 'paGetPaymentV2') {
-      if (String(req.query.override).toLowerCase() === 'true') {
-        paGetPaymentV2Queue.pop();
-        paGetPaymentV2Queue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);
-      } else {
-        paGetPaymentV2Queue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${paGetPaymentV2Queue.length} pushed`);
-      }
-    } else if (req.params.primitive === 'paSendRTV2') {
-      if (String(req.query.override).toLowerCase() === 'true') {
-        paSendRTV2Queue.pop();
-        paSendRTV2Queue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} updated`);
-      } else {
-        paSendRTV2Queue.push(req.rawBody);
-        res.status(200).send(`${req.params.primitive} saved. ${paSendRTV2Queue.length} pushed`);
-      }
+    const override = String(req.query.override).toLowerCase() === 'true';
+    const result = pushToQueue(req.params.primitive, req.rawBody, override);
+
+    if (result.startsWith('unknown')) {
+      res.status(400).send(result);
     } else {
-      res.status(400).send(`unknown ${req.params.primitive} error on saved.`);
+      res.status(200).send(result);
     }
   });
 

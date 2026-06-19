@@ -1,0 +1,311 @@
+{
+  "info": {
+    "name": "PA Mock - Queue Fix Test v4",
+    "_postman_id": "pa-mock-queue-fix-test-v4",
+    "description": "Collection per testare le code del dispatcher. Resetta le code prima di ogni run.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0. Reset - Svuota tutte le code",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Tutte le code svuotate', () => {",
+              "  pm.expect(pm.response.text()).to.eql('all queues cleared');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/{{mockEcPath}}/response",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{mockEcPath}}", "response"]
+        },
+        "description": "Svuota TUTTE le code prima di iniziare i test. Risposta attesa: 'all queues cleared'"
+      }
+    },
+    {
+      "name": "1. Health Check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Mock is alive', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.status).to.eql('iamalive');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/{{mockEcPath}}/info",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{mockEcPath}}", "info"]
+        }
+      }
+    },
+    {
+      "name": "2. Inject Custom Response (push 1)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Prima risposta salvata in coda', () => {",
+              "  pm.expect(pm.response.text()).to.include('saved. 1 pushed');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/xml" }],
+        "body": {
+          "mode": "raw",
+          "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:paf=\"http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd\">\n  <soapenv:Header />\n  <soapenv:Body>\n    <paf:paVerifyPaymentNoticeRes>\n      <outcome>OK</outcome>\n      <paymentList>\n        <paymentOptionDescription>\n          <amount>99.99</amount>\n          <options>EQ</options>\n          <dueDate>2025-12-31</dueDate>\n          <detailDescription>CUSTOM RESPONSE TEST</detailDescription>\n          <allCCP>true</allCCP>\n        </paymentOptionDescription>\n      </paymentList>\n      <paymentDescription>Custom Test Response</paymentDescription>\n      <fiscalCodePA>77777777777</fiscalCodePA>\n      <companyName>Test Company</companyName>\n      <officeName>Test Office</officeName>\n    </paf:paVerifyPaymentNoticeRes>\n  </soapenv:Body>\n</soapenv:Envelope>"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/{{mockEcPath}}/response/paVerifyPaymentNotice",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{mockEcPath}}", "response", "paVerifyPaymentNotice"]
+        }
+      }
+    },
+    {
+      "name": "3. Inject Custom Response (push 2 - verifica persistenza)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('KEY TEST - coda persiste tra le chiamate (deve essere 2)', () => {",
+              "  pm.expect(pm.response.text()).to.include('saved. 2 pushed');",
+              "});",
+              "pm.test('La coda NON si azzera ad ogni chiamata', () => {",
+              "  pm.expect(pm.response.text()).to.not.include('saved. 1 pushed');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/xml" }],
+        "body": {
+          "mode": "raw",
+          "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:paf=\"http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd\">\n  <soapenv:Header />\n  <soapenv:Body>\n    <paf:paVerifyPaymentNoticeRes>\n      <outcome>OK</outcome>\n      <paymentList>\n        <paymentOptionDescription>\n          <amount>55.55</amount>\n          <options>EQ</options>\n          <dueDate>2025-06-30</dueDate>\n          <detailDescription>CUSTOM RESPONSE TEST 2</detailDescription>\n          <allCCP>false</allCCP>\n        </paymentOptionDescription>\n      </paymentList>\n      <paymentDescription>Custom Test Response 2</paymentDescription>\n      <fiscalCodePA>77777777777</fiscalCodePA>\n      <companyName>Test Company 2</companyName>\n      <officeName>Test Office 2</officeName>\n    </paf:paVerifyPaymentNoticeRes>\n  </soapenv:Body>\n</soapenv:Envelope>"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/{{mockEcPath}}/response/paVerifyPaymentNotice",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{mockEcPath}}", "response", "paVerifyPaymentNotice"]
+        }
+      }
+    },
+    {
+      "name": "4. SOAP Request - consuma custom response 1",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Risposta contiene amount 99.99 (prima custom response)', () => {",
+              "  pm.expect(pm.response.text()).to.include('99.99');",
+              "});",
+              "pm.test('Risposta contiene CUSTOM RESPONSE TEST', () => {",
+              "  pm.expect(pm.response.text()).to.include('CUSTOM RESPONSE TEST');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/xml" }],
+        "body": {
+          "mode": "raw",
+          "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:pafn=\"http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd\">\n  <soapenv:Header />\n  <soapenv:Body>\n    <pafn:paVerifyPaymentNoticeReq>\n      <idPSP>AGID_01</idPSP>\n      <idBrokerPSP>97735020584</idBrokerPSP>\n      <idChannel>97735020584_02</idChannel>\n      <password>PWD_01</password>\n      <qrCode>\n        <fiscalCode>77777777777</fiscalCode>\n        <noticeNumber>302010000000000000</noticeNumber>\n      </qrCode>\n    </pafn:paVerifyPaymentNoticeReq>\n  </soapenv:Body>\n</soapenv:Envelope>"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/{{mockEcPath}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{mockEcPath}}"]
+        }
+      }
+    },
+    {
+      "name": "5. SOAP Request - consuma custom response 2",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Risposta contiene amount 55.55 (seconda custom response)', () => {",
+              "  pm.expect(pm.response.text()).to.include('55.55');",
+              "});",
+              "pm.test('Risposta contiene CUSTOM RESPONSE TEST 2', () => {",
+              "  pm.expect(pm.response.text()).to.include('CUSTOM RESPONSE TEST 2');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/xml" }],
+        "body": {
+          "mode": "raw",
+          "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:pafn=\"http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd\">\n  <soapenv:Header />\n  <soapenv:Body>\n    <pafn:paVerifyPaymentNoticeReq>\n      <idPSP>AGID_01</idPSP>\n      <idBrokerPSP>97735020584</idBrokerPSP>\n      <idChannel>97735020584_02</idChannel>\n      <password>PWD_01</password>\n      <qrCode>\n        <fiscalCode>77777777777</fiscalCode>\n        <noticeNumber>302010000000000000</noticeNumber>\n      </qrCode>\n    </pafn:paVerifyPaymentNoticeReq>\n  </soapenv:Body>\n</soapenv:Envelope>"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/{{mockEcPath}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{mockEcPath}}"]
+        }
+      }
+    },
+    {
+      "name": "6. SOAP Request - risposta di default",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Coda vuota - risposta di default con amount 120.00', () => {",
+              "  pm.expect(pm.response.text()).to.include('120.00');",
+              "});",
+              "pm.test('Risposta NON e una custom response', () => {",
+              "  pm.expect(pm.response.text()).to.not.include('CUSTOM RESPONSE TEST');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/xml" }],
+        "body": {
+          "mode": "raw",
+          "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:pafn=\"http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd\">\n  <soapenv:Header />\n  <soapenv:Body>\n    <pafn:paVerifyPaymentNoticeReq>\n      <idPSP>AGID_01</idPSP>\n      <idBrokerPSP>97735020584</idBrokerPSP>\n      <idChannel>97735020584_02</idChannel>\n      <password>PWD_01</password>\n      <qrCode>\n        <fiscalCode>77777777777</fiscalCode>\n        <noticeNumber>302010000000000000</noticeNumber>\n      </qrCode>\n    </pafn:paVerifyPaymentNoticeReq>\n  </soapenv:Body>\n</soapenv:Envelope>"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/{{mockEcPath}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{mockEcPath}}"]
+        }
+      }
+    },
+    {
+      "name": "7. Override custom response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Override confermato', () => {",
+              "  pm.expect(pm.response.text()).to.include('updated');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/xml" }],
+        "body": {
+          "mode": "raw",
+          "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:paf=\"http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd\">\n  <soapenv:Header />\n  <soapenv:Body>\n    <paf:paVerifyPaymentNoticeRes>\n      <outcome>KO</outcome>\n      <fault>\n        <faultCode>PAA_PAGAMENTO_DUPLICATO</faultCode>\n        <faultString>Override test</faultString>\n        <id>77777777777</id>\n      </fault>\n    </paf:paVerifyPaymentNoticeRes>\n  </soapenv:Body>\n</soapenv:Envelope>"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/{{mockEcPath}}/response/paVerifyPaymentNotice?override=true",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{mockEcPath}}", "response", "paVerifyPaymentNotice"],
+          "query": [{ "key": "override", "value": "true" }]
+        }
+      }
+    },
+    {
+      "name": "8. Reset coda singola",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Coda singola svuotata', () => {",
+              "  pm.expect(pm.response.text()).to.eql('paVerifyPaymentNotice queue cleared');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/{{mockEcPath}}/response/paVerifyPaymentNotice",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{mockEcPath}}", "response", "paVerifyPaymentNotice"]
+        },
+        "description": "Svuota solo la coda paVerifyPaymentNotice. Risposta attesa: 'paVerifyPaymentNotice queue cleared'"
+      }
+    },
+    {
+      "name": "9. Primitive sconosciuta (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 400 per primitiva sconosciuta', () => pm.response.to.have.status(400));",
+              "pm.test('Messaggio di errore corretto', () => {",
+              "  pm.expect(pm.response.text()).to.include('unknown primitiveInesistente');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/xml" }],
+        "body": { "mode": "raw", "raw": "<test/>" },
+        "url": {
+          "raw": "{{baseUrl}}/{{mockEcPath}}/response/primitiveInesistente",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{mockEcPath}}", "response", "primitiveInesistente"]
+        }
+      }
+    }
+  ]
+}

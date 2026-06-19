@@ -59,7 +59,7 @@ Amount of payment in euro
     </xsd:annotation>
     <xsd:restriction base="xsd:decimal">
       <xsd:pattern value="\d+\.\d{2}" />
-      <xsd:maxInclusive value="999999999.99" />
+      <xsd:maxInclusive value="999999900.00" />
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -72,7 +72,7 @@ Amount of payment in euro (_it doesn't admit values ​​equal to 0_)
     <xsd:restriction base="xsd:decimal">
       <xsd:pattern value="\d+\.\d{2}" />
       <xsd:minInclusive value="0.01" /> <!-- force to set value different from 0.-->
-      <xsd:maxInclusive value="999999999.99" />
+      <xsd:maxInclusive value="999999900.00" />
     </xsd:restriction>
   </xsd:simpleType>
 
