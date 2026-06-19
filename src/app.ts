@@ -75,8 +75,29 @@ export async function newExpressApp(
 
   
   app.post(`${config.PA_MOCK.ROUTES.PPT_NODO}/response/:primitive`, async (req, res) => {
+    
+    const primitive = String(req.params.primitive);
+    const allowedPrimitives = new Set([
+      'paVerifyPaymentNotice',
+      'paGetPayment',
+      'paSendRT',
+      'pspNotifyPayment',
+      'paaVerificaRPT',
+      'paaAttivaRPT',
+      'paaInviaRT',
+      'paDemandPaymentNotice',
+      'paaChiediNumeroAvviso',
+      'paGetPaymentV2',
+      'paSendRTV2',
+    ]);
+
+    if (!allowedPrimitives.has(primitive)) {
+      res.status(400).send('unknown primitive');
+      return;
+    }
+    
     const override = String(req.query.override).toLowerCase() === 'true';
-    const result = pushToQueue(req.params.primitive, req.rawBody, override);
+    const result = pushToQueue(primitive, req.rawBody, override);
 
     if (result.startsWith('unknown')) {
       res.status(400).send(result);

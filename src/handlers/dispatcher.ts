@@ -52,17 +52,21 @@ const queueMap: Record<string, Array<string>> = {
 };
 
 export function pushToQueue(primitive: string, body: string, override: boolean): string {
-  const queue = queueMap[primitive];
-  if (!queue) return `unknown ${primitive}`;
+    if (!Object.prototype.hasOwnProperty.call(queueMap, primitive)) {
+        return `unknown ${primitive}`;
+    }
+    const queue = queueMap[primitive];
 
-  if (override) {
-    queue.pop();
-    queue.push(body);
-    return `${primitive} updated`;
-  } else {
+    if (override) {
+        if (queue.length > 0) {
+        queue.pop();
+        }
+        queue.push(body);
+        return `${primitive} updated`;
+    }
+
     queue.push(body);
     return `${primitive} saved. ${queue.length} pushed`;
-  }
 }
 
 
@@ -156,10 +160,12 @@ export function ritorno(res: any, customResponse: string | undefined) {
       .send(customResponse);
   }
 
-  export function clearQueue(primitive?: string): string {
+export function clearQueue(primitive?: string): string {
   if (primitive) {
+    if (!Object.prototype.hasOwnProperty.call(queueMap, primitive)) {
+       return `unknown ${primitive}`;
+    }
     const queue = queueMap[primitive];
-    if (!queue) return `unknown ${primitive}`;
     queue.length = 0;
     return `${primitive} queue cleared`;
   } else {

@@ -289,7 +289,7 @@
             "exec": [
               "pm.test('Status 400 per primitiva sconosciuta', () => pm.response.to.have.status(400));",
               "pm.test('Messaggio di errore corretto', () => {",
-              "  pm.expect(pm.response.text()).to.include('unknown primitiveInesistente');",
+              "  pm.expect(pm.response.text()).to.include('unknown primitive');",
               "});"
             ],
             "type": "text/javascript"
