@@ -46,7 +46,7 @@ interface IErrorType {
 }
 
 export const paErrorVerify = (params: IErrorType): MockResponse => [
-  404,
+  200,
   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
 	xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
 	<soapenv:Header />
@@ -65,7 +65,7 @@ export const paErrorVerify = (params: IErrorType): MockResponse => [
 ];
 
 export const paErrorPaymentUnknown= (params: IErrorType): MockResponse => [
-  404,
+  200,
   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
 	xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
 	<soapenv:Header />
@@ -84,7 +84,7 @@ export const paErrorPaymentUnknown= (params: IErrorType): MockResponse => [
 ];
 
 export const paErrorReacheable = (params: IErrorType): MockResponse => [
-  404,
+  200,
   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
 	xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
 	<soapenv:Header />
