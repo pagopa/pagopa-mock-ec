@@ -1,5 +1,6 @@
 import escapeHtml = require('escape-html');
 import { MockResponse } from './nodoNewMod3Responses';
+import { spontaneousDueDate, spontaneousServices } from '../utils/configuration';
 
 export interface IECConfig {
   email : string;
@@ -185,7 +186,8 @@ interface AvvisoConfig {
 }
 export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> => {
 
-  
+  const bolloAuto = spontaneousServices['00004'];
+  const passaporto = spontaneousServices['00003'];
 
   return {
     '00': {  
@@ -399,6 +401,26 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
         { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "01199250158", iban: ec.CCPostSecondaryEC, remittanceInformation:"Comune Milano su bollettino  CCPost",transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "01199250158",iban: ec.CCBankSecondaryEC,richiestaMarcaDaBollo: {hashDocumento: 'QUJDRA==', tipoBollo: '01', provinciaResidenza: 'RM'} , remittanceInformation:"Comune Milano su bollettino  CCBank", transferCategory:"0201102IM"},    
    
+      ],
+    },
+    '28': {
+      allCCP: false,
+      amount: bolloAuto.amount,
+      dueDate: spontaneousDueDate(),
+      description: bolloAuto.description,
+      companyName: bolloAuto.companyName,
+      transfers: [
+        { idTransfer: 1, transferAmount: bolloAuto.amount, fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation: bolloAuto.description, transferCategory: "0101101IM" },
+      ],
+    },
+    '29': {
+      allCCP: false,
+      amount: passaporto.amount,
+      dueDate: spontaneousDueDate(),
+      description: passaporto.description,
+      companyName: passaporto.companyName,
+      transfers: [
+        { idTransfer: 1, transferAmount: passaporto.amount, fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation: passaporto.description, transferCategory: "0101101IM" },
       ],
     },
     // ...altri casi

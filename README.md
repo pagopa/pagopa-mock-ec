@@ -278,6 +278,31 @@ The following edge cases are available (stateless, based on notice number)
 
 **_NOTE:_** YY: every code not mentioned before
 
+### Spontaneous payments (_paDemandPaymentNotice_)
+
+On `paDemandPaymentNotice` the mock creates a new payable notice for the requesting EC, based on `idServizio` (service catalog, version 2 only):
+
+| idServizio | Service | `datiSpecificiServizioRequest` (base64) | Notice number | Amount |
+| ---------- | ------- | --------------------------------------- | ------------- | ------ |
+| `00004` | [Bollo auto](https://developer.pagopa.it/it/pago-pa/guides/sanp/3.12.0/casi-duso/pagamento-spontaneo-presso-psp/bollo-auto) | `TassaAutomobilistica_1_1_0.xsd`: `tipoVeicoloTarga` in `1`,`2`,`4` and `veicoloTarga` 7-8 chars | 302**28**xxxxxxxxxxxxx | 150.00 € |
+| `00003` | [Passaporto](https://developer.pagopa.it/it/pago-pa/guides/sanp/3.12.0/casi-duso/pagamento-spontaneo-presso-psp/passaporto) | `A001_Passaporto_1_0_0.xsd`: `codicePratica` = `A001`, `pagatore` and `intestatario` | 302**29**xxxxxxxxxxxxx | 116.00 € |
+
+- `qrCode.fiscalCode` / `fiscalCodePA` : the `idPA` of the request
+- `dueDate` : today + 30 days
+- amounts are fictitious; transfer on CCBank of **EC_TE**
+
+The returned notice can then be paid with the standard flow (`activatePaymentNotice(V2)` → `paGetPayment(V2)` → `paSendRT(V2)`).
+
+Error cases (`outcome` = `KO`):
+
+| Case | faultCode |
+| ---- | --------- |
+| missing/invalid `idPA` (11 digits), `idBrokerPA`, `idStation`, `idServizio` (5 chars), `idSoggettoServizio` (5 chars), `datiSpecificiServizioRequest` | `PAA_SINTASSI_XSD` |
+| `idServizio` not in the table above | `PAA_SEMANTICA` |
+| `datiSpecificiServizioRequest` not compliant with the service XSD | `PAA_SINTASSI_XSD` |
+
+Other scenarios (delay, unreachable) can be forced via `POST <BASE_PATH>/response/paDemandPaymentNotice`.
+
 <br>
 <!-- 
 ## Certificate creation :

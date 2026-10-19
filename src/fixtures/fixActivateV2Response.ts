@@ -129,6 +129,12 @@ export const paActivate25V2 = createActivateV2Response((params) =>
 export const paActivate26V2 =createActivateV2Response((params) =>
   getPaActivate("26", params.ec)(params)
 );
+export const paActivate28V2 = createActivateV2Response((params) =>
+  getPaActivate("28", params.ec)(params)
+);
+export const paActivate29V2 = createActivateV2Response((params) =>
+  getPaActivate("29", params.ec)(params)
+);
 export const paActivatePagamentoDuplicatoV2 = createActivateNoInputV2Response(paActivatePagamentoDuplicato);
 
 export const paActivate27 = (params: IActivateRequestV2): MockResponse => {

@@ -32,6 +32,8 @@ import {
   avviso25,
   avviso26,
   avviso27,
+  avviso28,
+  avviso29,
   avvisoPagamentoDuplicato  
 } from '../utils/configuration';
 
@@ -65,6 +67,8 @@ import {
   paActivate25V2,
   paActivate26V2,
   paActivate27,
+  paActivate28V2,
+  paActivate29V2,
   paActivatePagamentoDuplicatoV2,
 } from '../fixtures/fixActivateV2Response';
 
@@ -161,6 +165,8 @@ export const handlePaGetPaymentV2 = async (
         { pattern: avviso25, label: "25", handler: () => paActivate25V2({ creditorReferenceId, ec }) },
         { pattern: avviso26, label: "26", handler: () => paActivate26V2({ creditorReferenceId, ec }) },
         { pattern: avviso27, label: "27", handler: () => paActivate27({ creditorReferenceId, ec }), xml: true },
+        { pattern: avviso28, label: "28", handler: () => paActivate28V2({ creditorReferenceId, ec }) },
+        { pattern: avviso29, label: "29", handler: () => paActivate29V2({ creditorReferenceId, ec }) },
         { pattern: avvisoPagamentoDuplicato, label: "Duplicato", handler: () => paActivatePagamentoDuplicatoV2({ creditorReferenceId, ec }) },
     ];
 

@@ -135,7 +135,8 @@ export const dispatchSoapRequest = async (
     }
     // 8. paDemandPaymentNotice
     if (soapRequest[paDemandPaymentNoticereq]) {
-        return handlePaDemandPaymentNotice(config, paDemandPaymentNoticeQueue, null, req, res,dbAmounts, db, noticenumberRequests, noticenumberResponses);
+        const paDemandPaymentNotice = soapRequest[paDemandPaymentNoticereq][0];
+        return handlePaDemandPaymentNotice(config, paDemandPaymentNoticeQueue, paDemandPaymentNotice, req, res,dbAmounts, db, noticenumberRequests, noticenumberResponses);
     }
     // 9. paaChiediNumeroAvviso
     if (soapRequest[paaChiediNumeroAvvisoreq]) {

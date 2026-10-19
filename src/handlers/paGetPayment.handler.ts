@@ -32,6 +32,8 @@ import {
   avviso25,
   avviso26,
   avviso27,
+  avviso28,
+  avviso29,
   avvisoErrore,
   avvisoPagamentoDuplicato,
   avvisoScaduto,
@@ -148,6 +150,8 @@ export const handlePaGetPayment = async (
         [avviso25, "25"],
         [avviso26, "26"],
         [avviso27, "27"],
+        [avviso28, "28"],
+        [avviso29, "29"],
         [avvisoPagamentoDuplicato, "Duplicato"],
     ];
 
