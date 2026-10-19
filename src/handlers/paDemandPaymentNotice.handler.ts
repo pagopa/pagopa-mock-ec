@@ -22,16 +22,16 @@ const isText = (value: string | undefined, min: number, max: number): boolean =>
   value !== undefined && value.length >= min && value.length <= max;
 
 // Returns the detailDescription for valid datiSpecificiServizio, undefined otherwise
-const validators: Record<string, (dati: any) => string | undefined> = {
+const validators = new Map<string, (dati: any) => string | undefined>([
   // TassaAutomobilistica_1_1_0.xsd
-  '00004': dati => {
+  ['00004', dati => {
     const veicolo = dati?.tassaAuto?.veicoloConTarga?.[0];
     const tipo = field(veicolo, 'tipoVeicoloTarga');
     const targa = field(veicolo, 'veicoloTarga');
     return tipo && ['1', '2', '4'].includes(tipo) && isText(targa, 7, 8) ? `Tassa automobilistica targa ${targa}` : undefined;
-  },
+  }],
   // A001_Passaporto_1_0_0.xsd
-  '00003': dati => {
+  ['00003', dati => {
     const pratica = dati?.pagamentoPratica;
     const pagatore = pratica?.pagatore?.[0];
     const intestatario = pratica?.intestatario?.[0];
@@ -43,8 +43,8 @@ const validators: Record<string, (dati: any) => string | undefined> = {
       isText(field(intestatario, 'denominazioneIntestatario'), 1, 50)
       ? `Passaporto intestatario ${cfIntestatario}`
       : undefined;
-  },
-};
+  }],
+]);
 
 const parseDatiSpecifici = async (base64: string): Promise<any> => {
   try {
@@ -125,15 +125,17 @@ export const handlePaDemandPaymentNotice = async (
         return res.status(response[0]).send(response[1]);
     }
 
-    const service: ISpontaneousService | undefined = spontaneousServices[idServizio!];
-    if (!service) {
+    const service: ISpontaneousService | undefined =
+        Object.prototype.hasOwnProperty.call(spontaneousServices, idServizio!) ? spontaneousServices[idServizio!] : undefined;
+    const validator = validators.get(idServizio!);
+    if (!service || typeof validator !== 'function') {
         const response = koResponse('PAA_SEMANTICA', 'servizio non supportato',
             `idServizio ${idServizio} non supportato (ammessi: ${Object.keys(spontaneousServices).join(', ')})`);
         log_event_tx(response);
         return res.status(response[0]).send(response[1]);
     }
 
-    const detailDescription = validators[idServizio!](await parseDatiSpecifici(datiSpecifici!));
+    const detailDescription = validator(await parseDatiSpecifici(datiSpecifici!));
     if (!detailDescription) {
         const response = koResponse(PAA_SINTASSI_XSD.value, 'datiSpecificiServizioRequest non corretto',
             `datiSpecificiServizioRequest non conforme all'XSD del servizio ${idServizio}`);
