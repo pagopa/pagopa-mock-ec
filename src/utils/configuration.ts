@@ -28,6 +28,8 @@ export const avviso24 = new RegExp('^3\\d\\d24.*'); // fix response
 export const avviso25 = new RegExp('^3\\d\\d25.*'); // fix response
 export const avviso26 = new RegExp('^3\\d\\d26.*'); // fix response
 export const avviso27 = new RegExp('^3\\d\\d27.*'); // fix response for paGetPaymentV2*/
+export const avviso28 = new RegExp('^3\\d\\d28.*'); // pagamento spontaneo - bollo auto (paDemandPaymentNotice)
+export const avviso29 = new RegExp('^3\\d\\d29.*'); // pagamento spontaneo - passaporto (paDemandPaymentNotice)
 export const avvisoOver5000 = new RegExp('^3\\d\\d77.*'); // random over 5000 euro + random su 2 transfers
 export const avvisoUnder1 = new RegExp('^3\\d\\d88.*'); // random under 1 euro + + random su 2 transfers
 
@@ -51,3 +53,19 @@ export const descriptionAll = 'TARI/TEFA 2021';
 export const descriptionMono = 'TARI 2021';
 
 export const onBollettino = ' su bollettino';
+
+export interface ISpontaneousService {
+  noticeCode: string;
+  amount: string;
+  description: string;
+  companyName: string;
+}
+
+// Catalogo servizi (versione 2) gestiti da paDemandPaymentNotice, indicizzati per idServizio
+export const spontaneousServices: Record<string, ISpontaneousService> = {
+  '00004': { noticeCode: '28', amount: '150.00', description: 'Tassa automobilistica', companyName: 'ACI - Tassa automobilistica' },
+  '00003': { noticeCode: '29', amount: '116.00', description: 'Passaporto', companyName: "Ministero dell'Interno" },
+};
+
+export const spontaneousDueDate = (): string =>
+  new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10);

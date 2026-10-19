@@ -1,0 +1,12 @@
+<soapenv:Envelope xmlns:pafn="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+  <soapenv:Body>
+    <pafn:paDemandPaymentNoticeRequest>
+      <idPA>77777777777</idPA>
+      <idBrokerPA>77777777777</idBrokerPA>
+      <idStation>77777777777_01</idStation>
+      <idServizio>00003</idServizio>
+      <idSoggettoServizio>00001</idSoggettoServizio>
+      <datiSpecificiServizioRequest>PHBhZ2FtZW50b1ByYXRpY2EgeG1sbnM9Imh0dHA6Ly9QdW50b0FjY2Vzc29QU1Auc3Bjb29wLmdvdi5pdC9wYWdhbWVudG9QcmF0aWNhIj48Y29kaWNlUHJhdGljYT5BMDAxPC9jb2RpY2VQcmF0aWNhPjxwYWdhdG9yZT48Y29kaWNlRmlzY2FsZVBhZ2F0b3JlPlJTU01SQTgwQTAxSDUwMVU8L2NvZGljZUZpc2NhbGVQYWdhdG9yZT48ZGVub21pbmF6aW9uZVBhZ2F0b3JlPk1hcmlvIFJvc3NpPC9kZW5vbWluYXppb25lUGFnYXRvcmU+PC9wYWdhdG9yZT48aW50ZXN0YXRhcmlvPjxjb2RpY2VGaXNjYWxlSW50ZXN0YXRhcmlvPlZSTkdQUDgwQTAxSDUwMVU8L2NvZGljZUZpc2NhbGVJbnRlc3RhdGFyaW8+PGRlbm9taW5hemlvbmVJbnRlc3RhdGFyaW8+R2l1c2VwcGUgVmVyZGk8L2Rlbm9taW5hemlvbmVJbnRlc3RhdGFyaW8+PC9pbnRlc3RhdGFyaW8+PC9wYWdhbWVudG9QcmF0aWNhPg==</datiSpecificiServizioRequest>
+    </pafn:paDemandPaymentNoticeRequest>
+  </soapenv:Body>
+</soapenv:Envelope>

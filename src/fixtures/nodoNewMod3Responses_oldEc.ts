@@ -1,3 +1,5 @@
+import escapeHtml = require('escape-html');
+
 export type MockResponse = readonly [number, string];
 
 export const paaVerificaRPTRisposta: MockResponse = [
@@ -90,31 +92,54 @@ export const paaInviaRTRisposta: MockResponse = [
 ];
 
 
-export const paDemandPaymentNoticeRisposta: MockResponse = [
+export interface IDemandPaymentNoticeResponse {
+   outcome: 'OK' | 'KO';
+   fiscalCode?: string;
+   noticeNumber?: string;
+   amount?: string;
+   dueDate?: string;
+   allCCP?: boolean;
+   detailDescription?: string;
+   paymentDescription?: string;
+   companyName?: string;
+   fault?: { faultCode: string; faultString: string; id: string; description: string };
+}
+
+export const paDemandPaymentNoticeRisposta = (params: IDemandPaymentNoticeResponse): MockResponse => [
    200,
    `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
    <soapenv:Header/>
    <soapenv:Body>
-		  <paf:paDemandPaymentNoticeResponse>
-			 <outcome>OK</outcome>
-			 <qrCode>
-				<fiscalCode>44444444444</fiscalCode>
-				<noticeNumber>311018891531183500</noticeNumber>
-			 </qrCode>
-			 <paymentList>
-				<paymentOptionDescription>
-				   <amount>10.00</amount>
-				   <options>EQ</options>
-				   <!--Optional:-->
-				   <dueDate>2022-06-25</dueDate>
-				   <!--Optional:-->
-				   <detailDescription>descrizione dettagliata lato PA</detailDescription>
-				   <!--Optional:-->
-					<allCCP>false</allCCP>
-				</paymentOptionDescription>
-			 </paymentList>
-		  </paf:paDemandPaymentNoticeResponse>
-	</soapenv:Body>
+      <paf:paDemandPaymentNoticeResponse>
+         <outcome>${params.outcome}</outcome>
+         ${
+            params.fault
+               ? `<fault>
+            <faultCode>${escapeHtml(params.fault.faultCode)}</faultCode>
+            <faultString>${escapeHtml(params.fault.faultString)}</faultString>
+            <id>${escapeHtml(params.fault.id)}</id>
+            <description>${escapeHtml(params.fault.description)}</description>
+         </fault>`
+               : `<qrCode>
+            <fiscalCode>${escapeHtml(params.fiscalCode ?? '')}</fiscalCode>
+            <noticeNumber>${escapeHtml(params.noticeNumber ?? '')}</noticeNumber>
+         </qrCode>
+         <paymentList>
+            <paymentOptionDescription>
+               <amount>${escapeHtml(params.amount ?? '')}</amount>
+               <options>EQ</options>
+               <dueDate>${escapeHtml(params.dueDate ?? '')}</dueDate>
+               <detailDescription>${escapeHtml(params.detailDescription ?? '')}</detailDescription>
+               <allCCP>${params.allCCP ? 'true' : 'false'}</allCCP>
+            </paymentOptionDescription>
+         </paymentList>
+         <paymentDescription>${escapeHtml(params.paymentDescription ?? '')}</paymentDescription>
+         <fiscalCodePA>${escapeHtml(params.fiscalCode ?? '')}</fiscalCodePA>
+         <companyName>${escapeHtml(params.companyName ?? '')}</companyName>
+         <officeName>officeName</officeName>`
+         }
+      </paf:paDemandPaymentNoticeResponse>
+   </soapenv:Body>
 </soapenv:Envelope>`,
 ];
 

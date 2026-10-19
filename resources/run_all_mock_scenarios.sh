@@ -36,4 +36,9 @@ curl -H "Content-Type: text/xml; charset=utf-8" -H "SOAPAction:paGetPaymentReq" 
 curl -H "Content-Type: text/xml; charset=utf-8" -H "SOAPAction:paSendRTReq"  -d @paSendRTReq_avv4.xml -X POST http://localhost:8089/mockEcService
 curl -H "Content-Type: text/xml; charset=utf-8" -H "SOAPAction:paGetPaymentReq"  -d @paGetPaymentReq_avv4.xml -X POST http://localhost:8089/mockEcService
 
+# Pagamento spontaneo bollo auto (idServizio 00004): genera un avviso 30228xxxxxxxxxxxxx
+curl -H "Content-Type: text/xml; charset=utf-8" -H "SOAPAction:paDemandPaymentNotice"  -d @paDemandPaymentNoticeReq_bolloAuto.xml -X POST http://localhost:8089/mockEcService
+# Pagamento spontaneo passaporto (idServizio 00003): genera un avviso 30229xxxxxxxxxxxxx
+curl -H "Content-Type: text/xml; charset=utf-8" -H "SOAPAction:paDemandPaymentNotice"  -d @paDemandPaymentNoticeReq_passaporto.xml -X POST http://localhost:8089/mockEcService
+
 
