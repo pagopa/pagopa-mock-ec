@@ -4,7 +4,7 @@
       <idPA>77777777777</idPA>
       <idBrokerPA>77777777777</idBrokerPA>
       <idStation>77777777777_01</idStation>
-      <idServizio>00004</idServizio>
+      <idServizio>10004</idServizio>
       <idSoggettoServizio>00001</idSoggettoServizio>
       <datiSpecificiServizioRequest>PHRhc3NhQXV0byB4bWxucz0iaHR0cDovL1B1bnRvQWNjZXNzb1BTUC5zcGNvb3AuZ292Lml0L1Rhc3NhQXV0byI+PHZlaWNvbG9Db25UYXJnYT48dGlwb1ZlaWNvbG9UYXJnYT4xPC90aXBvVmVpY29sb1RhcmdhPjx2ZWljb2xvVGFyZ2E+QUIxMjNDRDwvdmVpY29sb1RhcmdhPjwvdmVpY29sb0NvblRhcmdhPjwvdGFzc2FBdXRvPg==</datiSpecificiServizioRequest>
     </pafn:paDemandPaymentNoticeRequest>
