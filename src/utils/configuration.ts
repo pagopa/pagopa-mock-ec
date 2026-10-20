@@ -61,10 +61,10 @@ export interface ISpontaneousService {
   companyName: string;
 }
 
-// Catalogo servizi (versione 2) gestiti da paDemandPaymentNotice, indicizzati per idServizio
+// Mock services: real catalog idServizio (v2) prefixed with '1' (00004 -> 10004), since real ids are bound to the actual EC stations
 export const spontaneousServices: Record<string, ISpontaneousService> = {
-  '00004': { noticeCode: '28', amount: '150.00', description: 'Tassa automobilistica', companyName: 'ACI - Tassa automobilistica' },
-  '00003': { noticeCode: '29', amount: '116.00', description: 'Passaporto', companyName: "Ministero dell'Interno" },
+  '10004': { noticeCode: '28', amount: '150.00', description: 'Tassa automobilistica', companyName: 'ACI - Tassa automobilistica' },
+  '10003': { noticeCode: '29', amount: '116.00', description: 'Passaporto', companyName: "Ministero dell'Interno" },
 };
 
 export const spontaneousDueDate = (): string =>

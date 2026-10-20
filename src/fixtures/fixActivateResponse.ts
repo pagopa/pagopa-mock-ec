@@ -186,8 +186,8 @@ interface AvvisoConfig {
 }
 export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> => {
 
-  const bolloAuto = spontaneousServices['00004'];
-  const passaporto = spontaneousServices['00003'];
+  const bolloAuto = spontaneousServices['10004'];
+  const passaporto = spontaneousServices['10003'];
 
   return {
     '00': {  

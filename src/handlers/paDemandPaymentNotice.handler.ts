@@ -24,14 +24,14 @@ const isText = (value: string | undefined, min: number, max: number): boolean =>
 // Returns the detailDescription for valid datiSpecificiServizio, undefined otherwise
 const validators = new Map<string, (dati: any) => string | undefined>([
   // TassaAutomobilistica_1_1_0.xsd
-  ['00004', dati => {
+  ['10004', dati => {
     const veicolo = dati?.tassaAuto?.veicoloConTarga?.[0];
     const tipo = field(veicolo, 'tipoVeicoloTarga');
     const targa = field(veicolo, 'veicoloTarga');
     return tipo && ['1', '2', '4'].includes(tipo) && isText(targa, 7, 8) ? `Tassa automobilistica targa ${targa}` : undefined;
   }],
   // A001_Passaporto_1_0_0.xsd
-  ['00003', dati => {
+  ['10003', dati => {
     const pratica = dati?.pagamentoPratica;
     const pagatore = pratica?.pagatore?.[0];
     const intestatario = pratica?.intestatario?.[0];
