@@ -39,7 +39,7 @@ export const CONFIG = {
       USER_FULL_NAME: process.env.USER_FULL_NAME || 'John Doe',
       USER_EMAL: process.env.USER_EMAL || 'john.doe@test.it',
       USER_CF: process.env.USER_CF || 'JHNDOE00A01F205N',
-      TIMETOUT_SEC: process.env.TIMEOUT_DELAY || 130,
+      TIMETOUT_SEC: process.env.TIMEOUT_DELAY || '130',
     },
   },
 };
