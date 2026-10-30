@@ -1,3 +1,5 @@
+import escapeHtml = require('escape-html');
+
 /*export const paVerify17 = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
     <soapenv:Header />
@@ -252,7 +254,7 @@ interface PaVerifyOptions {
 }
 
 interface PaVerifyResult {
-  xml: string;
+  xml: (orgFiscalCode: string) => string;
   options: Required<PaVerifyOptions>;
 }
 
@@ -266,7 +268,7 @@ const buildPaVerify = (opts: PaVerifyOptions = {}): PaVerifyResult => {
 
   return {
     options,
-    xml: `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xml: (orgFiscalCode: string) => `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
     <soapenv:Header />
     <soapenv:Body>
@@ -282,7 +284,7 @@ const buildPaVerify = (opts: PaVerifyOptions = {}): PaVerifyResult => {
                 </paymentOptionDescription>
             </paymentList>
             <paymentDescription>Pagamento di Test</paymentDescription>
-            <fiscalCodePA>77777777777</fiscalCodePA>
+            <fiscalCodePA>${escapeHtml(orgFiscalCode)}</fiscalCodePA>
             <companyName>${options.companyName}</companyName>
             <officeName>officeName</officeName>
         </paf:paVerifyPaymentNoticeRes>
@@ -301,7 +303,7 @@ const paActivatePagamentoDuplicato = (opts: PaVerifyOptions = {}): PaVerifyResul
 
   return {
     options,
-    xml: `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xml: (orgFiscalCode: string) => `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
             xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
             <soapenv:Header />
             <soapenv:Body>
@@ -311,7 +313,7 @@ const paActivatePagamentoDuplicato = (opts: PaVerifyOptions = {}): PaVerifyResul
                     <fault>
                         <faultCode>PAA_PAGAMENTO_DUPLICATO</faultCode>
                         <faultString>Errore mockato - caso PAA_PAGAMENTO_DUPLICATO</faultString>
-                        <id>77777777777</id>
+                        <id>${escapeHtml(orgFiscalCode)}</id>
                         <description>Errore mockato - caso PAA_PAGAMENTO_DUPLICATO</description>
                     </fault>
                 </paf:paVerifyPaymentNoticeRes>

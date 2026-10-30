@@ -6,6 +6,7 @@ export interface IECConfig {
   email : string;
   fullName : string;
   CF: string;
+  orgFiscalCode: string;
   CCPostPrimaryEC: string;
   CCBankPrimaryEC: string;
   CCPostSecondaryEC: string;
@@ -31,6 +32,7 @@ interface ITransfer {
 
 
 export interface IActivateRequest {
+  orgFiscalCode?: string;
   creditorReferenceId?: string;
   amount?: string;
   dueDate?: string;
@@ -53,11 +55,11 @@ export interface IActivateRequest {
 
 const escape = (v?: string) => escapeHtml(v ?? '');
 
-const buildTransfer = (t: ITransfer): string => {
+const buildTransfer = (t: ITransfer, orgFiscalCode?: string): string => {
   const xml = [`<transfer>`,
     `  <idTransfer>${t.idTransfer}</idTransfer>`,
     `  <transferAmount>${escape(t.transferAmount)}</transferAmount>`,
-    `  <fiscalCodePA>${escape(t.fiscalCodePA ?? '77777777777')}</fiscalCodePA>`,
+    `  <fiscalCodePA>${escape(t.fiscalCodePA ?? orgFiscalCode)}</fiscalCodePA>`,
     t.iban ? `  <IBAN>${escape(t.iban)}</IBAN>` : null,
     t.richiestaMarcaDaBollo 
     ? `<richiestaMarcaDaBollo>
@@ -74,8 +76,8 @@ const buildTransfer = (t: ITransfer): string => {
 };
 
 const DEFAULT_TRANSFERS: ITransfer[] = [
-  { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "", iban: '...' },
-  { idTransfer: 2, transferAmount: '20.00', fiscalCodePA: "", iban: '...' },
+  { idTransfer: 1, transferAmount: '100.00', iban: '...' },
+  { idTransfer: 2, transferAmount: '20.00', iban: '...' },
 ];
 
 
@@ -155,7 +157,9 @@ xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
                 <country>${escape(params.country ?? "IT")}</country>
                 <e-mail>${escape(params.email ?? "mail@mail.it")}</e-mail>
             </debtor>
-            <transferList>${(params.transfers ?? DEFAULT_TRANSFERS).map(buildTransfer).join('')}</transferList>
+            <transferList>${(params.transfers ?? DEFAULT_TRANSFERS).map(transfer =>
+    buildTransfer(transfer, params.orgFiscalCode),
+  ).join('')}</transferList>
         </data>
     </paf:${res}>
 </soapenv:Body>
@@ -194,101 +198,101 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
         allCCP:true,
         amount:"120.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "01199250158", iban:ec.CCPostSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCPost", transferCategory:"0201102IM"},
       ], },
     '01': {  
         allCCP:false,
         amount:"120.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "01199250158", iban:ec.CCBankSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
       ], },
     '02': {  
       allCCP:false,
         amount:"120.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "01199250158", iban:ec.CCPostSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCPost", transferCategory:"0201102IM"},
       ], },
     '03': {  
         allCCP:false,
         amount:"120.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "01199250158", iban:ec.CCBankSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
       ], },
     '04': {  
         allCCP:true,
         amount:"100.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
       ], },
     '05': {  
         allCCP:false,  
         amount:"100.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
       ], },
     '06': {  
         allCCP:true,
         amount:"100.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '30.00',  fiscalCodePA: "01199250158", iban:ec.CCPostSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCPost", transferCategory:"0201102IM"},
       ], },
     '07': {   
         allCCP:false,
         amount:"100.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '30.00',  fiscalCodePA: "01199250158", iban:ec.CCBankSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
       ], },
     '08': {  
         allCCP:false,
         amount:"100.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '30.00',  fiscalCodePA: "01199250158", iban:ec.CCPostSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCPost", transferCategory:"0201102IM"},
       ], },
     '09': {  
         allCCP:false,
         amount:"100.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '30.00',  fiscalCodePA: "01199250158", iban:ec.CCBankSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
       ], },
     '10': {  
         allCCP:true,
         amount:"70.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
       ], },
     '11': {  
         allCCP:false,    
         amount:"70.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCBankPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCBank", transferCategory:"0101101IM"},
       ], },
     '12': {   
         allCCP:false,
         amount:"6000.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '4000.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '4000.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '2000.00',  fiscalCodePA: "01199250158", iban:ec.CCBankSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
       ], },
     '13': {  
         allCCP:false,  
         amount:"0.30",
         transfers: [
-        { idTransfer: 1, transferAmount: '0.10', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '0.10', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"TARI EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '0.20',  fiscalCodePA: "01199250158", iban:ec.CCBankSecondaryEC , remittanceInformation:"TEFA Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
       ], },
     '14': {  
         allCCP:false,
         amount:"120.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '30.00', fiscalCodePA: "01199250158", iban:ec.CCBankSecondaryEC , remittanceInformation:"Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
         { idTransfer: 3, transferAmount: '10.00', fiscalCodePA: "00939820726", iban:ec.CCBankThirdEC , remittanceInformation:"Comune Bitetto su bollettino CCBank", transferCategory:"0201102IM"},
       ], },
@@ -296,7 +300,7 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
         allCCP:false,
         amount:"120.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '30.00', fiscalCodePA: "01199250158", iban:ec.CCBankSecondaryEC , remittanceInformation:"Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
         { idTransfer: 3, transferAmount: '10.00', fiscalCodePA: "00939820726", iban: ec.CCBankThirdEC, remittanceInformation:"Comune Bitetto su bollettino CCBank", transferCategory:"0101101IM"},
         { idTransfer: 4, transferAmount: '10.00', fiscalCodePA: "01199250158", iban:ec.CCBankSecondaryEC , remittanceInformation:"Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
@@ -305,7 +309,7 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
         allCCP:false,
         amount:"120.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
+        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
         { idTransfer: 2, transferAmount: '30.00', fiscalCodePA: "01199250158", iban:ec.CCBankSecondaryEC , remittanceInformation:"Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
         { idTransfer: 3, transferAmount: '10.00', fiscalCodePA: "00939820726", iban: ec.CCBankThirdEC, remittanceInformation:"Comune Bitetto su bollettino CCBank", transferCategory:"0101101IM"},
         { idTransfer: 4, transferAmount: '5.00',  fiscalCodePA: "01199250158", iban:ec.CCBankSecondaryEC , remittanceInformation:"Comune Milano su bollettino CCBank", transferCategory:"0201102IM"},
@@ -315,41 +319,41 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
         allCCP:true,
         amount:"120.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
-        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "77777777777", iban:ec.CCPostPrimaryEC , remittanceInformation:"EC_TE su bollettino CCPost", transferCategory:"0201102IM"},
+        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
+        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: ec.orgFiscalCode, iban:ec.CCPostPrimaryEC , remittanceInformation:"EC_TE su bollettino CCPost", transferCategory:"0201102IM"},
       ], },
     '21': {  
         allCCP:false,
         amount:"120.00",
         transfers: [
-        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
-        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "77777777777", iban:ec.CCBankPrimaryEC , remittanceInformation:"EC_TE su bollettino CCBank", transferCategory:"0201102IM"},
+        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost", transferCategory:"0101101IM"},
+        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: ec.orgFiscalCode, iban:ec.CCBankPrimaryEC , remittanceInformation:"EC_TE su bollettino CCBank", transferCategory:"0201102IM"},
      ], },
     '19': {
       allCCP:false,
       amount: "120.00",
       transfers: [
-        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation:"EC_TE su bollettino CCBank",},
-        { idTransfer: 2, transferAmount: '30.00', fiscalCodePA: "77777777777", iban:ec.CCBankPrimaryEC, remittanceInformation:"EC_TE su bollettino CCBank",},
-        { idTransfer: 3, transferAmount: '20.00', fiscalCodePA: "77777777777", iban:ec.CCPostPrimaryEC,remittanceInformation:"EC_TE su bollettino CCPost", },
+        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCBankPrimaryEC, remittanceInformation:"EC_TE su bollettino CCBank",},
+        { idTransfer: 2, transferAmount: '30.00', fiscalCodePA: ec.orgFiscalCode, iban:ec.CCBankPrimaryEC, remittanceInformation:"EC_TE su bollettino CCBank",},
+        { idTransfer: 3, transferAmount: '20.00', fiscalCodePA: ec.orgFiscalCode, iban:ec.CCPostPrimaryEC,remittanceInformation:"EC_TE su bollettino CCPost", },
       ],
     },
     '22': {
       allCCP:false,
       amount: "120.00",
       transfers: [
-        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost",},
-        { idTransfer: 2, transferAmount: '30.00', fiscalCodePA: "77777777777", iban:ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost",},
-        { idTransfer: 3, transferAmount: '20.00', fiscalCodePA: "77777777777", iban:ec.CCBankPrimaryEC,remittanceInformation:"EC_TE su bollettino CCBank", },
+        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost",},
+        { idTransfer: 2, transferAmount: '30.00', fiscalCodePA: ec.orgFiscalCode, iban:ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost",},
+        { idTransfer: 3, transferAmount: '20.00', fiscalCodePA: ec.orgFiscalCode, iban:ec.CCBankPrimaryEC,remittanceInformation:"EC_TE su bollettino CCBank", },
      ],
     },
     '23': {
       allCCP:false,
       amount: "120.00",
       transfers: [
-        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation:"EC_TE su bollettino CCBank",},
-        { idTransfer: 2, transferAmount: '30.00', fiscalCodePA: "77777777777", iban:ec.CCBankPrimaryEC, remittanceInformation:"EC_TE su bollettino CCBank",},
-        { idTransfer: 3, transferAmount: '20.00', fiscalCodePA: "77777777777", iban:ec.CCPostPrimaryEC,remittanceInformation:"EC_TE su bollettino CCPost", },
+        { idTransfer: 1, transferAmount: '70.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCBankPrimaryEC, remittanceInformation:"EC_TE su bollettino CCBank",},
+        { idTransfer: 2, transferAmount: '30.00', fiscalCodePA: ec.orgFiscalCode, iban:ec.CCBankPrimaryEC, remittanceInformation:"EC_TE su bollettino CCBank",},
+        { idTransfer: 3, transferAmount: '20.00', fiscalCodePA: ec.orgFiscalCode, iban:ec.CCPostPrimaryEC,remittanceInformation:"EC_TE su bollettino CCPost", },
       ],
     },
     '18': {
@@ -374,8 +378,8 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
       amount: "120.00",
       dueDate: '2021-07-31+02:00',
       transfers: [
-        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: "77777777777", iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost",transferCategory:"0101101IM"},
-        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: "77777777777", iban:ec.CCBankPrimaryEC, remittanceInformation:"EC_TE su bollettino CCBank", transferCategory:"0201102IM"},    
+        { idTransfer: 1, transferAmount: '100.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCPostPrimaryEC, remittanceInformation:"EC_TE su bollettino CCPost",transferCategory:"0101101IM"},
+        { idTransfer: 2, transferAmount: '20.00',  fiscalCodePA: ec.orgFiscalCode, iban:ec.CCBankPrimaryEC, remittanceInformation:"EC_TE su bollettino CCBank", transferCategory:"0201102IM"},
       ],
     },
     // avviso25: importo massimo
@@ -383,7 +387,7 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
       allCCP:false,
       amount: "999999900.00",
       transfers: [
-        { idTransfer: 1, transferAmount: '999999900.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC,remittanceInformation:"EC_TE su bollettino CCBank",  },
+        { idTransfer: 1, transferAmount: '999999900.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCBankPrimaryEC,remittanceInformation:"EC_TE su bollettino CCBank",  },
       ],
     },
     // avviso26: importo 3010
@@ -391,7 +395,7 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
       allCCP:false,
       amount: "3010.00",
       transfers: [
-        { idTransfer: 1, transferAmount: '3010.00', fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC,remittanceInformation:"EC_TE su bollettino CCBank",  },
+        { idTransfer: 1, transferAmount: '3010.00', fiscalCodePA: ec.orgFiscalCode, iban: ec.CCBankPrimaryEC,remittanceInformation:"EC_TE su bollettino CCBank",  },
       ],
     },
     '27': {
@@ -410,7 +414,7 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
       description: bolloAuto.description,
       companyName: bolloAuto.companyName,
       transfers: [
-        { idTransfer: 1, transferAmount: bolloAuto.amount, fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation: bolloAuto.description, transferCategory: "0101101IM" },
+        { idTransfer: 1, transferAmount: bolloAuto.amount, fiscalCodePA: ec.orgFiscalCode, iban: ec.CCBankPrimaryEC, remittanceInformation: bolloAuto.description, transferCategory: "0101101IM" },
       ],
     },
     '29': {
@@ -420,7 +424,7 @@ export const buildAvvisoConfigs = (ec: IECConfig): Record<string, AvvisoConfig> 
       description: passaporto.description,
       companyName: passaporto.companyName,
       transfers: [
-        { idTransfer: 1, transferAmount: passaporto.amount, fiscalCodePA: "77777777777", iban: ec.CCBankPrimaryEC, remittanceInformation: passaporto.description, transferCategory: "0101101IM" },
+        { idTransfer: 1, transferAmount: passaporto.amount, fiscalCodePA: ec.orgFiscalCode, iban: ec.CCBankPrimaryEC, remittanceInformation: passaporto.description, transferCategory: "0101101IM" },
       ],
     },
     // ...altri casi
@@ -431,10 +435,10 @@ export const getPaActivate = (suffix: string,ec: IECConfig) =>
   (params: IActivateRequest): MockResponse => {
     const configs = buildAvvisoConfigs(ec);
     const config = configs[suffix] ?? {};
-    return paActivate({ ...config, ...params });
+    return paActivate({ ...config, ...params, orgFiscalCode: ec.orgFiscalCode });
   };
 
-export const paActivatePagamentoDuplicato = (): MockResponse => [
+export const paActivatePagamentoDuplicato = (ec: IECConfig): MockResponse => [
   200,
   `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:paf="http://pagopa-api.pagopa.gov.it/pa/paForNode.xsd">
@@ -445,7 +449,7 @@ export const paActivatePagamentoDuplicato = (): MockResponse => [
             <fault>
                 <faultCode>PAA_PAGAMENTO_DUPLICATO</faultCode>
                 <faultString>Errore mockato - caso PAA_PAGAMENTO_DUPLICATO</faultString>
-                <id>77777777777</id>
+                <id>${escape(ec.orgFiscalCode)}</id>
             </fault>
         </paf:paGetPaymentRes>
     </soapenv:Body>

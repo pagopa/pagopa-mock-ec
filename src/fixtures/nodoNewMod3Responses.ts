@@ -1,3 +1,4 @@
+import escapeHtml = require('escape-html');
 import { ctFaultBean_type_pafn } from '../generated/paForNode_Service/ctFaultBean_type_pafn';
 import { stAmount_type_pafn } from '../generated/paForNode_Service/stAmount_type_pafn';
 import { stFiscalCodePA_type_pafn } from '../generated/paForNode_Service/stFiscalCodePA_type_pafn';
@@ -43,6 +44,7 @@ interface IRTRequest {
 }
 interface IErrorType {
   typeR: 'paVerifyPaymentNoticeRes' | 'paGetPaymentRes';
+  orgFiscalCode: string;
 }
 
 export const paErrorVerify = (params: IErrorType): MockResponse => [
@@ -56,7 +58,7 @@ export const paErrorVerify = (params: IErrorType): MockResponse => [
 			<fault>
 				<faultCode>PAA_SEMANTICA</faultCode>
 				<faultString>Errore1</faultString>
-				<id>77777777777</id>
+				<id>${escapeHtml(params.orgFiscalCode)}</id>
 				<description>ErroreDesc</description>
 			</fault>
 		</paf:${params.typeR}>
@@ -75,7 +77,7 @@ export const paErrorPaymentUnknown= (params: IErrorType): MockResponse => [
 			<fault>
 				<faultCode>PAA_PAGAMENTO_SCONOSCIUTO</faultCode>
 				<faultString>Payment unknown      </faultString>
-				<id>77777777777</id>
+				<id>${escapeHtml(params.orgFiscalCode)}</id>
 				<description>Payment unknown      </description>
 			</fault>
 		</paf:${params.typeR}>
@@ -94,7 +96,7 @@ export const paErrorReacheable = (params: IErrorType): MockResponse => [
 			<fault>
 				<faultCode>NOT_REACHEABLE</faultCode>
 				<faultString>EC Station not reacheable</faultString>
-				<id>77777777777</id>
+				<id>${escapeHtml(params.orgFiscalCode)}</id>
 				<description>EC Station not reacheable</description>
 			</fault>
 		</paf:${params.typeR}>
@@ -122,7 +124,7 @@ export const paVerifyPaymentNoticeRes = (params: IVerifyRequest): MockResponse =
         </paymentOptionDescription>
       </paymentList>
       <paymentDescription>Pagamento di Test</paymentDescription>
-      <fiscalCodePA>${params.fiscalCodePA}</fiscalCodePA>
+      <fiscalCodePA>${escapeHtml(params.fiscalCodePA)}</fiscalCodePA>
       <companyName>companyName</companyName>
       <officeName>officeName</officeName>`
           : ''
@@ -133,7 +135,7 @@ export const paVerifyPaymentNoticeRes = (params: IVerifyRequest): MockResponse =
             `<fault>
         <faultCode>${params.fault.faultCode}</faultCode>
         <faultString>${params.fault.faultString}</faultString>
-        <id>${params.fault.id}</id>
+        <id>${escapeHtml(params.fault.id)}</id>
         <description>${params.fault.description}</description>
       </fault>`
           : ''
@@ -178,7 +180,7 @@ export const paGetPaymentRes = (params: IActivateRequest): MockResponse => [
                       <transfer>
                         <idTransfer>1</idTransfer>
                         <transferAmount>${params.amountPrimary}</transferAmount>
-                        <fiscalCodePA>77777777777</fiscalCodePA>
+                        <fiscalCodePA>${escapeHtml(params.fiscalCodePA)}</fiscalCodePA>
                         <IBAN>${params.iban_1}</IBAN>
                         <remittanceInformation>TARI Comune EC_TE${
                           params.remittanceInformation1Bollettino
@@ -247,7 +249,7 @@ export const paGetPaymentRes = (params: IActivateRequest): MockResponse => [
                 `<fault>
             <faultCode>${params.fault.faultCode}</faultCode>
             <faultString>${params.fault.faultString}</faultString>
-            <id>${params.fault.id}</id>
+            <id>${escapeHtml(params.fault.id)}</id>
             <description>${params.fault.description}</description>
           </fault>`
               : ''
@@ -366,6 +368,5 @@ export const paSendRTV2Response: MockResponse = [
   </soapenv:Body>
 </soapenv:Envelope>`,
 ];
-
 
 
