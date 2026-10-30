@@ -69,11 +69,6 @@ import * as xml2js from 'xml2js';
 import { StTransferType_type_pafnEnum } from "../generated/paForNode_Service/stTransferType_type_pafn";
 import { Configuration } from "../config";
 import { ritorno } from "./dispatcher";
-
-const faultId = '77777777777';
-
-
-
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 export const handlePaVerifyPaymentNotice = async (
   config: Configuration,
@@ -174,7 +169,7 @@ export const handlePaVerifyPaymentNotice = async (
         noticenumberRequests.set(`${noticenumber}_paVerifyPaymentNotice`, req.body);
     }
 
-    return res.status(200).send(match[1].xml);           
+    return res.status(200).send(match[1].xml(fiscalcode));
   }  
 
   //ERRROS
@@ -189,7 +184,7 @@ export const handlePaVerifyPaymentNotice = async (
                   description: 'sintassi XSD errata',
                   faultCode: PAA_SINTASSI_XSD.value,
                   faultString: 'messaggio xml non corretto',
-                  id: faultId,
+                  id: fiscalcode,
                 },
                 outcome: 'KO',
               });
@@ -199,7 +194,10 @@ export const handlePaVerifyPaymentNotice = async (
   }
 
   if (isFixedError) {
-    const paErrorVerifyResponse = paErrorReacheable({ typeR: 'paVerifyPaymentNoticeRes' });
+    const paErrorVerifyResponse = paErrorReacheable({
+      typeR: 'paVerifyPaymentNoticeRes',
+      orgFiscalCode: fiscalcode,
+    });
     log_event_tx(paErrorVerifyResponse);
     return res.status(paErrorVerifyResponse[0]).send(paErrorVerifyResponse[1]);
   }
@@ -212,7 +210,7 @@ export const handlePaVerifyPaymentNotice = async (
         description: `il numero avviso ${noticenumber} e' scaduto`,
         faultCode: PAA_PAGAMENTO_SCADUTO.value,
         faultString: 'Pagamento in attesa risulta scaduto all’Ente Creditore',
-        id: faultId,
+        id: fiscalcode,
       },
     });
 
@@ -238,7 +236,10 @@ export const handlePaVerifyPaymentNotice = async (
  
   if(!isErrorXsd && !isFixedError && !isExpiredNotice && !isTimeout){
     console.log("PAGAMNTO SCONOSCIUTO");
-    const errorPaymentUnknown = paErrorPaymentUnknown({ typeR: 'paVerifyPaymentNoticeRes' });
+    const errorPaymentUnknown = paErrorPaymentUnknown({
+      typeR: 'paVerifyPaymentNoticeRes',
+      orgFiscalCode: fiscalcode,
+    });
     log_event_tx(errorPaymentUnknown);
     return res.status(errorPaymentUnknown[0]).send(errorPaymentUnknown[1]);
   }
