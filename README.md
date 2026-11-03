@@ -23,6 +23,11 @@ A mock implementation of PA pagoPA service
 
 ## Prerequisites
 
+Development, CI and the Docker image use Node.js 24.22.1. Keep `.node-version`,
+the Docker base image and the `package.json` engine constraint aligned when
+updating the runtime. Later security patches in the Node.js 24 release line are
+supported.
+
 To be able to use as PSP the following `pagopa-mock-ec` remebers to configure in your requests :
 
 - PSP [Identification and Authentication](https://pagopa.github.io/pagopa-api/#section/Introduction/Identification-and-Authentication)
