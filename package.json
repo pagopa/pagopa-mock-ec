@@ -1,6 +1,6 @@
 {
   "name": "io-pagopa-node-mock",
-  "version": "1.7.22",
+  "version": "1.7.22-1-fix-default-org",
   "description": "TODO",
   "repository": "https://github.com/pagopa/io-pagopa-node-mock.git",
   "author": "https://pagopa.it",

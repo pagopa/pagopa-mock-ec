@@ -63,22 +63,9 @@ export const handlePaGetPayment = async (
   noticenumberResponses: Map<string, JSON>,
 ): Promise<void> => {
 
-    const faultId = '77777777777';
-
     const TIMEOUT_SEC = config.PA_MOCK.NM3_DATA.TIMETOUT_SEC;
     const amount1 = 100.0;
     
-    const ec: IECConfig = {
-        email : config.PA_MOCK.NM3_DATA.USER_EMAL,
-        fullName : config.PA_MOCK.NM3_DATA.USER_FULL_NAME,
-        CF : config.PA_MOCK.NM3_DATA.USER_CF,
-        CCPostPrimaryEC:   config.PA_MOCK.NM3_DATA.CC_POST_PRIMARY_EC,
-        CCBankPrimaryEC:   config.PA_MOCK.NM3_DATA.CC_BANK_PRIMARY_EC,
-        CCPostSecondaryEC: config.PA_MOCK.NM3_DATA.CC_POST_SECONDARY_EC,
-        CCBankSecondaryEC: config.PA_MOCK.NM3_DATA.CC_BANK_SECONDARY_EC,
-        CCBankThirdEC:     config.PA_MOCK.NM3_DATA.CC_BANK_THIRD_EC,
-    };
-
     const testDebug = config.PA_MOCK.TEST_DEBUG;
 
     const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
@@ -120,6 +107,17 @@ export const handlePaGetPayment = async (
     const fiscalcode = paGetPayment.qrcode[0].fiscalcode;
     const noticenumber: string = paGetPayment.qrcode[0].noticenumber[0];
     const creditorReferenceId = noticenumber.substring(1);
+    const ec: IECConfig = {
+        email : config.PA_MOCK.NM3_DATA.USER_EMAL,
+        fullName : config.PA_MOCK.NM3_DATA.USER_FULL_NAME,
+        CF : config.PA_MOCK.NM3_DATA.USER_CF,
+        orgFiscalCode: fiscalcode,
+        CCPostPrimaryEC:   config.PA_MOCK.NM3_DATA.CC_POST_PRIMARY_EC,
+        CCBankPrimaryEC:   config.PA_MOCK.NM3_DATA.CC_BANK_PRIMARY_EC,
+        CCPostSecondaryEC: config.PA_MOCK.NM3_DATA.CC_POST_SECONDARY_EC,
+        CCBankSecondaryEC: config.PA_MOCK.NM3_DATA.CC_BANK_SECONDARY_EC,
+        CCBankThirdEC:     config.PA_MOCK.NM3_DATA.CC_BANK_THIRD_EC,
+    };
 
     const avvisoMappings: Array<[RegExp, string]> = [
         [avviso00, "00"],
@@ -166,7 +164,7 @@ export const handlePaGetPayment = async (
 
     const isFixedError = avvisoErrore.test(noticenumber);
     if (isFixedError) {
-        const paErrorGetResponse = paErrorVerify({ typeR: 'paGetPaymentRes' });
+        const paErrorGetResponse = paErrorVerify({ typeR: 'paGetPaymentRes', orgFiscalCode: fiscalcode });
         log_event_tx(paErrorGetResponse);
         return res.status(paErrorGetResponse[0]).send(paErrorGetResponse[1]);
     }
@@ -185,7 +183,7 @@ export const handlePaGetPayment = async (
             'numero avviso deve iniziare con 3\\d\\d[00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|99|98|97]',
             faultCode: PAA_PAGAMENTO_SCONOSCIUTO.value,
             faultString: 'Pagamento in attesa risulta sconosciuto all’Ente Creditore',
-            id: faultId,
+            id: fiscalcode,
         },
         outcome: 'KO',
         });
@@ -199,7 +197,7 @@ export const handlePaGetPayment = async (
             description: `il numero avviso ${noticenumber} e' scaduto`,
             faultCode: PAA_PAGAMENTO_SCADUTO.value,
             faultString: 'Pagamento in attesa risulta scaduto all’Ente Creditore',
-            id: faultId,
+            id: fiscalcode,
         },
         outcome: 'KO',
         });
@@ -247,7 +245,7 @@ export const handlePaGetPayment = async (
                 ? PAA_PAGAMENTO_DUPLICATO.value
                 : '_UNDEFINED_',
             faultString: `Errore ${noticenumber}`,
-            id: faultId,
+            id: fiscalcode,
             },
         });
 

@@ -173,7 +173,7 @@ export const paActivate27 = (params: IActivateRequestV2): MockResponse => {
                   <transfer>
                       <idTransfer>1</idTransfer>
                       <transferAmount>100.00</transferAmount>
-                      <fiscalCodePA>77777777777</fiscalCodePA>
+                      <fiscalCodePA>${escapeHtml(params.ec.orgFiscalCode)}</fiscalCodePA>
                       <IBAN>IT57N0760114800000011050036</IBAN>
                       <remittanceInformation>remittance information</remittanceInformation>
                       <transferCategory>0101101IM</transferCategory>
@@ -181,7 +181,7 @@ export const paActivate27 = (params: IActivateRequestV2): MockResponse => {
                   <transfer>
                       <idTransfer>2</idTransfer>
                       <transferAmount>20.00</transferAmount>
-                      <fiscalCodePA>77777777777</fiscalCodePA>
+                      <fiscalCodePA>${escapeHtml(params.ec.orgFiscalCode)}</fiscalCodePA>
                       <richiestaMarcaDaBollo>
                         <hashDocumento>QUJDRA==</hashDocumento>
                         <tipoBollo>01</tipoBollo>

@@ -87,16 +87,6 @@ export const handlePaGetPaymentV2 = async (
   noticenumberResponses: Map<string, JSON>,
 ): Promise<void> => {
 
-    const ec: IECConfig = {
-        email : config.PA_MOCK.NM3_DATA.USER_EMAL,
-        fullName : config.PA_MOCK.NM3_DATA.USER_FULL_NAME,
-        CF : config.PA_MOCK.NM3_DATA.USER_CF,
-        CCPostPrimaryEC:   config.PA_MOCK.NM3_DATA.CC_POST_PRIMARY_EC,
-        CCBankPrimaryEC:   config.PA_MOCK.NM3_DATA.CC_BANK_PRIMARY_EC,
-        CCPostSecondaryEC: config.PA_MOCK.NM3_DATA.CC_POST_SECONDARY_EC,
-        CCBankSecondaryEC: config.PA_MOCK.NM3_DATA.CC_BANK_SECONDARY_EC,
-        CCBankThirdEC:     config.PA_MOCK.NM3_DATA.CC_BANK_THIRD_EC,
-    };
     const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
     if (paGetPaymentV2Queue.length > 0) {
           const customResponse = paGetPaymentV2Queue.shift();
@@ -133,9 +123,21 @@ export const handlePaGetPaymentV2 = async (
     }
     console.log("paGetPaymentV2Request -> ",paGetPaymentV2Request.qrcode[0]);
        
+    const orgFiscalCode = paGetPaymentV2Request.qrcode[0].fiscalcode;
     const noticenumber: string = paGetPaymentV2Request.qrcode[0].noticenumber;
     console.log("NOTICE NUMBER :", noticenumber);
     const creditorReferenceId = noticenumber[0].substring(1);
+    const ec: IECConfig = {
+        email : config.PA_MOCK.NM3_DATA.USER_EMAL,
+        fullName : config.PA_MOCK.NM3_DATA.USER_FULL_NAME,
+        CF : config.PA_MOCK.NM3_DATA.USER_CF,
+        orgFiscalCode,
+        CCPostPrimaryEC:   config.PA_MOCK.NM3_DATA.CC_POST_PRIMARY_EC,
+        CCBankPrimaryEC:   config.PA_MOCK.NM3_DATA.CC_BANK_PRIMARY_EC,
+        CCPostSecondaryEC: config.PA_MOCK.NM3_DATA.CC_POST_SECONDARY_EC,
+        CCBankSecondaryEC: config.PA_MOCK.NM3_DATA.CC_BANK_SECONDARY_EC,
+        CCBankThirdEC:     config.PA_MOCK.NM3_DATA.CC_BANK_THIRD_EC,
+    };
     const avvisoMappings: ActivateEntry[] = [
         { pattern: avviso00, label: "00", handler: () => paActivate00V2({ creditorReferenceId, ec }) },
         { pattern: avviso01, label: "01", handler: () => paActivate01V2({ creditorReferenceId, ec }) },
