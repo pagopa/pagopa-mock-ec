@@ -27,7 +27,7 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Deploy
-        uses: pagopa/github-actions-template/aks-deploy@main
+        uses: pagopa/github-actions-template/aks-deploy@3289a075b9a681b5e0873088554ae77ae3fffe1b # main
         with:
           branch: ${{ inputs.branch }}
           client_id: ${{ secrets.CD_CLIENT_ID }}
